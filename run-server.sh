@@ -40,9 +40,8 @@ echo "[3/4] Syncing main.amx and config.json..."
 cp "$SRC_DIR/gamemodes/main.amx" "$RUN_DIR/gamemodes/main.amx"
 cp "$SRC_DIR/config.json" "$RUN_DIR/config.json"
 
-# Ensure config settings
+# Ensure config settings (disable public announce)
 sed -i 's/"announce": true/"announce": false/' "$RUN_DIR/config.json"
-sed -i 's/"enable": true/"enable": false/' "$RUN_DIR/config.json" # disable web artwork server
 
 echo "[4/4] Starting open.mp server on port 7777..."
 

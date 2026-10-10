@@ -71,14 +71,17 @@ Server ini mengadopsi antarmuka grafis interaktif berbasis kursor mouse (`Select
     5. `[ 5. Mode Suara ]` -> Mengubah mode dering / hening secara instan.
     6. `[ 6. Tutup Ponsel ]` -> Menutup tampilan ponsel.
 
-### 2. Modal Inventaris 12 Slot (Clickable Grid & Action Buttons)
-- Dibuka dengan `/inv` atau tombol cepat **N**.
-- **12 Slot Grid Interaktif:** Klik pada salah satu slot untuk memilih barang (slot yang dipilih akan disorot warna hijau).
-- **Tombol Aksi di Bawah Grid:**
-  - `[ GUNAKAN ]` -> Menggunakan item yang sedang dipilih (makan roti, minum, pakai medkit, dll.).
-  - `[ BERIKAN ]` -> Membuka dialog cepat untuk menyerahkan item ke pemain terdekat.
-  - `[ BUANG ]` -> Membuang barang yang sedang dipilih dari kantong.
-  - `[ TUTUP ]` -> Menutup inventaris.
+### 2. Modal Inventaris 25 Slot Interaktif (5x5 Grid & 3D Preview Models)
+- Dibuka dengan `/inv` atau via Quick Action Menu (tombol **N** on-foot).
+- **Desain Modern Dark Slate:** Menggunakan kisi 5x5 (25 Slot Barang) dengan header nama pemain dan bar kapasitas beban (`0.0 / 50.0 kg`).
+- **3D Preview Models:** Setiap slot menampilkan model objek 3D interaktif yang berputar halus sesuai tipe barang.
+- **25 Slot Grid Interaktif:** Klik pada salah satu slot untuk memilih barang (slot yang dipilih akan disorot warna cyan).
+- **Panel Aksi Terintegrasi di Samping Kanan Grid:**
+  - `[ Amount ]` -> Menampilkan dan memisahkan kuantitas barang dalam stack.
+  - `[ Use ]` -> Menggunakan item yang sedang dipilih (makan snack, minum, pakai medkit, dll.).
+  - `[ Give ]` -> Membuka dialog cepat untuk menyerahkan item ke pemain terdekat.
+  - `[ Drop ]` -> Membuang barang yang sedang dipilih dari kantong.
+  - `[ Close ]` -> Menutup inventaris.
 
 ### 3. Dashboard Kontrol Kendaraan (Vehicle Control Panel)
 - Muncul otomatis saat mengemudi dan menekan tombol **N** (atau perintah `/vehpanel`).

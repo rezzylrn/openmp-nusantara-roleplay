@@ -71,7 +71,7 @@
 #define BUS_VEH_MODEL          431 // Bus
 
 // inventory items
-#define MAX_INVENTORY_SLOTS    12
+#define MAX_INVENTORY_SLOTS    25
 #define MAX_TRUNK_SLOTS        8
 
 enum {
@@ -534,6 +534,10 @@ new gGiveTarget[MAX_PLAYERS];
 new gGiveItemType[MAX_PLAYERS];
 new bool:gPhoneOpen[MAX_PLAYERS];
 new bool:gInventoryOpen[MAX_PLAYERS];
+
+// forward prototypes
+forward Float:GetItemWeight(itemtype);
+forward GetItemModel(itemtype);
 new bool:gVehDashOpen[MAX_PLAYERS];
 new bool:gBankUIOpen[MAX_PLAYERS];
 new bool:gActMenuOpen[MAX_PLAYERS];

@@ -57,6 +57,8 @@
 #endif
 #define _INC_textdraws
 
+#include "inv_textdraw.inc"
+
 // Ambil header bersama.  pawncc mencari relatif ke berkas yang me-include
 // lebih dulu, lalu ke -i, jadi kedua ejaan dicoba agar modul ini tetap bisa
 // dikompilasi sendiri maupun dari gamemode.
@@ -142,55 +144,35 @@
 #define pTD_PhoneApp4       34
 #define pTD_PhoneApp5       35
 #define pTD_PhoneApp6       36
-// --- Inventory TextDraws (12 Slot Grid Modal) ---
-#define pTD_InvBackdrop     37
-#define pTD_InvHeader       38
-#define pTD_InvSlot1        39
-#define pTD_InvSlot2        40
-#define pTD_InvSlot3        41
-#define pTD_InvSlot4        42
-#define pTD_InvSlot5        43
-#define pTD_InvSlot6        44
-#define pTD_InvSlot7        45
-#define pTD_InvSlot8        46
-#define pTD_InvSlot9        47
-#define pTD_InvSlot10       48
-#define pTD_InvSlot11       49
-#define pTD_InvSlot12       50
-#define pTD_InvFooter       51
-#define pTD_InvBtnUse       52
-#define pTD_InvBtnGive      53
-#define pTD_InvBtnDrop      54
-#define pTD_InvBtnClose     55
 // --- Vehicle Control Dashboard ---
-#define pTD_VehDashBg       56
-#define pTD_VehDashTitle    57
-#define pTD_VehDashEngine   58
-#define pTD_VehDashLock     59
-#define pTD_VehDashLights   60
-#define pTD_VehDashHood     61
-#define pTD_VehDashTrunk    62
-#define pTD_VehDashClose    63
+#define pTD_VehDashBg       37
+#define pTD_VehDashTitle    38
+#define pTD_VehDashEngine   39
+#define pTD_VehDashLock     40
+#define pTD_VehDashLights   41
+#define pTD_VehDashHood     42
+#define pTD_VehDashTrunk    43
+#define pTD_VehDashClose    44
 // --- ATM / Banking UI ---
-#define pTD_BankBg          64
-#define pTD_BankTitle       65
-#define pTD_BankBalance     66
-#define pTD_BankBtnWithdraw 67
-#define pTD_BankBtnDeposit  68
-#define pTD_BankBtnTransfer 69
-#define pTD_BankBtnClose    70
+#define pTD_BankBg          45
+#define pTD_BankTitle       46
+#define pTD_BankBalance     47
+#define pTD_BankBtnWithdraw 48
+#define pTD_BankBtnDeposit  49
+#define pTD_BankBtnTransfer 50
+#define pTD_BankBtnClose    51
 // --- Quick Action Menu ---
-#define pTD_ActBg           71
-#define pTD_ActTitle        72
-#define pTD_ActBtnInv       73
-#define pTD_ActBtnPhone     74
-#define pTD_ActBtnID        75
-#define pTD_ActBtnVeh       76
-#define pTD_ActBtnStats     77
-#define pTD_ActBtnHelp      78
-#define pTD_ActBtnClose     79
+#define pTD_ActBg           52
+#define pTD_ActTitle        53
+#define pTD_ActBtnInv       54
+#define pTD_ActBtnPhone     55
+#define pTD_ActBtnID        56
+#define pTD_ActBtnVeh       57
+#define pTD_ActBtnStats     58
+#define pTD_ActBtnHelp      59
+#define pTD_ActBtnClose     60
 // --- penanda batas (harus terakhir) ---
-#define pTD_COUNT           80
+#define pTD_COUNT           61
 
 // Index pertama/terakhir tiap panel, untuk loop show/hide.
 #define TD_HUD_FIRST       pTD_HudPanel
@@ -199,8 +181,6 @@
 #define TD_SPD_LAST        pTD_SpdLockVal
 #define TD_PHONE_FIRST     pTD_PhoneBody
 #define TD_PHONE_LAST      pTD_PhoneApp6
-#define TD_INV_FIRST       pTD_InvBackdrop
-#define TD_INV_LAST        pTD_InvBtnClose
 #define TD_VEHDASH_FIRST   pTD_VehDashBg
 #define TD_VEHDASH_LAST    pTD_VehDashClose
 #define TD_BANK_FIRST      pTD_BankBg
@@ -627,84 +607,8 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp6], 615.0, 316.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_PhoneApp6], true);
 
-    // ================= INVENTARIS UI (tengah layar) =================
-    // Standar LEFT-aligned box: x=130 (kiri), TextSize=510 (kanan, lebar 380).
-    gTD_PlayerText[playerid][pTD_InvBackdrop] = CreatePlayerTextDraw(playerid, 130.0, 120.0, "_");
-    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_InvBackdrop], 0.0, 24.5);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_InvBackdrop], 510.0, 0.0);
-    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_InvBackdrop], TEXT_DRAW_ALIGN_LEFT);
-    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_InvBackdrop], TD_COLOR_WHITE);
-    PlayerTextDrawUseBox(playerid, gTD_PlayerText[playerid][pTD_InvBackdrop], true);
-    PlayerTextDrawBoxColour(playerid, gTD_PlayerText[playerid][pTD_InvBackdrop], TD_COLOR_INV_BG);
-    PlayerTextDrawSetShadow(playerid, gTD_PlayerText[playerid][pTD_InvBackdrop], 0);
-
-    gTD_PlayerText[playerid][pTD_InvHeader] = CreatePlayerTextDraw(playerid, 320.0, 126.0, "~b~~h~INVENTARIS PRIBADI ~w~(12 SLOT)");
-    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_InvHeader], 0.26, 1.15);
-    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_InvHeader], TEXT_DRAW_ALIGN_CENTER);
-    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_InvHeader], TD_COLOR_WHITE);
-    PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_InvHeader], TEXT_DRAW_FONT_2);
-    PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_InvHeader], true);
-
-    static const Float:slotCoords[12][2] = {
-        {140.0, 155.0}, {230.0, 155.0}, {320.0, 155.0}, {410.0, 155.0},
-        {140.0, 205.0}, {230.0, 205.0}, {320.0, 205.0}, {410.0, 205.0},
-        {140.0, 255.0}, {230.0, 255.0}, {320.0, 255.0}, {410.0, 255.0}
-    };
-
-    for (new s = 0; s < 12; s++) {
-        gTD_PlayerText[playerid][pTD_InvSlot1 + s] = CreatePlayerTextDraw(playerid, slotCoords[s][0], slotCoords[s][1], "[KOSONG]");
-        PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_InvSlot1 + s], 0.17, 0.78);
-        PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_InvSlot1 + s], TEXT_DRAW_ALIGN_LEFT);
-        PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_InvSlot1 + s], TD_COLOR_WHITE);
-        PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_InvSlot1 + s], TEXT_DRAW_FONT_1);
-        PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_InvSlot1 + s], true);
-        PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_InvSlot1 + s], slotCoords[s][0] + 78.0, slotCoords[s][1] + 30.0);
-        PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_InvSlot1 + s], true);
-    }
-
-    gTD_PlayerText[playerid][pTD_InvFooter] = CreatePlayerTextDraw(playerid, 320.0, 295.0,
-        "~w~Pilih slot barang di atas, lalu klik aksi di bawah:");
-    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_InvFooter], 0.18, 0.82);
-    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_InvFooter], TEXT_DRAW_ALIGN_CENTER);
-    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_InvFooter], TD_COLOR_WHITE);
-    PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_InvFooter], TEXT_DRAW_FONT_1);
-    PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_InvFooter], true);
-
-    gTD_PlayerText[playerid][pTD_InvBtnUse] = CreatePlayerTextDraw(playerid, 140.0, 316.0, "[ GUNAKAN ]");
-    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_InvBtnUse], 0.20, 0.90);
-    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_InvBtnUse], TEXT_DRAW_ALIGN_LEFT);
-    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_InvBtnUse], TD_COLOR_CASH);
-    PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_InvBtnUse], TEXT_DRAW_FONT_1);
-    PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_InvBtnUse], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_InvBtnUse], 215.0, 330.0);
-    PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_InvBtnUse], true);
-
-    gTD_PlayerText[playerid][pTD_InvBtnGive] = CreatePlayerTextDraw(playerid, 230.0, 316.0, "[ BERIKAN ]");
-    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_InvBtnGive], 0.20, 0.90);
-    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_InvBtnGive], TEXT_DRAW_ALIGN_LEFT);
-    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_InvBtnGive], TD_COLOR_BANK);
-    PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_InvBtnGive], TEXT_DRAW_FONT_1);
-    PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_InvBtnGive], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_InvBtnGive], 305.0, 330.0);
-    PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_InvBtnGive], true);
-
-    gTD_PlayerText[playerid][pTD_InvBtnDrop] = CreatePlayerTextDraw(playerid, 320.0, 316.0, "[ BUANG ]");
-    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_InvBtnDrop], 0.20, 0.90);
-    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_InvBtnDrop], TEXT_DRAW_ALIGN_LEFT);
-    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_InvBtnDrop], TD_COLOR_HUNGER);
-    PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_InvBtnDrop], TEXT_DRAW_FONT_1);
-    PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_InvBtnDrop], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_InvBtnDrop], 385.0, 330.0);
-    PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_InvBtnDrop], true);
-
-    gTD_PlayerText[playerid][pTD_InvBtnClose] = CreatePlayerTextDraw(playerid, 410.0, 316.0, "[ TUTUP ]");
-    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_InvBtnClose], 0.20, 0.90);
-    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_InvBtnClose], TEXT_DRAW_ALIGN_LEFT);
-    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_InvBtnClose], TD_COLOR_ENGINE_OFF);
-    PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_InvBtnClose], TEXT_DRAW_FONT_1);
-    PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_InvBtnClose], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_InvBtnClose], 475.0, 330.0);
-    PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_InvBtnClose], true);
+    // Inisialisasi TextDraw Inventaris Modern 25 Slot
+    InvTextDraw_Init(playerid);
 
     // ================= DASHBOARD KENDARAAN (tengah layar) =================
     // Standar LEFT-aligned box: x=170 (kiri), TextSize=470 (kanan, lebar 300).
@@ -938,6 +842,7 @@ stock DestroyPlayerTextDraws(playerid)
 {
     if (playerid < 0 || playerid >= MAX_PLAYERS) return 0;
 
+    InvTextDraw_Destroy(playerid);
     HidePlayerAlert(playerid);
     HidePlayerSubtitle(playerid);
     HidePlayerSpeedo(playerid);
@@ -1282,10 +1187,7 @@ stock ShowPlayerInventoryUI(playerid)
 {
     if (playerid < 0 || playerid >= MAX_PLAYERS) return 0;
     gSelectedInvSlot[playerid] = 0;
-    UpdatePlayerInventoryUI(playerid);
-    for (new e = TD_INV_FIRST; e <= TD_INV_LAST; e++) {
-        PlayerTextDrawShow(playerid, gTD_PlayerText[playerid][e]);
-    }
+    InvTextDraw_Show(playerid);
     gInventoryOpen[playerid] = true;
     SelectTextDraw(playerid, 0x33CCFFFF);
     PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
@@ -1295,9 +1197,7 @@ stock ShowPlayerInventoryUI(playerid)
 stock HidePlayerInventoryUI(playerid)
 {
     if (playerid < 0 || playerid >= MAX_PLAYERS) return 0;
-    for (new e = TD_INV_FIRST; e <= TD_INV_LAST; e++) {
-        PlayerTextDrawHide(playerid, gTD_PlayerText[playerid][e]);
-    }
+    InvTextDraw_Hide(playerid);
     gInventoryOpen[playerid] = false;
     CancelSelectTextDraw(playerid);
     return 1;
@@ -1306,25 +1206,7 @@ stock HidePlayerInventoryUI(playerid)
 stock UpdatePlayerInventoryUI(playerid)
 {
     if (playerid < 0 || playerid >= MAX_PLAYERS) return 0;
-    new slotBuf[64], itemName[32];
-
-    for (new s = 0; s < 12; s++) {
-        if (gPlayerItems[playerid][s][itType] != ITEM_NONE) {
-            GetItemName(gPlayerItems[playerid][s][itType], itemName, sizeof(itemName));
-            if (s == gSelectedInvSlot[playerid]) {
-                format(slotBuf, sizeof(slotBuf), "~g~[%d] ~y~%s\n~w~x%d", s + 1, itemName, gPlayerItems[playerid][s][itAmount]);
-            } else {
-                format(slotBuf, sizeof(slotBuf), "~y~[%d] ~w~%s\n~g~x%d", s + 1, itemName, gPlayerItems[playerid][s][itAmount]);
-            }
-        } else {
-            if (s == gSelectedInvSlot[playerid]) {
-                format(slotBuf, sizeof(slotBuf), "~g~[%d] ~d~[PILIH]", s + 1);
-            } else {
-                format(slotBuf, sizeof(slotBuf), "~y~[%d] ~d~[KOSONG]", s + 1);
-            }
-        }
-        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_InvSlot1 + s], slotBuf);
-    }
+    InvTextDraw_Update(playerid);
     return 1;
 }
 
@@ -1484,43 +1366,58 @@ stock ProcessPlayerClickTD(playerid, PlayerText:playertextid)
         }
     }
 
-    // 2. INVENTORY SLOTS & BUTTONS
+    // 2. INVENTORY SLOTS (25 SLOTS) & ACTIONS
     if (gInventoryOpen[playerid]) {
-        for (new s = 0; s < 12; s++) {
-            if (playertextid == gTD_PlayerText[playerid][pTD_InvSlot1 + s]) {
+        for (new s = 0; s < 25; s++) {
+            if (playertextid == INDEXTD[playerid][s]) {
                 gSelectedInvSlot[playerid] = s;
-                UpdatePlayerInventoryUI(playerid);
+                InvTextDraw_Update(playerid);
                 PlayerPlaySound(playerid, 1083, 0.0, 0.0, 0.0);
-                new itemName[32], footerBuf[96];
-                GetItemName(gPlayerItems[playerid][s][itType], itemName, sizeof(itemName));
-                format(footerBuf, sizeof(footerBuf), "~w~Dipilih: ~y~Slot %d (%s) ~w~| Klik aksi:", s + 1, itemName);
-                PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_InvFooter], footerBuf);
                 return 1;
             }
         }
 
-        if (playertextid == gTD_PlayerText[playerid][pTD_InvBtnUse]) {
-            UsePlayerItemBySlot(playerid, gSelectedInvSlot[playerid]);
-            UpdatePlayerInventoryUI(playerid);
+        // Amount info / split (INVINFO 1)
+        if (playertextid == INVINFO[playerid][1]) {
+            new slot = gSelectedInvSlot[playerid];
+            if (gPlayerItems[playerid][slot][itType] != ITEM_NONE) {
+                new prompt[140];
+                format(prompt, sizeof(prompt), "{FFFFFF}Jumlah item saat ini: {FFFF00}%d buah{FFFFFF}.\nSlot: #%d",
+                    gPlayerItems[playerid][slot][itAmount], slot + 1);
+                ShowPlayerDialog(playerid, DIALOG_HELP, DIALOG_STYLE_MSGBOX, "JUMLAH ITEM", prompt, "Tutup", "");
+            }
             return 1;
         }
-        if (playertextid == gTD_PlayerText[playerid][pTD_InvBtnGive]) {
+
+        // Use (INVINFO 2)
+        if (playertextid == INVINFO[playerid][2]) {
+            UsePlayerItemBySlot(playerid, gSelectedInvSlot[playerid]);
+            InvTextDraw_Update(playerid);
+            return 1;
+        }
+
+        // Give (INVINFO 3)
+        if (playertextid == INVINFO[playerid][3]) {
             HidePlayerInventoryUI(playerid);
             ShowPlayerDialog(playerid, DIALOG_GIVE_PLAYER, DIALOG_STYLE_INPUT,
                 "BERIKAN BARANG", "Masukkan ID/Nama Pemain dan Jumlah:\nContoh: 2 1 (Memberikan 1 barang ke ID 2)",
                 "Kirim", "Batal");
             return 1;
         }
-        if (playertextid == gTD_PlayerText[playerid][pTD_InvBtnDrop]) {
+
+        // Drop (INVINFO 4)
+        if (playertextid == INVINFO[playerid][4]) {
             new slot = gSelectedInvSlot[playerid];
             if (gPlayerItems[playerid][slot][itType] != ITEM_NONE) {
                 TakePlayerItem(playerid, gPlayerItems[playerid][slot][itType], 1);
-                SendInfo(playerid, "Barang telah dibuang dari inventaris.");
-                UpdatePlayerInventoryUI(playerid);
+                SendInfo(playerid, "Barang telah dibuang dari kantong.");
+                InvTextDraw_Update(playerid);
             }
             return 1;
         }
-        if (playertextid == gTD_PlayerText[playerid][pTD_InvBtnClose]) {
+
+        // Close (INVINFO 5)
+        if (playertextid == INVINFO[playerid][5]) {
             HidePlayerInventoryUI(playerid);
             return 1;
         }

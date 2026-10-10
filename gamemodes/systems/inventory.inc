@@ -41,6 +41,50 @@ stock GetItemTypeByName(const item[])
 	return ITEM_NONE;
 }
 
+stock GetItemModel(itemtype)
+{
+	switch (itemtype) {
+		case ITEM_SNACK:     return 2768; // burger/snack
+		case ITEM_WATER:     return 1544; // drink bottle
+		case ITEM_BANDAGE:   return 1575; // bandage
+		case ITEM_MEDKIT:    return 11736;// medkit
+		case ITEM_REPAIRKIT: return 3096; // toolbox
+		case ITEM_JERRYCAN:  return 1650; // jerrycan
+		case ITEM_CIGARETTE: return 3044; // cigarette
+		case ITEM_LIGHTER:   return 328;  // lighter
+		case ITEM_PHONE:     return 18867;// phone
+		case ITEM_RADIO:     return 19942;// radio walkie
+		case ITEM_GPS:       return 18875;// gps
+		case ITEM_ROD:       return 18632;// fishing rod
+		case ITEM_BAIT:      return 19630;// bait box
+		case ITEM_WOOD:      return 1463; // wood
+		case ITEM_RECYCLED:  return 2672; // scrap / recycle
+	}
+	return 1212;
+}
+
+stock Float:GetItemWeight(itemtype)
+{
+	switch (itemtype) {
+		case ITEM_SNACK:     return 0.2;
+		case ITEM_WATER:     return 0.5;
+		case ITEM_BANDAGE:   return 0.1;
+		case ITEM_MEDKIT:    return 1.2;
+		case ITEM_REPAIRKIT: return 3.5;
+		case ITEM_JERRYCAN:  return 4.0;
+		case ITEM_CIGARETTE: return 0.1;
+		case ITEM_LIGHTER:   return 0.1;
+		case ITEM_PHONE:     return 0.2;
+		case ITEM_RADIO:     return 0.4;
+		case ITEM_GPS:       return 0.3;
+		case ITEM_ROD:       return 1.5;
+		case ITEM_BAIT:      return 0.2;
+		case ITEM_WOOD:      return 3.0;
+		case ITEM_RECYCLED:  return 1.0;
+	}
+	return 0.0;
+}
+
 stock GetPlayerItemCount(playerid, itemtype)
 {
 	new count = 0;

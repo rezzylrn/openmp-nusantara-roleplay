@@ -48,7 +48,7 @@
     },
     "language": "Indonesian / Bahasa Indonesia",
     "logging": {
-        "enable": false,
+        "enable": true,
         "file": "log.txt",
         "log_chat": true,
         "log_connection_messages": true,

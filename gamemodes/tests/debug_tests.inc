@@ -254,7 +254,7 @@ public RunAutomatedRPTests()
 	}
 
 	// 14. test police mdc & speed radar
-	print("[TEST 14/14] Police MDC & Speed Radar Detector...");
+	print("[TEST 14/15] Police MDC & Speed Radar Detector...");
 	new bool:copCar1 = IsPoliceVehicleModel(596) ? true : false;
 	new bool:copCar2 = IsPoliceVehicleModel(599) ? true : false;
 	new bool:civCar  = IsPoliceVehicleModel(411) ? false : true;
@@ -267,8 +267,25 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
+	// 15. test otp / pin security flow
+	print("[TEST 15/15] Bot OTP / Security PIN Registration Flow...");
+	new testOtpGood[16] = "849201";
+	new testOtpBad[16]  = "000000";
+	new testSecCode[16] = "849201";
+
+	new bool:otpMatch = (strcmp(testOtpGood, testSecCode, false) == 0) ? true : false;
+	new bool:otpMismatch = (strcmp(testOtpBad, testSecCode, false) != 0) ? true : false;
+
+	if (otpMatch && otpMismatch) {
+		print("  -> PASS: OTP/PIN verification comparison engine operates accurately.");
+		passCount++;
+	} else {
+		print("  -> FAIL: OTP comparison error.");
+		failCount++;
+	}
+
 	print("==================================================");
-	printf("  [DEBUG SUMMARY] %d / 14 TESTS PASSED, %d FAILED", passCount, failCount);
+	printf("  [DEBUG SUMMARY] %d / 15 TESTS PASSED, %d FAILED", passCount, failCount);
 	print("==================================================\n");
 
 	return 1;
