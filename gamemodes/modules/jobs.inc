@@ -493,13 +493,13 @@ stock ProcessKeyActivity(playerid)
 
 	// 8. Cek ATM
 	if (IsPlayerInRangeOfPoint(playerid, 4.0, ATM_X, ATM_Y, ATM_Z)) {
-		ShowATMDialog(playerid);
+		ShowPlayerBankUI(playerid);
 		return 1;
 	}
 
 	// 9. Cek Bank
 	if (IsPlayerInRangeOfPoint(playerid, 6.0, BANK_X, BANK_Y, BANK_Z)) {
-		ShowBankDialog(playerid);
+		ShowPlayerBankUI(playerid);
 		return 1;
 	}
 

@@ -220,6 +220,20 @@ CMD:hp(playerid, params[])
 	return cmd_phone(playerid, params);
 }
 
+CMD:menu(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ShowPlayerActMenu(playerid);
+	return 1;
+}
+
+CMD:vehpanel(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ShowPlayerVehDash(playerid);
+	return 1;
+}
+
 CMD:give(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");

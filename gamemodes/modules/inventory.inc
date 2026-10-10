@@ -99,6 +99,50 @@ stock TakePlayerItem(playerid, itemtype, amount)
 	return 1;
 }
 
+stock ProcessGiveItem(playerid, targetid, itemtype, amount)
+{
+	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
+	if (!IsPlayerConnected(targetid) || !gPlayerData[targetid][pLoggedIn]) {
+		SendErr(playerid, "Pemain tujuan tidak terhubung.");
+		return 0;
+	}
+	if (targetid == playerid) {
+		SendErr(playerid, "Anda tidak dapat memberikan barang kepada diri sendiri.");
+		return 0;
+	}
+	if (amount <= 0) {
+		SendErr(playerid, "Jumlah harus lebih dari 0.");
+		return 0;
+	}
+
+	new Float:px, Float:py, Float:pz;
+	GetPlayerPos(playerid, px, py, pz);
+	if (!IsPlayerInRangeOfPoint(targetid, 4.0, px, py, pz)) {
+		SendErr(playerid, "Pemain tujuan terlalu jauh dari Anda (Maksimal 4 meter).");
+		return 0;
+	}
+
+	if (GetPlayerItemCount(playerid, itemtype) < amount) {
+		SendErr(playerid, "Jumlah barang Anda tidak mencukupi di inventaris.");
+		return 0;
+	}
+
+	TakePlayerItem(playerid, itemtype, amount);
+	GivePlayerItem(targetid, itemtype, amount);
+
+	new itemName[32];
+	GetItemName(itemtype, itemName, sizeof(itemName));
+
+	SendRP(playerid, COLOR_SUCCESS, "Anda memberikan %d %s kepada %s.", amount, itemName, gPlayerData[targetid][pName]);
+	SendRP(targetid, COLOR_SUCCESS, "%s memberikan %d %s kepada Anda.", gPlayerData[playerid][pName], amount, itemName);
+
+	new rpMsg[140];
+	format(rpMsg, sizeof(rpMsg), "* %s menyerahkan %d %s kepada %s.",
+		gPlayerData[playerid][pName], amount, itemName, gPlayerData[targetid][pName]);
+	SendNearbyPlayer(playerid, COLOR_RP_ME, rpMsg, 15.0);
+	return 1;
+}
+
 stock ShowPlayerInventory(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
@@ -228,7 +272,7 @@ stock UsePlayerItemBySlot(playerid, slot)
 			SendInfo(playerid, "Korek api digunakan bersama dengan rokok.");
 		}
 		case ITEM_PHONE: {
-			ShowPhoneMenu(playerid);
+			ShowPlayerPhone(playerid);
 		}
 		case ITEM_RADIO: {
 			ShowRadioDialog(playerid);

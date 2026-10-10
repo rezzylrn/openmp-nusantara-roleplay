@@ -207,12 +207,31 @@ public OnPlayerKeyStateChange(playerid, KEY:newkeys, KEY:oldkeys)
 		return 1;
 	}
 
-	// Key N (KEY_NO) untuk menyalakan/mematikan mesin kendaraan
+	// Key N (KEY_NO) untuk Dashboard Kendaraan (di mobil) atau Menu Cepat (jalan kaki)
 	if ((newkeys & KEY_NO) && !(oldkeys & KEY_NO)) {
-		if (IsPlayerInAnyVehicle(playerid) && GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
-			ProcessEngineToggle(playerid);
-			return 1;
+		if (IsPlayerInAnyVehicle(playerid)) {
+			if (GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
+				ShowPlayerVehDash(playerid);
+			}
+		} else {
+			ShowPlayerActMenu(playerid);
 		}
+		return 1;
+	}
+	return 1;
+}
+
+// clickable textdraws
+public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid)
+{
+	ProcessPlayerClickTD(playerid, playertextid);
+	return 1;
+}
+
+public OnPlayerClickTextDraw(playerid, Text:clickedid)
+{
+	if (clickedid == Text:INVALID_TEXT_DRAW) {
+		ProcessPlayerClickTD(playerid, PlayerText:INVALID_TEXT_DRAW);
 	}
 	return 1;
 }
@@ -257,6 +276,18 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 				new slot = gSelectedInvSlot[playerid];
 				TakePlayerItem(playerid, gPlayerItems[playerid][slot][itType], 1);
 				SendInfo(playerid, "Barang telah dibuang dari kantong.");
+			}
+		}
+		case DIALOG_GIVE_PLAYER: {
+			new targetid, amount;
+			if (!sscanf(inputtext, "ud", targetid, amount)) {
+				new slot = gSelectedInvSlot[playerid];
+				new itemType = gPlayerItems[playerid][slot][itType];
+				if (itemType != ITEM_NONE) {
+					ProcessGiveItem(playerid, targetid, itemType, amount);
+				}
+			} else {
+				SendSyntax(playerid, "[ID/Nama Pemain] [Jumlah]");
 			}
 		}
 		case DIALOG_STORE_BUY:         ProcessStorePurchase(playerid, listitem);
