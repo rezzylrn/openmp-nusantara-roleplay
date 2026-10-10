@@ -1,0 +1,18 @@
+# Compiled binaries
+*.amx
+*.so
+*.dll
+*.exe
+
+# Database & runtime files
+*.db
+*.db-journal
+*.log
+log.txt
+bans.json
+
+# Cache & OS files
+.DS_Store
+Thumbs.db
+__pycache__/
+*.tmp
