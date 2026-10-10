@@ -19,6 +19,10 @@
 #include "modules/commands_rp.inc"
 #include "modules/player_auth.inc"
 #include "modules/admin.inc"
+#include "modules/anticheat.inc"
+#include "modules/properties.inc"
+#include "modules/police_mdc.inc"
+#include "modules/workshop.inc"
 #include "modules/debug_tests.inc"
 
 main()
@@ -40,6 +44,8 @@ public OnGameModeInit()
 
 	// db init
 	DB_Init();
+	AC_Init();
+	House_Init();
 
 	// default class spawn
 	AddPlayerClass(0, SPAWN_X, SPAWN_Y, SPAWN_Z, SPAWN_A, WEAPON_FIST, 0, WEAPON_FIST, 0, WEAPON_FIST, 0);
@@ -99,6 +105,7 @@ public OnGameModeExit()
 public OnPlayerConnect(playerid)
 {
 	ResetPlayerData(playerid);
+	AC_ResetPlayer(playerid);
 
 	new name[MAX_PLAYER_NAME], ip[20];
 	GetPlayerName(playerid, name, sizeof(name));
@@ -202,8 +209,9 @@ public OnPlayerText(playerid, text[])
 // key handling
 public OnPlayerKeyStateChange(playerid, KEY:newkeys, KEY:oldkeys)
 {
-	// Key Y (KEY_YES) untuk interaksi pekerjaan dan fasilitas umum
+	// Key Y (KEY_YES) untuk interaksi properti rumah, pekerjaan, dan fasilitas umum
 	if ((newkeys & KEY_YES) && !(oldkeys & KEY_YES)) {
+		if (ProcessHouseInteraction(playerid)) return 1;
 		ProcessKeyActivity(playerid);
 		return 1;
 	}
@@ -219,6 +227,13 @@ public OnPlayerKeyStateChange(playerid, KEY:newkeys, KEY:oldkeys)
 		}
 		return 1;
 	}
+	return 1;
+}
+
+// weapon anti-cheat hook
+public OnPlayerWeaponShot(playerid, WEAPON:weaponid, BULLET_HIT_TYPE:hittype, hitid, Float:fX, Float:fY, Float:fZ)
+{
+	if (!AC_OnPlayerWeaponShot(playerid, weaponid)) return 0;
 	return 1;
 }
 
@@ -357,6 +372,8 @@ public RP_Tick()
 		if (!IsPlayerConnected(i) || !gPlayerData[i][pLoggedIn]) continue;
 		UpdateHungerThirst(i);
 		TickPaycheck(i);
+		AC_Tick(i);
+		ProcessPoliceRadarTick(i);
 	}
 	UpdateVehicleFuelLoop();
 	return 1;

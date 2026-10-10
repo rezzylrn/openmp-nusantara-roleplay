@@ -35,7 +35,11 @@ Kode sumber diorganisasi secara modular langsung di dalam direktori `gamemodes/`
         ├── jobs.inc                # 8 Pekerjaan & handler interaksi tombol Y (KEY_YES)
         ├── commands_rp.inc         # Perintah roleplay berbasis izcmd (/inv, /give, /showid, dll.)
         ├── admin.inc               # Manajemen staf admin berbasis izcmd (CMD:*)
-        └── debug_tests.inc         # Test suite otomatis (11 pengujian sistem)
+        ├── anticheat.inc           # Server-side Anti-Cheat (Weapon, Speed, Airbreak, Money, Rapid-Fire)
+        ├── properties.inc          # Real Estate & Housing dinamis (Grove St, Idlewood, Vinewood, dll.)
+        ├── police_mdc.inc          # SAPD Mobile Data Computer (MDC), Cek Plat, & Speed Radar
+        ├── workshop.inc            # Bengkel tuning mekanik (Velg, Hidrolik, Nitro, Spoiler, Cat)
+        └── debug_tests.inc         # Test suite otomatis (14 pengujian sistem)
 ```
 
 ---
@@ -144,6 +148,40 @@ Pemain cukup mendekati objek di dunia lalu menekan tombol **Y**:
 
 ---
 
+## Server-Side Anti-Cheat Engine (`anticheat.inc`)
+Gamemode ini dilengkapi sistem proteksi server-side aktif untuk mencegah eksploitasi dan cheat:
+- **Anti-Weapon Hack:** Memverifikasi kepemilikan senjata resmi. Senjata ilegal (Minigun, RPG, AK47 cheat) langsung di-strip secara instan dan admin diberi notifikasi peringatan.
+- **Anti-Teleport & Airbreak:** Memantau perpindahan posisi delta per detik. Pemain yang teleport/airbreak otomatis ditarik kembali ke koordinat sah terakhir.
+- **Anti-Speed Hack:** Mendeteksi kecepatan abnormal kendaraan darat (> 240 KM/J) dan meredam kecepatan fisik kendaraan.
+- **Anti-Money Hack:** Sinkronisasi saldo uang client secara periodik dengan otoritas server untuk menangkal S0beit / Cheat Engine.
+- **Anti-Rapid Fire:** Membatasi interval fisik tembakan senjata (`OnPlayerWeaponShot`) untuk mencegah spam peluru abnormal.
+
+---
+
+## Properti Rumah & Real Estate (`properties.inc`)
+- 6 properti awal tersebar di Los Santos (Grove Street, Ganton, Idlewood, Verona Beach, Vinewood Hills, Jefferson).
+- Dilengkapi 3D Text Label status dan pickup masuk/keluar interaktif.
+- Tekan **Y** di depan pintu: Beli rumah (`/buyhouse`), masuk ke interior, atau kunci/buka pintu (`/lockhouse`).
+
+---
+
+## Kepolisian SAPD: MDC & Speed Radar (`police_mdc.inc`)
+- **Mobile Data Computer (`/mdc`):** Akses arsip kriminal dan data tilang di dalam mobil patroli polisi.
+- **Cek Plat Nomor (`/checkplate [plat]`):** Mengetahui pemilik kendaraan, model mobil, dan status kepemilikan.
+- **Speed Radar Otomatis:** Radar di dashboard mobil patroli memantau kecepatan kendaraan di depan. Jika melaju > 100 KM/J, radar otomatis menampilkan peringatan visual nama kendaraan, kecepatan, dan plat nomor.
+
+---
+
+## Bengkel Tuning Mekanik (`workshop.inc`)
+- Area bengkel Idlewood dengan katalog modifikasi kendaraan (`/tune` / `/modveh`):
+  - Velg mobil sport (Rimshine, Mega, Shadow, dll.).
+  - Sistem suspensi hidrolik (Hydraulics).
+  - Tabung Nitrous Oxide 10x.
+  - Spoiler balap & knalpot kustom.
+  - Pengecatan ulang bodi kendaraan.
+
+---
+
 ## Kompilasi & Menjalankan Server
 
 ### 1. Import Database MySQL
@@ -164,6 +202,13 @@ chmod +x run-server.sh
 
 ---
 
+## Kontak & Pengembang
+- **GitHub**: [@rezzylrn](https://github.com/rezzylrn)
+- **Discord**: `@rezz` (`rezzylrn`)
+- **Telegram**: [@rezzylrn](https://t.me/rezzylrn)
+
+---
+
 ## Lisensi
 Proyek ini dilisensikan di bawah [MIT License](LICENSE).
-Dikembangkan oleh Reja Irawan Alam Syah ([@rezzylrn](https://github.com/rezzylrn)).
+Dikembangkan oleh **rezzylrn**.

@@ -234,6 +234,33 @@ CMD:vehpanel(playerid, params[])
 	return 1;
 }
 
+CMD:mdc(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ShowPoliceMDC(playerid);
+	return 1;
+}
+
+CMD:checkplate(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (isnull(params)) return SendSyntax(playerid, "/checkplate [plat nomor]");
+	ProcessCheckPlate(playerid, params);
+	return 1;
+}
+
+CMD:tune(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ShowWorkshopMenu(playerid);
+	return 1;
+}
+
+CMD:modveh(playerid, params[])
+{
+	return cmd_tune(playerid, params);
+}
+
 CMD:give(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");

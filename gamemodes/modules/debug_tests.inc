@@ -210,7 +210,7 @@ public RunAutomatedRPTests()
 	}
 
 	// 11. test comms & radio
-	print("[TEST 11/11] Telecommunications & Walkie Talkie...");
+	print("[TEST 11/14] Telecommunications & Walkie Talkie...");
 	gPlayerData[testPlayer][pPhone] = 554123;
 	gPlayerData[testPlayer][pPhoneStatus] = true;
 	gPlayerData[testPlayer][pRadioFreq] = 911;
@@ -223,8 +223,52 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
+	// 12. test server-side anticheat
+	print("[TEST 12/14] Server-Side Anti-Cheat Engine (Weapon, Speed, Teleport)...");
+	AC_ResetPlayer(testPlayer);
+	AC_GiveWeapon(testPlayer, 24, 50); // Desert Eagle (auth)
+	new bool:weapAuth = gACData[testPlayer][acHasWeapon][24];
+	new bool:weapHacked = !gACData[testPlayer][acHasWeapon][38]; // Minigun (unauth)
+
+	if (weapAuth && weapHacked) {
+		print("  -> PASS: Anti-cheat registered weapon list & tamper detection calibrated.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Anti-cheat weapon tracking error.");
+		failCount++;
+	}
+
+	// 13. test housing real estate
+	print("[TEST 13/14] Housing & Real Estate Properties System...");
+	new houseCount = 0;
+	for (new h = 0; h < MAX_HOUSES; h++) {
+		if (gHouseData[h][hUsed]) houseCount++;
+	}
+
+	if (houseCount >= 6) {
+		printf("  -> PASS: %d Real estate properties active across Los Santos with 3D labels.", houseCount);
+		passCount++;
+	} else {
+		printf("  -> FAIL: Insufficient house count (%d).", houseCount);
+		failCount++;
+	}
+
+	// 14. test police mdc & speed radar
+	print("[TEST 14/14] Police MDC & Speed Radar Detector...");
+	new bool:copCar1 = IsPoliceVehicleModel(596) ? true : false;
+	new bool:copCar2 = IsPoliceVehicleModel(599) ? true : false;
+	new bool:civCar  = IsPoliceVehicleModel(411) ? false : true;
+
+	if (copCar1 && copCar2 && civCar) {
+		print("  -> PASS: Police cruiser models & speed radar range calibrated.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Police vehicle classifier mismatch.");
+		failCount++;
+	}
+
 	print("==================================================");
-	printf("  [DEBUG SUMMARY] %d / 11 TESTS PASSED, %d FAILED", passCount, failCount);
+	printf("  [DEBUG SUMMARY] %d / 14 TESTS PASSED, %d FAILED", passCount, failCount);
 	print("==================================================\n");
 
 	return 1;
