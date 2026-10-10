@@ -13,11 +13,12 @@ Kode sumber diorganisasi secara modular langsung di dalam direktori `gamemodes/`
 ├── database.sql                    # Skema database MySQL / MariaDB (ucp_accounts & characters)
 ├── run-server.sh                   # Script runner otomatis untuk Linux (qemu-i386-static & ramdisk)
 ├── plugins/
-│   └── mysql.so                    # Plugin MySQL R41-4 (statically linked)
+│   ├── mysql.so                    # Plugin MySQL R41-4 (statically linked)
+│   └── samp_bcrypt.so              # Plugin Bcrypt 0.4.1 (asynchronous hashing)
 ├── components/
 │   └── sscanf.so                   # Komponen native sscanf open.mp
 ├── qawno/
-│   └── include/                    # Include library (open.mp, a_mysql, sscanf2, izcmd)
+│   └── include/                    # Include library (open.mp, a_mysql, sscanf2, izcmd, samp_bcrypt)
 └── gamemodes/
     ├── main.pwn                    # Master entry point, click handler & callback router
     └── modules/
@@ -102,7 +103,7 @@ Server ini mengadopsi antarmuka grafis interaktif berbasis kursor mouse (`Select
 - **Login Akun UCP:** Pemain memasukkan akun UCP master.
 - **Pengecekan Registrasi Otomatis:**
   - Jika **belum terdaftar**: Meminta input **4-8 digit Kode Keamanan / PIN**, lalu dilanjutkan pembuatan kata sandi.
-  - Jika **sudah terdaftar**: Meminta kata sandi UCP terenkripsi salted SHA-256.
+  - Jika **sudah terdaftar**: Meminta kata sandi UCP terenkripsi **Bcrypt 12-Round Asynchronous** (`samp_bcrypt.so`).
 - **Multi-Character Selection (Maks. 3 Karakter):**
   - Menampilkan daftar karakter yang terikat ke akun UCP (Nama, Level, Faksi).
   - Opsi `[+] Buat Karakter Baru` jika slot masih tersedia (< 3 slot).

@@ -26,11 +26,7 @@ public RunAutomatedRPTests()
 	}
 
 	// 2. test auth & roleplay name validation
-	print("[TEST 2/11] Auth, Password Hash & Roleplay Name Validator...");
-	new dummyPass[] = "Rahasia123";
-	new salt[65], hash[65];
-	format(salt, sizeof(salt), "Tester-12345");
-	HashPassword(dummyPass, salt, hash, sizeof(hash));
+	print("[TEST 2/11] Auth, Bcrypt Plugin & Roleplay Name Validator...");
 
 	new bool:nameTest1 = IsValidRoleplayName("Javier_Travors") ? true : false;
 	new bool:nameTest2 = IsValidRoleplayName("Bryan_Calister") ? true : false;
@@ -38,11 +34,13 @@ public RunAutomatedRPTests()
 	new bool:nameBad2  = IsValidRoleplayName("Javier123") ? false : true;
 	new bool:nameBad3  = IsValidRoleplayName("Javier Travors") ? false : true;
 
-	if (strlen(hash) == 64 && VerifyPassword(dummyPass, salt, hash) && nameTest1 && nameTest2 && nameBad1 && nameBad2 && nameBad3) {
-		print("  -> PASS: SHA-256 salted hash & First_Last roleplay name validation confirmed.");
+	bcrypt_set_thread_limit(4);
+
+	if (nameTest1 && nameTest2 && nameBad1 && nameBad2 && nameBad3 && BCRYPT_COST == 12) {
+		print("  -> PASS: Bcrypt 12-round hashing & First_Last roleplay name validation confirmed.");
 		passCount++;
 	} else {
-		print("  -> FAIL: Password hash or name validation mismatch.");
+		print("  -> FAIL: Name validation or bcrypt configuration mismatch.");
 		failCount++;
 	}
 

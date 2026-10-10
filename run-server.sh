@@ -28,6 +28,9 @@ if [ -f "$SRC_DIR/plugins/mysql-R41-4-Debian/plugins/mysql.so" ]; then
     cp "$SRC_DIR/plugins/mysql-R41-4-Debian/plugins/mysql.so" "$RUN_DIR/plugins/"
     cp "$SRC_DIR/plugins/mysql-R41-4-Debian/log-core.so" "$RUN_DIR/"
 fi
+if [ -f "$SRC_DIR/plugins/samp_bcrypt.so" ]; then
+    cp "$SRC_DIR/plugins/samp_bcrypt.so" "$RUN_DIR/plugins/"
+fi
 if [ -f "$SRC_DIR/plugins/components/sscanf.so" ]; then
     cp "$SRC_DIR/plugins/components/sscanf.so" "$RUN_DIR/components/"
 fi

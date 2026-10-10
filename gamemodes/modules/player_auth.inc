@@ -6,20 +6,34 @@
 // ucp pending buffers
 new gPendingUCPCode[MAX_PLAYERS][16];
 
-stock HashPassword(const password[], const salt[], hash[], len = sizeof(hash))
+forward OnPlayerPasswordHashed(playerid);
+public OnPlayerPasswordHashed(playerid)
 {
-	new buf[128];
-	format(buf, sizeof(buf), "%s", password);
-	SHA256_Hash(buf, salt, hash, len);
+	if (!IsPlayerConnected(playerid)) return 0;
+	new hash[BCRYPT_HASH_LENGTH];
+	bcrypt_get_hash(hash, sizeof(hash));
+
+	format(gPlayerData[playerid][pPassword], 65, "%s", hash);
+	format(gPlayerData[playerid][pSalt], 65, "bcrypt");
+
+	DB_RegisterUCP(playerid, gPlayerData[playerid][pUCPName], hash, "bcrypt", gPendingUCPCode[playerid]);
 	return 1;
 }
 
-stock VerifyPassword(const password[], const salt[], const hash[])
+forward OnPlayerPasswordVerified(playerid, bool:success);
+public OnPlayerPasswordVerified(playerid, bool:success)
 {
-	new buf[128], out[65];
-	format(buf, sizeof(buf), "%s", password);
-	SHA256_Hash(buf, salt, out, sizeof(out));
-	return (strcmp(out, hash, false, 64) == 0);
+	if (!IsPlayerConnected(playerid)) return 0;
+
+	if (!success) {
+		SendErr(playerid, "Kata sandi yang Anda masukkan salah.");
+		ShowUCPLoginDialog(playerid);
+		return 0;
+	}
+
+	SendSucc(playerid, "Autentikasi UCP berhasil! Memuat karakter Anda...");
+	DB_LoadUCPCharacters(playerid);
+	return 1;
 }
 
 stock ResetPlayerData(playerid)
@@ -154,14 +168,8 @@ stock ProcessUCPLogin(playerid, const password[])
 {
 	if (!IsPlayerConnected(playerid)) return 0;
 
-	if (!VerifyPassword(password, gPlayerData[playerid][pSalt], gPlayerData[playerid][pPassword])) {
-		SendErr(playerid, "Kata sandi yang Anda masukkan salah.");
-		ShowUCPLoginDialog(playerid);
-		return 0;
-	}
-
-	SendSucc(playerid, "Autentikasi UCP berhasil! Memuat karakter Anda...");
-	DB_LoadUCPCharacters(playerid);
+	// Asynchronous 12-round bcrypt password verification
+	bcrypt_verify(playerid, "OnPlayerPasswordVerified", password, gPlayerData[playerid][pPassword]);
 	return 1;
 }
 
@@ -216,14 +224,8 @@ stock ProcessUCPRegisterPass(playerid, const password[])
 		return 0;
 	}
 
-	new salt[65], hash[65];
-	format(salt, sizeof(salt), "%s-%d-%d", gPlayerData[playerid][pUCPName], random(999999), GetTickCount());
-	HashPassword(password, salt, hash, sizeof(hash));
-
-	format(gPlayerData[playerid][pPassword], 65, "%s", hash);
-	format(gPlayerData[playerid][pSalt], 65, "%s", salt);
-
-	DB_RegisterUCP(playerid, gPlayerData[playerid][pUCPName], hash, salt, gPendingUCPCode[playerid]);
+	// Asynchronous 12-round bcrypt password hash
+	bcrypt_hash(playerid, "OnPlayerPasswordHashed", password, BCRYPT_COST);
 	return 1;
 }
 

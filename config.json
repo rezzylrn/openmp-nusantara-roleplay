@@ -103,7 +103,8 @@
     "password": "",
     "pawn": {
         "legacy_plugins": [
-            "mysql.so"
+            "mysql.so",
+            "samp_bcrypt.so"
         ],
         "main_scripts": [
             "main 1"

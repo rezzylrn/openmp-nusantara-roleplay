@@ -2,6 +2,7 @@
 #include <a_mysql>
 #include <sscanf2>
 #include <izcmd>
+#include <samp_bcrypt>
 
 // core modules
 #include "modules/header.inc"
