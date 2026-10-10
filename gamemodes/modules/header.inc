@@ -143,6 +143,11 @@ enum E_PLAYER_DATA {
 	// health condition
 	bool:pInjured,
 	pInjuredTime,
+	// ucp & character selection
+	pUCPID,
+	pUCPName[24],
+	pBirthDate[16],
+	pGender,
 	// job variables
 	pJobCooldown,
 	pTrashCount,
@@ -176,36 +181,45 @@ enum E_VEHICLE_DATA {
 };
 
 // dialog IDs
-#define DIALOG_REGISTER           1
-#define DIALOG_REGISTER_CONFIRM   2
-#define DIALOG_LOGIN              3
-#define DIALOG_STATS              4
-#define DIALOG_BANK_MENU          5
-#define DIALOG_BANK_DEPOSIT       6
-#define DIALOG_BANK_WITHDRAW      7
-#define DIALOG_BANK_TRANSFER      8
-#define DIALOG_ATM_MENU           9
-#define DIALOG_ATM_WITHDRAW       10
-#define DIALOG_ATM_DEPOSIT        11
-#define DIALOG_PAY                12
-#define DIALOG_JOB_MENU           13
-#define DIALOG_DEALERSHIP         14
-#define DIALOG_MYVEH              15
-#define DIALOG_MYVEH_ACTION       16
-#define DIALOG_TRUNK              17
-#define DIALOG_TRUNK_DEPOSIT      18
-#define DIALOG_TRUNK_WITHDRAW     19
-#define DIALOG_REFUEL             20
-#define DIALOG_SAPD_ACTIONS       21
-#define DIALOG_HELP               22
-#define DIALOG_INVENTORY          23
-#define DIALOG_ITEM_ACTION        24
-#define DIALOG_STORE_BUY          25
-#define DIALOG_PHONE_MENU         26
-#define DIALOG_PHONE_CALL         27
-#define DIALOG_PHONE_SMS          28
-#define DIALOG_RADIO_FREQ         29
-#define DIALOG_GPS_MENU           30
+#define DIALOG_UCP_LOGIN          1
+#define DIALOG_UCP_REG_CODE       2
+#define DIALOG_UCP_REG_PASS       3
+#define DIALOG_CHAR_SELECT        4
+#define DIALOG_CHAR_CREATE_NAME   5
+#define DIALOG_CHAR_CREATE_DOB    6
+#define DIALOG_CHAR_CREATE_GENDER 7
+#define DIALOG_REGISTER           8
+#define DIALOG_REGISTER_CONFIRM   9
+#define DIALOG_LOGIN              10
+#define DIALOG_STATS              11
+#define DIALOG_BANK_MENU          12
+#define DIALOG_BANK_DEPOSIT       13
+#define DIALOG_BANK_WITHDRAW      14
+#define DIALOG_BANK_TRANSFER      15
+#define DIALOG_ATM_MENU           16
+#define DIALOG_ATM_WITHDRAW       17
+#define DIALOG_ATM_DEPOSIT        18
+#define DIALOG_PAY                19
+#define DIALOG_JOB_MENU           20
+#define DIALOG_DEALERSHIP         21
+#define DIALOG_MYVEH              22
+#define DIALOG_MYVEH_ACTION       23
+#define DIALOG_TRUNK              24
+#define DIALOG_TRUNK_DEPOSIT      25
+#define DIALOG_TRUNK_WITHDRAW     26
+#define DIALOG_REFUEL             27
+#define DIALOG_SAPD_ACTIONS       28
+#define DIALOG_HELP               29
+#define DIALOG_INVENTORY          30
+#define DIALOG_ITEM_ACTION        31
+#define DIALOG_STORE_BUY          32
+#define DIALOG_PHONE_MENU         33
+#define DIALOG_PHONE_CALL         34
+#define DIALOG_PHONE_SMS          35
+#define DIALOG_RADIO_FREQ         36
+#define DIALOG_GPS_MENU           37
+#define DIALOG_GIVE_PLAYER        38
+#define DIALOG_GIVE_AMOUNT        39
 
 // server limits & config
 #define MAX_DEALER_STOCK         8
@@ -515,6 +529,39 @@ new gJobType[MAX_PLAYERS];
 // selection states
 new gPlayerVehicleSlot[MAX_PLAYERS];
 new gSelectedInvSlot[MAX_PLAYERS];
+new gGiveTarget[MAX_PLAYERS];
+new gGiveItemType[MAX_PLAYERS];
+new bool:gPhoneOpen[MAX_PLAYERS];
+new bool:gInventoryOpen[MAX_PLAYERS];
+new gPendingCharName[MAX_PLAYERS][24];
+new gPendingCharDOB[MAX_PLAYERS][16];
+new gUserCharIDs[MAX_PLAYERS][3];
+
+stock IsValidRoleplayName(const name[])
+{
+	new len = strlen(name);
+	if (len < 4 || len > 24) return 0;
+
+	new underscoreCount = 0;
+	new underscorePos = -1;
+
+	for (new i = 0; i < len; i++) {
+		if (name[i] == '_') {
+			underscoreCount++;
+			underscorePos = i;
+		} else if (!((name[i] >= 'a' && name[i] <= 'z') || (name[i] >= 'A' && name[i] <= 'Z'))) {
+			return 0;
+		}
+	}
+
+	if (underscoreCount != 1) return 0;
+	if (underscorePos <= 0 || underscorePos >= len - 1) return 0;
+
+	if (name[0] < 'A' || name[0] > 'Z') return 0;
+	if (name[underscorePos + 1] < 'A' || name[underscorePos + 1] > 'Z') return 0;
+
+	return 1;
+}
 
 // textdraw visibility flags
 new bool:gTD_HUD[MAX_PLAYERS];

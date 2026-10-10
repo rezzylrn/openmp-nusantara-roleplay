@@ -81,6 +81,8 @@
 #define TD_COLOR_LOCK_OFF    0x9AA0A6FF  // abu   - bebas
 #define TD_COLOR_ALERT_BG    0x0B0B17E6  // latar banner alert
 #define TD_COLOR_SUB_BG      0x101024E6  // latar banner subtitle
+#define TD_COLOR_PHONE_BG    0x141720F0  // latar smartphone
+#define TD_COLOR_INV_BG      0x10131DEE  // latar inventaris modal
 
 // ---------------------------------------------------------------------------
 // PENALAAN
@@ -129,14 +131,45 @@
 #define pTD_AlertText       24
 #define pTD_SubPanel        25
 #define pTD_SubText         26
+// --- Phone TextDraws (Smartphone UI) ---
+#define pTD_PhoneBody       27
+#define pTD_PhoneHeader     28
+#define pTD_PhoneTitle      29
+#define pTD_PhoneInfo       30
+#define pTD_PhoneApp1       31
+#define pTD_PhoneApp2       32
+#define pTD_PhoneApp3       33
+#define pTD_PhoneApp4       34
+#define pTD_PhoneApp5       35
+#define pTD_PhoneApp6       36
+// --- Inventory TextDraws (12 Slot Grid Modal) ---
+#define pTD_InvBackdrop     37
+#define pTD_InvHeader       38
+#define pTD_InvSlot1        39
+#define pTD_InvSlot2        40
+#define pTD_InvSlot3        41
+#define pTD_InvSlot4        42
+#define pTD_InvSlot5        43
+#define pTD_InvSlot6        44
+#define pTD_InvSlot7        45
+#define pTD_InvSlot8        46
+#define pTD_InvSlot9        47
+#define pTD_InvSlot10       48
+#define pTD_InvSlot11       49
+#define pTD_InvSlot12       50
+#define pTD_InvFooter       51
 // --- penanda batas (harus terakhir) ---
-#define pTD_COUNT           27
+#define pTD_COUNT           52
 
 // Index pertama/terakhir tiap panel, untuk loop show/hide.
 #define TD_HUD_FIRST   pTD_HudPanel
 #define TD_HUD_LAST    pTD_HudLevelVal
 #define TD_SPD_FIRST   pTD_SpdPanel
 #define TD_SPD_LAST    pTD_SpdLockVal
+#define TD_PHONE_FIRST pTD_PhoneBody
+#define TD_PHONE_LAST  pTD_PhoneApp6
+#define TD_INV_FIRST   pTD_InvBackdrop
+#define TD_INV_LAST    pTD_InvFooter
 
 // ---------------------------------------------------------------------------
 // STATE MODUL
@@ -469,6 +502,119 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_SubText], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_SubText], true);
 
+    // ================== SMARTPHONE UI (kanan layar) ==================
+    gTD_PlayerText[playerid][pTD_PhoneBody] = CreatePlayerTextDraw(playerid, 560.0, 180.0, "_");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneBody], 0.0, 16.5);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneBody], 126.0, 0.0);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_PhoneBody], TEXT_DRAW_ALIGN_CENTER);
+    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneBody], TD_COLOR_WHITE);
+    PlayerTextDrawUseBox(playerid, gTD_PlayerText[playerid][pTD_PhoneBody], true);
+    PlayerTextDrawBoxColour(playerid, gTD_PlayerText[playerid][pTD_PhoneBody], TD_COLOR_PHONE_BG);
+    PlayerTextDrawSetShadow(playerid, gTD_PlayerText[playerid][pTD_PhoneBody], 0);
+
+    gTD_PlayerText[playerid][pTD_PhoneHeader] = CreatePlayerTextDraw(playerid, 560.0, 184.0, "~w~12:45   ~g~5G   ~w~[||||]");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneHeader], 0.20, 0.85);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_PhoneHeader], TEXT_DRAW_ALIGN_CENTER);
+    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneHeader], TD_COLOR_WHITE);
+    PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_PhoneHeader], TEXT_DRAW_FONT_1);
+    PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_PhoneHeader], true);
+
+    gTD_PlayerText[playerid][pTD_PhoneTitle] = CreatePlayerTextDraw(playerid, 560.0, 198.0, "~b~~h~SMARTPHONE OS");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneTitle], 0.24, 1.0);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_PhoneTitle], TEXT_DRAW_ALIGN_CENTER);
+    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneTitle], TD_COLOR_WHITE);
+    PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_PhoneTitle], TEXT_DRAW_FONT_2);
+    PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_PhoneTitle], true);
+
+    gTD_PlayerText[playerid][pTD_PhoneInfo] = CreatePlayerTextDraw(playerid, 560.0, 212.0, "~w~No: ~y~554-123");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneInfo], 0.20, 0.85);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_PhoneInfo], TEXT_DRAW_ALIGN_CENTER);
+    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneInfo], TD_COLOR_WHITE);
+    PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_PhoneInfo], TEXT_DRAW_FONT_1);
+    PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_PhoneInfo], true);
+
+    gTD_PlayerText[playerid][pTD_PhoneApp1] = CreatePlayerTextDraw(playerid, 502.0, 230.0, "~w~1. Panggilan (/call)");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp1], 0.18, 0.80);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_PhoneApp1], TEXT_DRAW_ALIGN_LEFT);
+    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneApp1], TD_COLOR_WHITE);
+    PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_PhoneApp1], TEXT_DRAW_FONT_1);
+    PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_PhoneApp1], true);
+
+    gTD_PlayerText[playerid][pTD_PhoneApp2] = CreatePlayerTextDraw(playerid, 502.0, 244.0, "~w~2. Pesan SMS (/sms)");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp2], 0.18, 0.80);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_PhoneApp2], TEXT_DRAW_ALIGN_LEFT);
+    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneApp2], TD_COLOR_WHITE);
+    PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_PhoneApp2], TEXT_DRAW_FONT_1);
+    PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_PhoneApp2], true);
+
+    gTD_PlayerText[playerid][pTD_PhoneApp3] = CreatePlayerTextDraw(playerid, 502.0, 258.0, "~w~3. GPS Peta (/gps)");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp3], 0.18, 0.80);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_PhoneApp3], TEXT_DRAW_ALIGN_LEFT);
+    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneApp3], TD_COLOR_WHITE);
+    PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_PhoneApp3], TEXT_DRAW_FONT_1);
+    PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_PhoneApp3], true);
+
+    gTD_PlayerText[playerid][pTD_PhoneApp4] = CreatePlayerTextDraw(playerid, 502.0, 272.0, "~w~4. Info Pulsa & Saldo");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp4], 0.18, 0.80);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_PhoneApp4], TEXT_DRAW_ALIGN_LEFT);
+    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneApp4], TD_COLOR_WHITE);
+    PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_PhoneApp4], TEXT_DRAW_FONT_1);
+    PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_PhoneApp4], true);
+
+    gTD_PlayerText[playerid][pTD_PhoneApp5] = CreatePlayerTextDraw(playerid, 502.0, 286.0, "~w~5. Mode: ~g~Dering");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp5], 0.18, 0.80);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_PhoneApp5], TEXT_DRAW_ALIGN_LEFT);
+    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneApp5], TD_COLOR_WHITE);
+    PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_PhoneApp5], TEXT_DRAW_FONT_1);
+    PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_PhoneApp5], true);
+
+    gTD_PlayerText[playerid][pTD_PhoneApp6] = CreatePlayerTextDraw(playerid, 502.0, 304.0, "~r~6. Tutup Ponsel (/p)");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp6], 0.18, 0.80);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_PhoneApp6], TEXT_DRAW_ALIGN_LEFT);
+    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneApp6], TD_COLOR_WHITE);
+    PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_PhoneApp6], TEXT_DRAW_FONT_1);
+    PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_PhoneApp6], true);
+
+    // ================= INVENTARIS UI (tengah layar) =================
+    gTD_PlayerText[playerid][pTD_InvBackdrop] = CreatePlayerTextDraw(playerid, 320.0, 120.0, "_");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_InvBackdrop], 0.0, 22.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_InvBackdrop], 380.0, 0.0);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_InvBackdrop], TEXT_DRAW_ALIGN_CENTER);
+    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_InvBackdrop], TD_COLOR_WHITE);
+    PlayerTextDrawUseBox(playerid, gTD_PlayerText[playerid][pTD_InvBackdrop], true);
+    PlayerTextDrawBoxColour(playerid, gTD_PlayerText[playerid][pTD_InvBackdrop], TD_COLOR_INV_BG);
+    PlayerTextDrawSetShadow(playerid, gTD_PlayerText[playerid][pTD_InvBackdrop], 0);
+
+    gTD_PlayerText[playerid][pTD_InvHeader] = CreatePlayerTextDraw(playerid, 320.0, 126.0, "~b~~h~INVENTARIS PRIBADI ~w~(12 SLOT)");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_InvHeader], 0.26, 1.15);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_InvHeader], TEXT_DRAW_ALIGN_CENTER);
+    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_InvHeader], TD_COLOR_WHITE);
+    PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_InvHeader], TEXT_DRAW_FONT_2);
+    PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_InvHeader], true);
+
+    static const Float:slotCoords[12][2] = {
+        {140.0, 155.0}, {230.0, 155.0}, {320.0, 155.0}, {410.0, 155.0},
+        {140.0, 205.0}, {230.0, 205.0}, {320.0, 205.0}, {410.0, 205.0},
+        {140.0, 255.0}, {230.0, 255.0}, {320.0, 255.0}, {410.0, 255.0}
+    };
+
+    for (new s = 0; s < 12; s++) {
+        gTD_PlayerText[playerid][pTD_InvSlot1 + s] = CreatePlayerTextDraw(playerid, slotCoords[s][0], slotCoords[s][1], "[KOSONG]");
+        PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_InvSlot1 + s], 0.17, 0.78);
+        PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_InvSlot1 + s], TEXT_DRAW_ALIGN_LEFT);
+        PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_InvSlot1 + s], TD_COLOR_WHITE);
+        PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_InvSlot1 + s], TEXT_DRAW_FONT_1);
+        PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_InvSlot1 + s], true);
+    }
+
+    gTD_PlayerText[playerid][pTD_InvFooter] = CreatePlayerTextDraw(playerid, 320.0, 310.0,
+        "~y~Gunakan /use [slot] ~w~| ~g~/give [id] [item] [jml] ~w~| ~r~Ketik /inv untuk tutup");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_InvFooter], 0.19, 0.85);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_InvFooter], TEXT_DRAW_ALIGN_CENTER);
+    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_InvFooter], TD_COLOR_WHITE);
+    PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_InvFooter], TEXT_DRAW_FONT_1);
+    PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_InvFooter], true);
+
     // Setel ulang keadaan berjalan.
     gTD_HUD[playerid] = false;
     gTD_Speedo[playerid] = false;
@@ -785,4 +931,81 @@ forward TextdrawDestroyAll(playerid);
 public TextdrawDestroyAll(playerid)
 {
     return DestroyPlayerTextDraws(playerid);
+}
+
+// ---------------------------------------------------------------------------
+// SMARTPHONE & INVENTARIS UI KONTROL
+// ---------------------------------------------------------------------------
+stock ShowPlayerPhone(playerid)
+{
+    if (playerid < 0 || playerid >= MAX_PLAYERS) return 0;
+    UpdatePlayerPhone(playerid);
+    for (new e = TD_PHONE_FIRST; e <= TD_PHONE_LAST; e++) {
+        PlayerTextDrawShow(playerid, gTD_PlayerText[playerid][e]);
+    }
+    gPhoneOpen[playerid] = true;
+    PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
+    return 1;
+}
+
+stock HidePlayerPhone(playerid)
+{
+    if (playerid < 0 || playerid >= MAX_PLAYERS) return 0;
+    for (new e = TD_PHONE_FIRST; e <= TD_PHONE_LAST; e++) {
+        PlayerTextDrawHide(playerid, gTD_PlayerText[playerid][e]);
+    }
+    gPhoneOpen[playerid] = false;
+    return 1;
+}
+
+stock UpdatePlayerPhone(playerid)
+{
+    if (playerid < 0 || playerid >= MAX_PLAYERS) return 0;
+    new infoBuf[64];
+    format(infoBuf, sizeof(infoBuf), "~w~No: ~y~%d", gPlayerData[playerid][pPhone]);
+    PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_PhoneInfo], infoBuf);
+
+    new modeBuf[48];
+    format(modeBuf, sizeof(modeBuf), "~w~5. Mode: %s", gPlayerData[playerid][pPhoneStatus] ? "~g~Dering" : "~r~Hening");
+    PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_PhoneApp5], modeBuf);
+    return 1;
+}
+
+stock ShowPlayerInventoryUI(playerid)
+{
+    if (playerid < 0 || playerid >= MAX_PLAYERS) return 0;
+    UpdatePlayerInventoryUI(playerid);
+    for (new e = TD_INV_FIRST; e <= TD_INV_LAST; e++) {
+        PlayerTextDrawShow(playerid, gTD_PlayerText[playerid][e]);
+    }
+    gInventoryOpen[playerid] = true;
+    PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
+    return 1;
+}
+
+stock HidePlayerInventoryUI(playerid)
+{
+    if (playerid < 0 || playerid >= MAX_PLAYERS) return 0;
+    for (new e = TD_INV_FIRST; e <= TD_INV_LAST; e++) {
+        PlayerTextDrawHide(playerid, gTD_PlayerText[playerid][e]);
+    }
+    gInventoryOpen[playerid] = false;
+    return 1;
+}
+
+stock UpdatePlayerInventoryUI(playerid)
+{
+    if (playerid < 0 || playerid >= MAX_PLAYERS) return 0;
+    new slotBuf[64], itemName[32];
+
+    for (new s = 0; s < 12; s++) {
+        if (gPlayerItems[playerid][s][itType] != ITEM_NONE) {
+            GetItemName(gPlayerItems[playerid][s][itType], itemName, sizeof(itemName));
+            format(slotBuf, sizeof(slotBuf), "~y~[%d] ~w~%s\n~g~x%d", s + 1, itemName, gPlayerItems[playerid][s][itAmount]);
+        } else {
+            format(slotBuf, sizeof(slotBuf), "~y~[%d] ~d~[KOSONG]", s + 1);
+        }
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_InvSlot1 + s], slotBuf);
+    }
+    return 1;
 }

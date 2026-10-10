@@ -5,14 +5,28 @@ CREATE DATABASE IF NOT EXISTS `roleplay` DEFAULT CHARACTER SET utf8mb4 COLLATE u
 USE `roleplay`;
 
 -- ---------------------------------------------------------------------------
--- Tabel: players (Karakter & Akun Pemain)
+-- Tabel: ucp_accounts (Akun Master UCP Pemain)
 -- ---------------------------------------------------------------------------
-DROP TABLE IF EXISTS `players`;
-CREATE TABLE `players` (
+DROP TABLE IF EXISTS `ucp_accounts`;
+CREATE TABLE `ucp_accounts` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `name` VARCHAR(24) NOT NULL UNIQUE,
+  `ucp_name` VARCHAR(24) NOT NULL UNIQUE,
   `password` VARCHAR(64) NOT NULL,
   `salt` VARCHAR(64) NOT NULL,
+  `security_code` VARCHAR(16) NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ---------------------------------------------------------------------------
+-- Tabel: characters (Karakter Roleplay Multi-Character terikat ke UCP)
+-- ---------------------------------------------------------------------------
+DROP TABLE IF EXISTS `characters`;
+CREATE TABLE `characters` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `ucp_id` INT NOT NULL,
+  `name` VARCHAR(24) NOT NULL UNIQUE,
+  `birthdate` VARCHAR(16) DEFAULT '01/01/2000',
+  `gender` INT DEFAULT 1,
   `money` INT DEFAULT 500,
   `bank` INT DEFAULT 1000,
   `level` INT DEFAULT 1,
@@ -42,7 +56,8 @@ CREATE TABLE `players` (
   `radiofreq` INT DEFAULT 0,
   `radiostatus` INT DEFAULT 0,
   `injured` INT DEFAULT 0,
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX (`ucp_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ---------------------------------------------------------------------------

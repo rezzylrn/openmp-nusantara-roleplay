@@ -25,18 +25,24 @@ public RunAutomatedRPTests()
 		passCount++;
 	}
 
-	// 2. test auth & sha-256
-	print("[TEST 2/11] Auth & Password Hash System...");
+	// 2. test auth & roleplay name validation
+	print("[TEST 2/11] Auth, Password Hash & Roleplay Name Validator...");
 	new dummyPass[] = "Rahasia123";
 	new salt[65], hash[65];
 	format(salt, sizeof(salt), "Tester-12345");
 	HashPassword(dummyPass, salt, hash, sizeof(hash));
 
-	if (strlen(hash) == 64 && VerifyPassword(dummyPass, salt, hash)) {
-		print("  -> PASS: SHA-256 salt & password verification confirmed.");
+	new bool:nameTest1 = IsValidRoleplayName("Javier_Travors") ? true : false;
+	new bool:nameTest2 = IsValidRoleplayName("Bryan_Calister") ? true : false;
+	new bool:nameBad1  = IsValidRoleplayName("javier_travors") ? false : true;
+	new bool:nameBad2  = IsValidRoleplayName("Javier123") ? false : true;
+	new bool:nameBad3  = IsValidRoleplayName("Javier Travors") ? false : true;
+
+	if (strlen(hash) == 64 && VerifyPassword(dummyPass, salt, hash) && nameTest1 && nameTest2 && nameBad1 && nameBad2 && nameBad3) {
+		print("  -> PASS: SHA-256 salted hash & First_Last roleplay name validation confirmed.");
 		passCount++;
 	} else {
-		print("  -> FAIL: Password hash verification mismatch.");
+		print("  -> FAIL: Password hash or name validation mismatch.");
 		failCount++;
 	}
 

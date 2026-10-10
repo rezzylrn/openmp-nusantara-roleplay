@@ -439,3 +439,88 @@ stock ProcessJobQuit(playerid)
 	SendInfo(playerid, "Anda telah membatalkan dan keluar dari pekerjaan.");
 	return 1;
 }
+
+// ---------------------------------------------------------------------------
+// Interaksi Tombol Y (KEY_YES) untuk Aktivitas Pekerjaan & Fasilitas Publik
+// ---------------------------------------------------------------------------
+stock ProcessKeyActivity(playerid)
+{
+	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
+
+	// 1. Cek pemulung tempat sampah
+	for (new i = 0; i < sizeof(gTrashPoints); i++) {
+		if (IsPlayerInRangeOfPoint(playerid, 3.5, float(gTrashPoints[i][0]), float(gTrashPoints[i][1]), float(gTrashPoints[i][2]))) {
+			ProcessSearchTrash(playerid);
+			return 1;
+		}
+	}
+
+	// 2. Cek penebang kayu di Hutan Shady Creeks
+	if (IsPlayerInRangeOfPoint(playerid, 35.0, LUMBER_X, LUMBER_Y, LUMBER_Z)) {
+		ProcessCutWood(playerid);
+		return 1;
+	}
+
+	// 3. Cek memancing di Dermaga Santa Maria Pier
+	if (IsPlayerInRangeOfPoint(playerid, 25.0, FISH_PIER_X, FISH_PIER_Y, FISH_PIER_Z)) {
+		ProcessFish(playerid);
+		return 1;
+	}
+
+	// 4. Cek jual rongsokan di Pengepul
+	if (IsPlayerInRangeOfPoint(playerid, 5.0, TRASH_BUYER_X, TRASH_BUYER_Y, TRASH_BUYER_Z)) {
+		ProcessSellTrash(playerid);
+		return 1;
+	}
+
+	// 5. Cek jual kayu di Sawmill
+	if (IsPlayerInRangeOfPoint(playerid, 8.0, SAWMILL_X, SAWMILL_Y, SAWMILL_Z)) {
+		ProcessSellWood(playerid);
+		return 1;
+	}
+
+	// 6. Cek jual ikan di Dermaga
+	if (IsPlayerInRangeOfPoint(playerid, 6.0, FISH_PIER_X, FISH_PIER_Y, FISH_PIER_Z)) {
+		ProcessSellFish(playerid);
+		return 1;
+	}
+
+	// 7. Cek pusat pekerjaan umum
+	if (IsPlayerInRangeOfPoint(playerid, 5.0, COURIER_X, COURIER_Y, COURIER_Z)) {
+		ShowJobDialog(playerid);
+		return 1;
+	}
+
+	// 8. Cek ATM
+	if (IsPlayerInRangeOfPoint(playerid, 4.0, ATM_X, ATM_Y, ATM_Z)) {
+		ShowATMDialog(playerid);
+		return 1;
+	}
+
+	// 9. Cek Bank
+	if (IsPlayerInRangeOfPoint(playerid, 6.0, BANK_X, BANK_Y, BANK_Z)) {
+		ShowBankDialog(playerid);
+		return 1;
+	}
+
+	// 10. Cek Toko 24/7
+	if (IsPlayerInRangeOfPoint(playerid, 6.0, STORE_IDLEWOOD_X, STORE_IDLEWOOD_Y, STORE_IDLEWOOD_Z)) {
+		ShowStoreBuyMenu(playerid);
+		return 1;
+	}
+
+	// 11. Cek Dealership
+	if (IsPlayerInRangeOfPoint(playerid, 6.0, DEALER_X, DEALER_Y, DEALER_Z)) {
+		ShowDealershipDialog(playerid);
+		return 1;
+	}
+
+	// 12. Cek SPBU
+	if (IsPlayerInRangeOfPoint(playerid, 8.0, FUEL_STATION_X, FUEL_STATION_Y, FUEL_STATION_Z)) {
+		ProcessRefuel(playerid);
+		return 1;
+	}
+
+	SendInfo(playerid, "Tidak ada objek di sekitar Anda. Dekati tempat kerja, tong sampah, ATM, atau toko lalu tekan Y.");
+	return 0;
+}

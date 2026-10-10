@@ -117,7 +117,7 @@ public OnPlayerConnect(playerid)
 public RP_DelayLogin(playerid)
 {
 	if (!IsPlayerConnected(playerid)) return 1;
-	DB_CheckAccount(playerid);
+	ShowUCPInputPrompt(playerid);
 	return 1;
 }
 
@@ -201,6 +201,13 @@ public OnPlayerText(playerid, text[])
 // key handling
 public OnPlayerKeyStateChange(playerid, KEY:newkeys, KEY:oldkeys)
 {
+	// Key Y (KEY_YES) untuk interaksi pekerjaan dan fasilitas umum
+	if ((newkeys & KEY_YES) && !(oldkeys & KEY_YES)) {
+		ProcessKeyActivity(playerid);
+		return 1;
+	}
+
+	// Key N (KEY_NO) untuk menyalakan/mematikan mesin kendaraan
 	if ((newkeys & KEY_NO) && !(oldkeys & KEY_NO)) {
 		if (IsPlayerInAnyVehicle(playerid) && GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
 			ProcessEngineToggle(playerid);
@@ -222,7 +229,7 @@ public OnPlayerStateChange(playerid, PLAYER_STATE:newstate, PLAYER_STATE:oldstat
 public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 {
 	if (!response) {
-		if (dialogid == DIALOG_LOGIN || dialogid == DIALOG_REGISTER) {
+		if (dialogid == DIALOG_UCP_LOGIN || dialogid == DIALOG_LOGIN || dialogid == DIALOG_UCP_REG_CODE || dialogid == DIALOG_CHAR_SELECT) {
 			SendErr(playerid, "Anda harus masuk atau mendaftar untuk bermain.");
 			SetTimerEx("RP_DelayLogin", 1000, false, "i", playerid);
 		}
@@ -230,9 +237,14 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	}
 
 	switch (dialogid) {
-		case DIALOG_REGISTER:          ProcessRegister(playerid, inputtext);
-		case DIALOG_REGISTER_CONFIRM:  ProcessRegisterConfirm(playerid, inputtext);
-		case DIALOG_LOGIN:             ProcessLogin(playerid, inputtext);
+		case DIALOG_UCP_LOGIN:          ProcessUCPInput(playerid, inputtext);
+		case DIALOG_LOGIN:              ProcessUCPLogin(playerid, inputtext);
+		case DIALOG_UCP_REG_CODE:       ProcessUCPRegisterCode(playerid, inputtext);
+		case DIALOG_UCP_REG_PASS:       ProcessUCPRegisterPass(playerid, inputtext);
+		case DIALOG_CHAR_SELECT:        ProcessCharSelect(playerid, listitem);
+		case DIALOG_CHAR_CREATE_NAME:   ProcessCharCreateName(playerid, inputtext);
+		case DIALOG_CHAR_CREATE_DOB:    ProcessCharCreateDOB(playerid, inputtext);
+		case DIALOG_CHAR_CREATE_GENDER: ProcessCharCreateGender(playerid, listitem);
 		case DIALOG_INVENTORY: {
 			gSelectedInvSlot[playerid] = listitem;
 			ShowPlayerDialog(playerid, DIALOG_ITEM_ACTION, DIALOG_STYLE_LIST,

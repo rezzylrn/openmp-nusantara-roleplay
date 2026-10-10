@@ -9,9 +9,11 @@
 #define MYSQL_PASS     "samp123"
 #define MYSQL_DB       "roleplay"
 
-forward OnAccountCheck(playerid);
-forward OnAccountCreated(playerid);
-forward OnAccountLoaded(playerid);
+forward OnUCPCheck(playerid);
+forward OnUCPRegistered(playerid);
+forward OnUCPCharactersLoaded(playerid);
+forward OnCharacterCreated(playerid);
+forward OnCharacterLoaded(playerid);
 forward OnVehiclesLoaded();
 
 // db init & setup
@@ -26,12 +28,22 @@ stock DB_Init()
 	gDBReady = true;
 	print("[MYSQL] Terhubung ke database MySQL (roleplay) via plugin R41-4!");
 
-	// create tables
-	mysql_tquery(gDB, "CREATE TABLE IF NOT EXISTS players (\
+	// 1. master ucp accounts table
+	mysql_tquery(gDB, "CREATE TABLE IF NOT EXISTS ucp_accounts (\
 		id INT AUTO_INCREMENT PRIMARY KEY, \
-		name VARCHAR(24) NOT NULL UNIQUE, \
+		ucp_name VARCHAR(24) NOT NULL UNIQUE, \
 		password VARCHAR(64) NOT NULL, \
 		salt VARCHAR(64) NOT NULL, \
+		security_code VARCHAR(16) NOT NULL, \
+		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)");
+
+	// 2. multi-characters table
+	mysql_tquery(gDB, "CREATE TABLE IF NOT EXISTS characters (\
+		id INT AUTO_INCREMENT PRIMARY KEY, \
+		ucp_id INT NOT NULL, \
+		name VARCHAR(24) NOT NULL UNIQUE, \
+		birthdate VARCHAR(16) DEFAULT '01/01/2000', \
+		gender INT DEFAULT 1, \
 		money INT DEFAULT 500, \
 		bank INT DEFAULT 1000, \
 		level INT DEFAULT 1, \
@@ -60,8 +72,11 @@ stock DB_Init()
 		phonestatus INT DEFAULT 1, \
 		radiofreq INT DEFAULT 0, \
 		radiostatus INT DEFAULT 0, \
-		injured INT DEFAULT 0)");
+		injured INT DEFAULT 0, \
+		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, \
+		INDEX (ucp_id))");
 
+	// 3. vehicles table
 	mysql_tquery(gDB, "CREATE TABLE IF NOT EXISTS vehicles (\
 		id INT AUTO_INCREMENT PRIMARY KEY, \
 		ownerid INT NOT NULL, \
@@ -79,6 +94,7 @@ stock DB_Init()
 		locked INT DEFAULT 0, \
 		trunk INT DEFAULT 0)");
 
+	// 4. bans table
 	mysql_tquery(gDB, "CREATE TABLE IF NOT EXISTS bans (\
 		id INT AUTO_INCREMENT PRIMARY KEY, \
 		name VARCHAR(24) NOT NULL, \
@@ -104,68 +120,156 @@ stock DB_Shutdown()
 	return 1;
 }
 
-// account check on connect
-stock DB_CheckAccount(playerid)
+// ---------------------------------------------------------------------------
+// UCP Check & Login Flow
+// ---------------------------------------------------------------------------
+stock DB_CheckUCP(playerid, const ucpName[])
 {
 	if (!gDBReady) return 0;
-	new query[128];
-	mysql_format(gDB, query, sizeof(query), "SELECT id, password, salt FROM players WHERE name = '%e' LIMIT 1", gPlayerData[playerid][pName]);
-	mysql_tquery(gDB, query, "OnAccountCheck", "i", playerid);
+	new query[160];
+	mysql_format(gDB, query, sizeof(query),
+		"SELECT id, password, salt, security_code FROM ucp_accounts WHERE ucp_name = '%e' LIMIT 1", ucpName);
+	mysql_tquery(gDB, query, "OnUCPCheck", "i", playerid);
 	return 1;
 }
 
-public OnAccountCheck(playerid)
+public OnUCPCheck(playerid)
 {
 	if (!IsPlayerConnected(playerid)) return 0;
 	new rows = cache_num_rows();
 
 	if (rows > 0) {
-		cache_get_value_name_int(0, "id", gPlayerData[playerid][pID]);
+		// ucp sudah terdaftar -> minta password
+		cache_get_value_name_int(0, "id", gPlayerData[playerid][pUCPID]);
 		cache_get_value_name(0, "password", gPlayerData[playerid][pPassword], 65);
 		cache_get_value_name(0, "salt", gPlayerData[playerid][pSalt], 65);
-		ShowLoginDialog(playerid);
+		ShowUCPLoginDialog(playerid);
 	} else {
-		ShowRegisterDialog(playerid);
+		// ucp belum terdaftar -> minta kode verifikasi / pin
+		ShowUCPRegisterCodeDialog(playerid);
 	}
 	return 1;
 }
 
-// register
-stock DB_RegisterAccount(playerid, const hash[], const salt[])
+stock DB_RegisterUCP(playerid, const ucpName[], const pass[], const salt[], const secCode[])
 {
 	if (!gDBReady) return 0;
 	new query[384];
 	mysql_format(gDB, query, sizeof(query),
-		"INSERT INTO players (name, password, salt, money, bank, level, skin) \
-		VALUES ('%e', '%e', '%e', %d, %d, %d, %d)",
-		gPlayerData[playerid][pName], hash, salt, START_MONEY, START_BANK, START_LEVEL, START_SKIN);
-	mysql_tquery(gDB, query, "OnAccountCreated", "i", playerid);
+		"INSERT INTO ucp_accounts (ucp_name, password, salt, security_code) VALUES ('%e', '%e', '%e', '%e')",
+		ucpName, pass, salt, secCode);
+	mysql_tquery(gDB, query, "OnUCPRegistered", "i", playerid);
 	return 1;
 }
 
-public OnAccountCreated(playerid)
+public OnUCPRegistered(playerid)
 {
 	if (!IsPlayerConnected(playerid)) return 0;
-	gPlayerData[playerid][pID] = cache_insert_id();
-	SpawnPlayerEx(playerid);
-	SendSucc(playerid, "Akun berhasil didaftarkan di MySQL. Selamat bermain!");
+	gPlayerData[playerid][pUCPID] = cache_insert_id();
+	SendSucc(playerid, "Akun UCP berhasil didaftarkan! Melanjutkan ke pemilihan karakter...");
+	DB_LoadUCPCharacters(playerid);
 	return 1;
 }
 
-// load player data
-stock DB_LoadPlayerData(playerid)
+// ---------------------------------------------------------------------------
+// Multi-Character System
+// ---------------------------------------------------------------------------
+stock DB_LoadUCPCharacters(playerid)
+{
+	if (!gDBReady || gPlayerData[playerid][pUCPID] <= 0) return 0;
+	new query[160];
+	mysql_format(gDB, query, sizeof(query),
+		"SELECT id, name, level, skin, faction FROM characters WHERE ucp_id = %d ORDER BY id ASC LIMIT 3",
+		gPlayerData[playerid][pUCPID]);
+	mysql_tquery(gDB, query, "OnUCPCharactersLoaded", "i", playerid);
+	return 1;
+}
+
+public OnUCPCharactersLoaded(playerid)
+{
+	if (!IsPlayerConnected(playerid)) return 0;
+	new rows = cache_num_rows();
+
+	for (new i = 0; i < 3; i++) {
+		gUserCharIDs[playerid][i] = 0;
+	}
+
+	new dialogList[512];
+	format(dialogList, sizeof(dialogList), "Slot\tNama Karakter\tLevel & Faksi\n");
+
+	for (new i = 0; i < rows; i++) {
+		new charid, name[24], level, faction;
+		cache_get_value_name_int(i, "id", charid);
+		cache_get_value_name(i, "name", name, 24);
+		cache_get_value_name_int(i, "level", level);
+		cache_get_value_name_int(i, "faction", faction);
+
+		gUserCharIDs[playerid][i] = charid;
+
+		new factionLabel[32];
+		switch (faction) {
+			case FACTION_POLICE: format(factionLabel, sizeof(factionLabel), "SAPD");
+			case FACTION_MEDIC:  format(factionLabel, sizeof(factionLabel), "SAMD");
+			case FACTION_GOV:    format(factionLabel, sizeof(factionLabel), "SAGOV");
+			case FACTION_GANG:   format(factionLabel, sizeof(factionLabel), "Gang");
+			default:             format(factionLabel, sizeof(factionLabel), "Warga Sipil");
+		}
+
+		format(dialogList, sizeof(dialogList), "%sSlot %d\t%s\tLevel %d (%s)\n",
+			dialogList, i + 1, name, level, factionLabel);
+	}
+
+	if (rows < 3) {
+		format(dialogList, sizeof(dialogList), "%sSlot %d\t{2ECC71}[+] Buat Karakter Baru{FFFFFF}\t-\n",
+			dialogList, rows + 1);
+	}
+
+	ShowPlayerDialog(playerid, DIALOG_CHAR_SELECT, DIALOG_STYLE_TABLIST_HEADERS,
+		"PILIH KARAKTER - NUSANTARA ROLEPLAY", dialogList, "Pilih", "Keluar");
+	return 1;
+}
+
+stock DB_CreateCharacter(playerid, const charName[], const birthdate[], gender, skin)
+{
+	if (!gDBReady || gPlayerData[playerid][pUCPID] <= 0) return 0;
+	new query[400];
+	mysql_format(gDB, query, sizeof(query),
+		"INSERT INTO characters (ucp_id, name, birthdate, gender, skin, money, bank, level) \
+		VALUES (%d, '%e', '%e', %d, %d, %d, %d, %d)",
+		gPlayerData[playerid][pUCPID], charName, birthdate, gender, skin,
+		START_MONEY, START_BANK, START_LEVEL);
+	mysql_tquery(gDB, query, "OnCharacterCreated", "i", playerid);
+	return 1;
+}
+
+public OnCharacterCreated(playerid)
+{
+	if (!IsPlayerConnected(playerid)) return 0;
+	new charid = cache_insert_id();
+	SendSucc(playerid, "Karakter baru berhasil dibuat!");
+	DB_LoadCharacter(playerid, charid);
+	return 1;
+}
+
+stock DB_LoadCharacter(playerid, charid)
 {
 	if (!gDBReady) return 0;
-	new query[128];
-	mysql_format(gDB, query, sizeof(query), "SELECT * FROM players WHERE id = %d LIMIT 1", gPlayerData[playerid][pID]);
-	mysql_tquery(gDB, query, "OnAccountLoaded", "i", playerid);
+	new query[140];
+	mysql_format(gDB, query, sizeof(query),
+		"SELECT * FROM characters WHERE id = %d LIMIT 1", charid);
+	mysql_tquery(gDB, query, "OnCharacterLoaded", "i", playerid);
 	return 1;
 }
 
-public OnAccountLoaded(playerid)
+public OnCharacterLoaded(playerid)
 {
 	if (!IsPlayerConnected(playerid)) return 0;
 	if (cache_num_rows() <= 0) return 0;
+
+	cache_get_value_name_int(0, "id", gPlayerData[playerid][pID]);
+	cache_get_value_name(0, "name", gPlayerData[playerid][pName], MAX_PLAYER_NAME);
+	cache_get_value_name(0, "birthdate", gPlayerData[playerid][pBirthDate], 16);
+	cache_get_value_name_int(0, "gender", gPlayerData[playerid][pGender]);
 
 	cache_get_value_name_int(0, "money", gPlayerData[playerid][pMoney]);
 	cache_get_value_name_int(0, "bank", gPlayerData[playerid][pBank]);
@@ -222,11 +326,25 @@ public OnAccountLoaded(playerid)
 	if (gPlayerData[playerid][pHunger] < 0.0) gPlayerData[playerid][pHunger] = 100.0;
 	if (gPlayerData[playerid][pThirst] < 0.0) gPlayerData[playerid][pThirst] = 100.0;
 
+	// set player nickname in samp to the selected character name
+	SetPlayerName(playerid, gPlayerData[playerid][pName]);
+
+	// give starter items if new
+	if (gPlayerData[playerid][pPhone] == 0) {
+		gPlayerData[playerid][pPhone] = 500000 + random(499999);
+		gPlayerData[playerid][pPhoneStatus] = true;
+		GivePlayerItem(playerid, ITEM_SNACK, 2);
+		GivePlayerItem(playerid, ITEM_WATER, 2);
+		GivePlayerItem(playerid, ITEM_PHONE, 1);
+		GivePlayerItem(playerid, ITEM_GPS, 1);
+	}
+
+	gPlayerData[playerid][pLoggedIn] = true;
 	SpawnPlayerEx(playerid);
 	return 1;
 }
 
-// save player data
+// save character data
 stock DB_SavePlayerData(playerid)
 {
 	if (!gDBReady || !IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
@@ -237,7 +355,7 @@ stock DB_SavePlayerData(playerid)
 
 	new query[650];
 	mysql_format(gDB, query, sizeof(query),
-		"UPDATE players SET money=%d, bank=%d, level=%d, exp=%d, admin=%d, \
+		"UPDATE characters SET money=%d, bank=%d, level=%d, exp=%d, admin=%d, \
 		faction=%d, factionrank=%d, duty=%d, job=%d, hunger=%.2f, thirst=%.2f, \
 		skin=%d, lastx=%.2f, lasty=%.2f, lastz=%.2f, lasta=%.2f, interior=%d, \
 		vworld=%d, cuffed=%d, warnings=%d, kills=%d, deaths=%d, playhours=%d, muted=%d, \

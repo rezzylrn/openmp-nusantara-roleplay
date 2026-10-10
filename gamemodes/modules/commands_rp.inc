@@ -123,21 +123,169 @@ CMD:stats(playerid, params[])
 	return 1;
 }
 
+CMD:showid(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	new targetid;
+	if (sscanf(params, "u", targetid)) {
+		return SendSyntax(playerid, "/showid [playerid/nama]");
+	}
+	if (!IsPlayerConnected(targetid) || !gPlayerData[targetid][pLoggedIn]) {
+		return SendErr(playerid, "Pemain tujuan tidak terhubung.");
+	}
+
+	new Float:px, Float:py, Float:pz;
+	GetPlayerPos(playerid, px, py, pz);
+	if (!IsPlayerInRangeOfPoint(targetid, 4.0, px, py, pz)) {
+		return SendErr(playerid, "Pemain tujuan terlalu jauh dari Anda.");
+	}
+
+	new idCard[256];
+	format(idCard, sizeof(idCard),
+		"{FFFFFF}=== {33CCFF}KARTU TANDA PENDUDUK (KTP) LS{FFFFFF} ===\n\
+Nama: {FFFF00}%s\n\
+UCP: {33CCFF}%s\n\
+Tanggal Lahir: {FFFF00}%s\n\
+Jenis Kelamin: {FFFF00}%s\n\
+Level: {FFFF00}%d",
+		gPlayerData[playerid][pName],
+		gPlayerData[playerid][pUCPName],
+		gPlayerData[playerid][pBirthDate],
+		(gPlayerData[playerid][pGender] == 1) ? "Laki-Laki" : "Perempuan",
+		gPlayerData[playerid][pLevel]);
+
+	ShowPlayerDialog(targetid, DIALOG_HELP, DIALOG_STYLE_MSGBOX, "KARTU IDENTITAS PENDUDUK", idCard, "Tutup", "");
+
+	new rpMsg[128];
+	format(rpMsg, sizeof(rpMsg), "* %s memperlihatkan KTP miliknya kepada %s.",
+		gPlayerData[playerid][pName], gPlayerData[targetid][pName]);
+	SendNearbyPlayer(playerid, COLOR_RP_ME, rpMsg, 15.0);
+	SendSucc(playerid, "Anda telah memperlihatkan kartu identitas Anda kepada %s.", gPlayerData[targetid][pName]);
+	return 1;
+}
+
 CMD:inv(playerid, params[])
 {
-	ShowPlayerInventory(playerid);
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (gInventoryOpen[playerid]) {
+		HidePlayerInventoryUI(playerid);
+	} else {
+		ShowPlayerInventoryUI(playerid);
+	}
 	return 1;
 }
 
 CMD:inventory(playerid, params[])
 {
-	ShowPlayerInventory(playerid);
-	return 1;
+	return cmd_inv(playerid, params);
 }
 
 CMD:items(playerid, params[])
 {
 	ShowPlayerInventory(playerid);
+	return 1;
+}
+
+CMD:use(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	new slot;
+	if (sscanf(params, "d", slot)) {
+		return SendSyntax(playerid, "/use [nomor slot 1-12]");
+	}
+	if (slot < 1 || slot > 12) {
+		return SendErr(playerid, "Slot harus antara 1 sampai 12.");
+	}
+	UsePlayerItemBySlot(playerid, slot - 1);
+	if (gInventoryOpen[playerid]) UpdatePlayerInventoryUI(playerid);
+	return 1;
+}
+
+CMD:phone(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (GetPlayerItemCount(playerid, ITEM_PHONE) <= 0) {
+		return SendErr(playerid, "Anda tidak memiliki ponsel di dalam inventaris (/inv).");
+	}
+	if (gPhoneOpen[playerid]) {
+		HidePlayerPhone(playerid);
+	} else {
+		ShowPlayerPhone(playerid);
+	}
+	return 1;
+}
+
+CMD:hp(playerid, params[])
+{
+	return cmd_phone(playerid, params);
+}
+
+CMD:give(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+
+	new targetid, item[24], amount;
+	if (sscanf(params, "us[24]d", targetid, item, amount)) {
+		SendSyntax(playerid, "/give [playerid/nama] [item/cash] [jumlah]");
+		SendInfo(playerid, "Contoh: /give 2 cash 500  atau  /give 2 snack 2");
+		return 1;
+	}
+
+	if (!IsPlayerConnected(targetid) || !gPlayerData[targetid][pLoggedIn]) {
+		return SendErr(playerid, "Pemain tujuan tidak terhubung atau belum login.");
+	}
+	if (targetid == playerid) {
+		return SendErr(playerid, "Anda tidak dapat memberikan barang kepada diri sendiri.");
+	}
+	if (amount <= 0) {
+		return SendErr(playerid, "Jumlah harus lebih dari 0.");
+	}
+
+	new Float:px, Float:py, Float:pz;
+	GetPlayerPos(playerid, px, py, pz);
+	if (!IsPlayerInRangeOfPoint(targetid, 4.0, px, py, pz)) {
+		return SendErr(playerid, "Pemain tujuan terlalu jauh dari Anda (Maksimal 4 meter).");
+	}
+
+	if (strcmp(item, "cash", true) == 0 || strcmp(item, "uang", true) == 0) {
+		if (gPlayerData[playerid][pMoney] < amount) {
+			return SendErr(playerid, "Uang tunai Anda tidak mencukupi.");
+		}
+		TakePlayerMoneyEx(playerid, amount);
+		GivePlayerMoneyEx(targetid, amount);
+
+		SendRP(playerid, COLOR_SUCCESS, "Anda memberikan uang $%d kepada %s.", amount, gPlayerData[targetid][pName]);
+		SendRP(targetid, COLOR_SUCCESS, "%s memberikan uang $%d kepada Anda.", gPlayerData[playerid][pName], amount);
+
+		new rpMsg[128];
+		format(rpMsg, sizeof(rpMsg), "* %s mengambil sejumlah uang dan memberikannya kepada %s.",
+			gPlayerData[playerid][pName], gPlayerData[targetid][pName]);
+		SendNearbyPlayer(playerid, COLOR_RP_ME, rpMsg, 15.0);
+		return 1;
+	}
+
+	new itemType = GetItemTypeByName(item);
+	if (itemType == ITEM_NONE) {
+		return SendErr(playerid, "Nama barang tidak dikenali. Ketik /inv untuk melihat daftar barang.");
+	}
+
+	if (GetPlayerItemCount(playerid, itemType) < amount) {
+		return SendErr(playerid, "Jumlah barang Anda tidak mencukupi di inventaris.");
+	}
+
+	TakePlayerItem(playerid, itemType, amount);
+	GivePlayerItem(targetid, itemType, amount);
+
+	new itemName[32];
+	GetItemName(itemType, itemName, sizeof(itemName));
+
+	SendRP(playerid, COLOR_SUCCESS, "Anda memberikan %d %s kepada %s.", amount, itemName, gPlayerData[targetid][pName]);
+	SendRP(targetid, COLOR_SUCCESS, "%s memberikan %d %s kepada Anda.", gPlayerData[playerid][pName], amount, itemName);
+
+	new rpMsg[140];
+	format(rpMsg, sizeof(rpMsg), "* %s menyerahkan %d %s kepada %s.",
+		gPlayerData[playerid][pName], amount, itemName, gPlayerData[targetid][pName]);
+	SendNearbyPlayer(playerid, COLOR_RP_ME, rpMsg, 15.0);
 	return 1;
 }
 

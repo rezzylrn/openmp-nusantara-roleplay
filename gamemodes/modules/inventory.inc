@@ -21,6 +21,26 @@ stock ClearPlayerInventory(playerid)
 	return 1;
 }
 
+stock GetItemTypeByName(const item[])
+{
+	if (strcmp(item, "snack", true) == 0 || strcmp(item, "roti", true) == 0) return ITEM_SNACK;
+	if (strcmp(item, "water", true) == 0 || strcmp(item, "air", true) == 0) return ITEM_WATER;
+	if (strcmp(item, "bandage", true) == 0 || strcmp(item, "perban", true) == 0) return ITEM_BANDAGE;
+	if (strcmp(item, "medkit", true) == 0 || strcmp(item, "p3k", true) == 0) return ITEM_MEDKIT;
+	if (strcmp(item, "repairkit", true) == 0 || strcmp(item, "toolkit", true) == 0) return ITEM_REPAIRKIT;
+	if (strcmp(item, "jerrycan", true) == 0 || strcmp(item, "bensin", true) == 0) return ITEM_JERRYCAN;
+	if (strcmp(item, "cigarette", true) == 0 || strcmp(item, "rokok", true) == 0) return ITEM_CIGARETTE;
+	if (strcmp(item, "lighter", true) == 0 || strcmp(item, "korek", true) == 0) return ITEM_LIGHTER;
+	if (strcmp(item, "phone", true) == 0 || strcmp(item, "hp", true) == 0) return ITEM_PHONE;
+	if (strcmp(item, "radio", true) == 0 || strcmp(item, "ht", true) == 0) return ITEM_RADIO;
+	if (strcmp(item, "gps", true) == 0) return ITEM_GPS;
+	if (strcmp(item, "rod", true) == 0 || strcmp(item, "joran", true) == 0) return ITEM_ROD;
+	if (strcmp(item, "bait", true) == 0 || strcmp(item, "umpan", true) == 0) return ITEM_BAIT;
+	if (strcmp(item, "wood", true) == 0 || strcmp(item, "kayu", true) == 0) return ITEM_WOOD;
+	if (strcmp(item, "trash", true) == 0 || strcmp(item, "rongsokan", true) == 0) return ITEM_RECYCLED;
+	return ITEM_NONE;
+}
+
 stock GetPlayerItemCount(playerid, itemtype)
 {
 	new count = 0;
