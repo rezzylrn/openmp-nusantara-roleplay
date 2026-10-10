@@ -200,7 +200,7 @@ stock OnDealershipResponse(playerid, listitem)
 	format(plate, sizeof(plate), "LS-%04d", 1000 + random(8999));
 
 	new dbid = DB_CreateVehicleRow(gPlayerData[playerid][pID], model, px + 2.5, py + 2.5, pz, pa,
-		gDealerStock[listitem][2], gDealerStock[listitem][3]);
+		gDealerStock[listitem][2], gDealerStock[listitem][3], plate);
 
 	gVehicleData[slot][vUsed] = true;
 	gVehicleData[slot][vDBID] = dbid;

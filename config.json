@@ -102,9 +102,11 @@
     },
     "password": "",
     "pawn": {
-        "legacy_plugins": [],
+        "legacy_plugins": [
+            "mysql.so"
+        ],
         "main_scripts": [
-            "roleplay 1"
+            "main 1"
         ],
         "side_scripts": []
     },

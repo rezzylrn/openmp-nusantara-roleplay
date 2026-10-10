@@ -383,12 +383,3 @@ stock TickPaycheck(playerid)
 	}
 	return 1;
 }
-
-// ---------------------------------------------------------------------------
-// Utilitas
-// ---------------------------------------------------------------------------
-stock IsPlayerNearPoint(playerid, Float:x, Float:y, Float:z, Float:range)
-{
-	if (!IsPlayerConnected(playerid)) return 0;
-	return IsPlayerInRangeOfPoint(playerid, range, x, y, z);
-}

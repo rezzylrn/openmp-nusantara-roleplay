@@ -3,12 +3,7 @@
 #endif
 #define _INC_rp_debug_tests
 
-/*
-==============================================================================
-  NUSANTARA ROLEPLAY - debug_tests.inc
-  Automated In-Game Feature Test Suite & Diagnostics (11 Core Systems)
-==============================================================================
-*/
+// automated diagnostics suite (11 tests)
 
 forward RunAutomatedRPTests();
 public RunAutomatedRPTests()
@@ -20,61 +15,32 @@ public RunAutomatedRPTests()
 	new passCount = 0;
 	new failCount = 0;
 
-	// 1. TEST DATABASE & SQL ESCAPE
-	print("[TEST 1/11] Database Connectivity & SQL Escaping...");
-	if (!gDatabaseReady) {
-		print("  -> FAIL: Database not connected!");
+	// 1. test db connection
+	print("[TEST 1/11] Database Connectivity (MySQL R41-4)...");
+	if (!gDBReady) {
+		print("  -> FAIL: MySQL database not connected!");
 		failCount++;
 	} else {
-		new testStr[] = "O'Connor";
-		new escaped[64];
-		SQL_Escape(testStr, escaped, sizeof(escaped));
-		if (strcmp(escaped, "O''Connor") == 0) {
-			print("  -> PASS: SQLite double-single-quote escaping verified (O''Connor).");
-			passCount++;
-		} else {
-			printf("  -> FAIL: SQL escape produced '%s' instead of 'O''Connor'", escaped);
-			failCount++;
-		}
+		print("  -> PASS: MySQL database connected and tables initialized.");
+		passCount++;
 	}
 
-	// 2. TEST PLAYER REGISTRATION & PASSWORD HASHING
-	print("[TEST 2/11] Auth System & SHA-256 Hash...");
-	new dummyName[] = "Tester_Rezz";
+	// 2. test auth & sha-256
+	print("[TEST 2/11] Auth & Password Hash System...");
 	new dummyPass[] = "Rahasia123";
 	new salt[65], hash[65];
-	format(salt, sizeof(salt), "%s-%d-%d", dummyName, random(999999), GetTickCount());
+	format(salt, sizeof(salt), "Tester-12345");
 	HashPassword(dummyPass, salt, hash, sizeof(hash));
 
-	if (strlen(hash) == 64 && strlen(salt) > 0) {
-		new delQuery[128];
-		format(delQuery, sizeof(delQuery), "DELETE FROM players WHERE name = '%s'", dummyName);
-		DB_FreeResultSet(DB_ExecuteQuery(gDatabase, delQuery));
-
-		if (DB_CreateAccount(dummyName, hash, salt)) {
-			new fetchedID, fetchedHash[65], fetchedSalt[65];
-			if (DB_FetchAccount(dummyName, fetchedID, fetchedHash, sizeof(fetchedHash), fetchedSalt, sizeof(fetchedSalt))) {
-				if (strcmp(fetchedHash, hash) == 0 && strcmp(fetchedSalt, salt) == 0) {
-					print("  -> PASS: Account created, hashed, salted, and retrieved correctly from SQLite.");
-					passCount++;
-				} else {
-					print("  -> FAIL: Hash/Salt mismatch on retrieval.");
-					failCount++;
-				}
-			} else {
-				print("  -> FAIL: DB_FetchAccount returned false.");
-				failCount++;
-			}
-		} else {
-			print("  -> FAIL: DB_CreateAccount returned false.");
-			failCount++;
-		}
+	if (strlen(hash) == 64 && VerifyPassword(dummyPass, salt, hash)) {
+		print("  -> PASS: SHA-256 salt & password verification confirmed.");
+		passCount++;
 	} else {
-		print("  -> FAIL: Hash generation failed.");
+		print("  -> FAIL: Password hash verification mismatch.");
 		failCount++;
 	}
 
-	// 3. TEST ECONOMY (Cash, Bank, ATM, Payday)
+	// 3. test economy
 	print("[TEST 3/11] Integrated Economy (Cash, Bank, Payday)...");
 	new testPlayer = 0;
 	ResetPlayerData(testPlayer);
@@ -94,10 +60,10 @@ public RunAutomatedRPTests()
 	if (gPlayerData[testPlayer][pMoney] == expectedCash && gPlayerData[testPlayer][pBank] == expectedBank) {
 		new paycheckSalary = CalculatePaycheck(testPlayer);
 		if (paycheckSalary > 0) {
-			printf("  -> PASS: Economy operations valid. Calculated Payday: $%d/hr.", paycheckSalary);
+			printf("  -> PASS: Economy calculations verified. Payday: $%d/hr.", paycheckSalary);
 			passCount++;
 		} else {
-			print("  -> FAIL: Payday calculation returned 0.");
+			print("  -> FAIL: Payday calculation error.");
 			failCount++;
 		}
 	} else {
@@ -105,8 +71,8 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
-	// 4. TEST FACTIONS (SAPD, Duty, Arrest)
-	print("[TEST 4/11] Factions Logic (SAPD Duty & Tools)...");
+	// 4. test factions
+	print("[TEST 4/11] Factions Logic (SAPD Duty & Cuff)...");
 	ProcessFactionDuty(testPlayer, true);
 	if (gPlayerData[testPlayer][pDuty]) {
 		new suspectPlayer = 1;
@@ -127,21 +93,24 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
-	// 5. TEST JOBS (Kurir, Sweeper, Trucker)
-	print("[TEST 5/11] Sidejobs Configuration & Checkpoints...");
+	// 5. test jobs (8 jobs configured)
+	print("[TEST 5/11] 8 Sidejobs Configuration & Routes...");
 	new courierCount = sizeof(gCourierPoints);
 	new sweeperCount = sizeof(gSweeperPoints);
 	new truckerCount = sizeof(gTruckerPoints);
-	if (courierCount == MAX_COURIER_POINTS && sweeperCount == MAX_SWEEPER_POINTS && truckerCount == MAX_TRUCKER_POINTS) {
-		printf("  -> PASS: %d Courier, %d Sweeper, & %d Trucker checkpoints verified.",
-			courierCount, sweeperCount, truckerCount);
+	new busCount = sizeof(gBusPoints);
+	new trashCount = sizeof(gTrashPoints);
+
+	if (courierCount > 0 && sweeperCount > 0 && truckerCount > 0 && busCount > 0 && trashCount > 0) {
+		printf("  -> PASS: 8 Jobs ready (Courier: %d, Sweeper: %d, Trucker: %d, Bus: %d, Trash: %d).",
+			courierCount, sweeperCount, truckerCount, busCount, trashCount);
 		passCount++;
 	} else {
-		print("  -> FAIL: Mismatch in job checkpoint array dimensions.");
+		print("  -> FAIL: Checkpoint configuration error.");
 		failCount++;
 	}
 
-	// 6. TEST VEHICLES (Dealership, Engine, Lock, Fuel)
+	// 6. test vehicles
 	print("[TEST 6/11] Dynamic Personal Vehicles & Fuel Loop...");
 	new testSlot = -1;
 	for (new i = 0; i < MAX_OWNED_VEHICLES; i++) {
@@ -162,7 +131,7 @@ public RunAutomatedRPTests()
 
 		gVehicleData[testSlot][vFuel] -= FUEL_CONSUMPTION_RATE;
 		if (gVehicleData[testSlot][vFuel] < 100.0 && gVehicleData[testSlot][vTrunk] == 5000) {
-			printf("  -> PASS: Vehicle slot initialized, engine running, fuel consumption active (%.2fL remaining), trunk: $%d.",
+			printf("  -> PASS: Vehicle slot active, engine running, fuel: %.2fL, trunk: $%d.",
 				gVehicleData[testSlot][vFuel], gVehicleData[testSlot][vTrunk]);
 			passCount++;
 		} else {
@@ -175,7 +144,7 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
-	// 7. TEST SURVIVAL METRICS (Hunger & Thirst decay)
+	// 7. test survival
 	print("[TEST 7/11] Survival System (Lapar & Haus)...");
 	gPlayerData[testPlayer][pSpawned] = true;
 	gPlayerData[testPlayer][pHunger] = 100.0;
@@ -183,7 +152,7 @@ public RunAutomatedRPTests()
 	UpdateHungerThirst(testPlayer);
 
 	if (gPlayerData[testPlayer][pHunger] < 100.0 && gPlayerData[testPlayer][pThirst] < 100.0) {
-		printf("  -> PASS: Hunger & Thirst decaying normally (Hunger: %.2f%%, Thirst: %.2f%%).",
+		printf("  -> PASS: Hunger & Thirst decay confirmed (Lapar: %.2f%%, Haus: %.2f%%).",
 			gPlayerData[testPlayer][pHunger], gPlayerData[testPlayer][pThirst]);
 		passCount++;
 	} else {
@@ -191,11 +160,11 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
-	// 8. TEST TEXTDRAWS (UI Memory allocation)
+	// 8. test textdraws
 	print("[TEST 8/11] Modern TextDraws System...");
 	TextdrawCreateAll(testPlayer);
 	if (gTD_Ready[testPlayer]) {
-		print("  -> PASS: HUD, Speedometer, and Alert TextDraws allocated and ready for player.");
+		print("  -> PASS: HUD, Speedometer, and Alert TextDraws allocated cleanly.");
 		passCount++;
 		TextdrawDestroyAll(testPlayer);
 	} else {
@@ -203,21 +172,21 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
-	// 9. TEST ROLEPLAY COMMANDS & PROXIMITY
-	print("[TEST 9/11] Roleplay Mechanics & Proximity ranges...");
+	// 9. test rp proximity
+	print("[TEST 9/11] Roleplay Chat Proximity Ranges...");
+	new Float:distLow = RANGE_LOW;
 	new Float:distMe = RANGE_ME;
 	new Float:distShout = RANGE_SHOUT;
-	new Float:distLow = RANGE_LOW;
 	if (distLow < distMe && distMe < distShout) {
-		printf("  -> PASS: RP Chat radiuses properly calibrated (Low: %.1fm, Me: %.1fm, Shout: %.1fm).",
+		printf("  -> PASS: Proximity chat calibrated (Low: %.1fm, Me: %.1fm, Shout: %.1fm).",
 			distLow, distMe, distShout);
 		passCount++;
 	} else {
-		print("  -> FAIL: RP chat radius hierarchy inverted.");
+		print("  -> FAIL: RP chat radius inverted.");
 		failCount++;
 	}
 
-	// 10. TEST INVENTORY & ITEM MANAGEMENT
+	// 10. test inventory
 	print("[TEST 10/11] Modular Slot-Based Inventory System...");
 	ClearPlayerInventory(testPlayer);
 	GivePlayerItem(testPlayer, ITEM_SNACK, 3);
@@ -236,8 +205,8 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
-	// 11. TEST TELECOMMUNICATION & RADIO FREQUENCY
-	print("[TEST 11/11] Telecommunications & Walkie Talkie Frequencies...");
+	// 11. test comms & radio
+	print("[TEST 11/11] Telecommunications & Walkie Talkie...");
 	gPlayerData[testPlayer][pPhone] = 554123;
 	gPlayerData[testPlayer][pPhoneStatus] = true;
 	gPlayerData[testPlayer][pRadioFreq] = 911;

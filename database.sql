@@ -1,0 +1,91 @@
+-- Nusantara Roleplay - Database Schema (MySQL R41-4 / MariaDB)
+-- Standard: UTF8MB4, InnoDB
+
+CREATE DATABASE IF NOT EXISTS `roleplay` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE `roleplay`;
+
+-- ---------------------------------------------------------------------------
+-- Tabel: players (Karakter & Akun Pemain)
+-- ---------------------------------------------------------------------------
+DROP TABLE IF EXISTS `players`;
+CREATE TABLE `players` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `name` VARCHAR(24) NOT NULL UNIQUE,
+  `password` VARCHAR(64) NOT NULL,
+  `salt` VARCHAR(64) NOT NULL,
+  `money` INT DEFAULT 500,
+  `bank` INT DEFAULT 1000,
+  `level` INT DEFAULT 1,
+  `exp` INT DEFAULT 0,
+  `admin` INT DEFAULT 0,
+  `faction` INT DEFAULT 0,
+  `factionrank` INT DEFAULT 0,
+  `duty` INT DEFAULT 0,
+  `job` INT DEFAULT 0,
+  `hunger` FLOAT DEFAULT 100.0,
+  `thirst` FLOAT DEFAULT 100.0,
+  `skin` INT DEFAULT 0,
+  `lastx` FLOAT DEFAULT 1481.0,
+  `lasty` FLOAT DEFAULT -1748.0,
+  `lastz` FLOAT DEFAULT 13.5,
+  `lasta` FLOAT DEFAULT 270.0,
+  `interior` INT DEFAULT 0,
+  `vworld` INT DEFAULT 0,
+  `cuffed` INT DEFAULT 0,
+  `warnings` INT DEFAULT 0,
+  `kills` INT DEFAULT 0,
+  `deaths` INT DEFAULT 0,
+  `playhours` INT DEFAULT 0,
+  `muted` INT DEFAULT 0,
+  `phone` INT DEFAULT 0,
+  `phonestatus` INT DEFAULT 1,
+  `radiofreq` INT DEFAULT 0,
+  `radiostatus` INT DEFAULT 0,
+  `injured` INT DEFAULT 0,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ---------------------------------------------------------------------------
+-- Tabel: vehicles (Kendaraan Pribadi Dinamis)
+-- ---------------------------------------------------------------------------
+DROP TABLE IF EXISTS `vehicles`;
+CREATE TABLE `vehicles` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `ownerid` INT NOT NULL,
+  `model` INT NOT NULL,
+  `posx` FLOAT DEFAULT 0.0,
+  `posy` FLOAT DEFAULT 0.0,
+  `posz` FLOAT DEFAULT 0.0,
+  `posa` FLOAT DEFAULT 0.0,
+  `color1` INT DEFAULT 1,
+  `color2` INT DEFAULT 1,
+  `fuel` FLOAT DEFAULT 100.0,
+  `health` FLOAT DEFAULT 1000.0,
+  `plate` VARCHAR(16) DEFAULT '',
+  `engine` INT DEFAULT 0,
+  `locked` INT DEFAULT 0,
+  `trunk` INT DEFAULT 0,
+  INDEX (`ownerid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ---------------------------------------------------------------------------
+-- Tabel: bans (Daftar Blokir Akun & IP)
+-- ---------------------------------------------------------------------------
+DROP TABLE IF EXISTS `bans`;
+CREATE TABLE `bans` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `name` VARCHAR(24) NOT NULL,
+  `ip` VARCHAR(20) NOT NULL,
+  `reason` VARCHAR(96),
+  `admin` VARCHAR(24),
+  `created` INT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ---------------------------------------------------------------------------
+-- Tabel: settings (Konfigurasi Server Global)
+-- ---------------------------------------------------------------------------
+DROP TABLE IF EXISTS `settings`;
+CREATE TABLE `settings` (
+  `key` VARCHAR(64) PRIMARY KEY,
+  `value` TEXT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

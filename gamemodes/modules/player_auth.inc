@@ -136,14 +136,6 @@ new gPendingPassword[MAX_PLAYERS][80];
 stock ProcessRegister(playerid, const password[])
 {
 	if (!IsPlayerConnected(playerid)) return 0;
-	new name[MAX_PLAYER_NAME];
-	GetPlayerName(playerid, name, sizeof(name));
-
-	if (DB_PlayerExists(name)) {
-		SendErr(playerid, "Akun sudah terdaftar. Silakan login.");
-		ShowLoginDialog(playerid);
-		return 0;
-	}
 
 	if (strlen(password) < 6) {
 		SendErr(playerid, "Kata sandi minimal harus 6 karakter.");
@@ -174,15 +166,6 @@ stock ProcessRegisterConfirm(playerid, const confirmpassword[])
 	HashPassword(gPendingPassword[playerid], salt, hash, sizeof(hash));
 	gPendingPassword[playerid][0] = '\0';
 
-	new rowid = DB_CreateAccount(name, hash, salt);
-	if (rowid < 0) {
-		SendErr(playerid, "Gagal membuat akun di database.");
-		Kick(playerid);
-		return 0;
-	}
-
-	gPlayerData[playerid][pID] = rowid;
-	format(gPlayerData[playerid][pName], MAX_PLAYER_NAME, "%s", name);
 	format(gPlayerData[playerid][pPassword], 65, "%s", hash);
 	format(gPlayerData[playerid][pSalt], 65, "%s", salt);
 	gPlayerData[playerid][pMoney] = START_MONEY;
@@ -207,42 +190,22 @@ stock ProcessRegisterConfirm(playerid, const confirmpassword[])
 	GivePlayerItem(playerid, ITEM_PHONE, 1);
 	GivePlayerItem(playerid, ITEM_GPS, 1);
 
-	SpawnPlayerEx(playerid);
-	SendSucc(playerid, "Pendaftaran berhasil! Anda mendapatkan Starter Pack (Makanan, Minuman, Ponsel & GPS di /inv).");
+	DB_RegisterAccount(playerid, hash, salt);
 	return 1;
 }
 
 stock ProcessLogin(playerid, const password[])
 {
 	if (!IsPlayerConnected(playerid)) return 0;
-	new name[MAX_PLAYER_NAME];
-	GetPlayerName(playerid, name, sizeof(name));
 
-	if (!DB_PlayerExists(name)) {
-		SendErr(playerid, "Akun tidak ditemukan di database.");
-		ShowRegisterDialog(playerid);
-		return 0;
-	}
-
-	new rowid, storedHash[65], storedSalt[65];
-	if (!DB_FetchAccount(name, rowid, storedHash, sizeof(storedHash), storedSalt, sizeof(storedSalt))) {
-		SendErr(playerid, "Gagal memuat akun. Hubungi staf admin.");
-		Kick(playerid);
-		return 0;
-	}
-
-	if (!VerifyPassword(password, storedSalt, storedHash)) {
+	if (!VerifyPassword(password, gPlayerData[playerid][pSalt], gPlayerData[playerid][pPassword])) {
 		SendErr(playerid, "Kata sandi yang Anda masukkan salah.");
 		ShowLoginDialog(playerid);
 		return 0;
 	}
 
 	DB_LoadPlayerData(playerid);
-	format(gPlayerData[playerid][pPassword], 65, "%s", storedHash);
-	format(gPlayerData[playerid][pSalt], 65, "%s", storedSalt);
 	gPlayerData[playerid][pLoggedIn] = true;
-
-	SpawnPlayerEx(playerid);
 	return 1;
 }
 

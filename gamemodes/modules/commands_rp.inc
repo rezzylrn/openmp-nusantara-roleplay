@@ -1,0 +1,603 @@
+#if defined _INC_rp_commands_rp
+	#endinput
+#endif
+#define _INC_rp_commands_rp
+
+// cmd loader & rp commands
+
+// chat rp
+CMD:me(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (isnull(params)) return SendSyntax(playerid, "/me [tindakan]");
+	new msg[160];
+	format(msg, sizeof(msg), "* %s %s", gPlayerData[playerid][pName], params);
+	SendNearbyPlayer(playerid, COLOR_RP_ME, msg, RANGE_ME);
+	return 1;
+}
+
+CMD:do(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (isnull(params)) return SendSyntax(playerid, "/do [keadaan sekitar]");
+	new msg[160];
+	format(msg, sizeof(msg), "* %s (( %s ))", params, gPlayerData[playerid][pName]);
+	SendNearbyPlayer(playerid, COLOR_RP_DO, msg, RANGE_ME);
+	return 1;
+}
+
+CMD:b(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (isnull(params)) return SendSyntax(playerid, "/b [pesan ooc]");
+	new msg[160];
+	format(msg, sizeof(msg), "(( [OOC] %s: %s ))", gPlayerData[playerid][pName], params);
+	SendNearbyPlayer(playerid, COLOR_OOC, msg, RANGE_OOC);
+	return 1;
+}
+
+CMD:o(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (isnull(params)) return SendSyntax(playerid, "/o [pesan ooc global]");
+	new msg[160];
+	format(msg, sizeof(msg), "[OOC] %s: %s", gPlayerData[playerid][pName], params);
+	SendClientMessageToAll(COLOR_OOC, msg);
+	return 1;
+}
+
+CMD:w(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	new targetid, text[128];
+	if (sscanf(params, "us[128]", targetid, text)) return SendSyntax(playerid, "/w [playerid/nama] [pesan]");
+	ProcessWhisper(playerid, targetid, text);
+	return 1;
+}
+
+CMD:s(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (isnull(params)) return SendSyntax(playerid, "/s [pesan teriakan]");
+	ProcessShout(playerid, params);
+	return 1;
+}
+
+CMD:l(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (isnull(params)) return SendSyntax(playerid, "/l [pesan pelan]");
+	ProcessLow(playerid, params);
+	return 1;
+}
+
+CMD:id(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (isnull(params)) return SendSyntax(playerid, "/id [nama/id]");
+	ProcessFindID(playerid, params);
+	return 1;
+}
+
+CMD:admins(playerid, params[])
+{
+	ProcessAdmins(playerid);
+	return 1;
+}
+
+CMD:pm(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	new targetid, text[128];
+	if (sscanf(params, "us[128]", targetid, text)) return SendSyntax(playerid, "/pm [playerid/nama] [pesan]");
+	ProcessPM(playerid, targetid, text);
+	return 1;
+}
+
+CMD:report(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (isnull(params)) return SendSyntax(playerid, "/report [laporan]");
+	ProcessReport(playerid, params);
+	return 1;
+}
+
+CMD:ask(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (isnull(params)) return SendSyntax(playerid, "/ask [pertanyaan]");
+	ProcessAsk(playerid, params);
+	return 1;
+}
+
+CMD:help(playerid, params[])
+{
+	ShowHelpDialog(playerid);
+	return 1;
+}
+
+// player stats & items
+CMD:stats(playerid, params[])
+{
+	ShowStatsDialog(playerid);
+	return 1;
+}
+
+CMD:inv(playerid, params[])
+{
+	ShowPlayerInventory(playerid);
+	return 1;
+}
+
+CMD:inventory(playerid, params[])
+{
+	ShowPlayerInventory(playerid);
+	return 1;
+}
+
+CMD:items(playerid, params[])
+{
+	ShowPlayerInventory(playerid);
+	return 1;
+}
+
+CMD:gps(playerid, params[])
+{
+	ShowGPSMenu(playerid);
+	return 1;
+}
+
+// economy
+CMD:pay(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	new targetid, amount;
+	if (sscanf(params, "ud", targetid, amount)) return SendSyntax(playerid, "/pay [playerid/nama] [jumlah]");
+	if (!IsPlayerConnected(targetid)) return SendErr(playerid, "Pemain tidak ditemukan.");
+	new targetName[MAX_PLAYER_NAME];
+	GetPlayerName(targetid, targetName, sizeof(targetName));
+	ProcessPay(playerid, targetName, amount);
+	return 1;
+}
+
+CMD:bank(playerid, params[])
+{
+	ShowBankDialog(playerid);
+	return 1;
+}
+
+CMD:atm(playerid, params[])
+{
+	ShowATMDialog(playerid);
+	return 1;
+}
+
+CMD:buy(playerid, params[])
+{
+	ShowStoreBuyMenu(playerid);
+	return 1;
+}
+
+// comms
+CMD:call(playerid, params[])
+{
+	if (isnull(params)) return SendSyntax(playerid, "/call [nomor telepon]");
+	ProcessCall(playerid, params);
+	return 1;
+}
+
+CMD:p(playerid, params[])
+{
+	ProcessPickup(playerid);
+	return 1;
+}
+
+CMD:h(playerid, params[])
+{
+	ProcessHangup(playerid);
+	return 1;
+}
+
+CMD:sms(playerid, params[])
+{
+	new num, text[128];
+	if (sscanf(params, "ds[128]", num, text)) return SendSyntax(playerid, "/sms [nomor] [pesan]");
+	ProcessSMS(playerid, num, text);
+	return 1;
+}
+
+CMD:setfreq(playerid, params[])
+{
+	new f;
+	if (sscanf(params, "d", f)) return SendSyntax(playerid, "/setfreq [1-999]");
+	if (f < 1 || f > 999) return SendErr(playerid, "Frekuensi harus antara 1 - 999 MHz.");
+	gPlayerData[playerid][pRadioFreq] = f;
+	SendSucc(playerid, "Frekuensi HT disetel ke %d MHz.", f);
+	return 1;
+}
+
+CMD:r(playerid, params[])
+{
+	if (isnull(params)) return SendSyntax(playerid, "/r [pesan radio]");
+	ProcessRadio(playerid, params);
+	return 1;
+}
+
+CMD:d(playerid, params[])
+{
+	if (isnull(params)) return SendSyntax(playerid, "/d [pesan departemen]");
+	ProcessDepartmentRadio(playerid, params);
+	return 1;
+}
+
+CMD:m(playerid, params[])
+{
+	if (isnull(params)) return SendSyntax(playerid, "/m [pengumuman pengeras suara]");
+	ProcessMegaphone(playerid, params);
+	return 1;
+}
+
+// vehicles
+CMD:buyveh(playerid, params[])
+{
+	ShowDealershipDialog(playerid);
+	return 1;
+}
+
+CMD:myveh(playerid, params[])
+{
+	ShowMyVehiclesDialog(playerid);
+	return 1;
+}
+
+CMD:v(playerid, params[])
+{
+	ShowMyVehiclesDialog(playerid);
+	return 1;
+}
+
+CMD:engine(playerid, params[])
+{
+	ProcessEngineToggle(playerid);
+	return 1;
+}
+
+CMD:lights(playerid, params[])
+{
+	ProcessLightsToggle(playerid);
+	return 1;
+}
+
+CMD:lock(playerid, params[])
+{
+	new vid = GetPlayerVehicleID(playerid);
+	new slot = Vehicle_GetSlot(vid);
+	if (slot != -1) ProcessVehicleLock(playerid, slot);
+	else SendErr(playerid, "Anda harus berada di dalam kendaraan pribadi.");
+	return 1;
+}
+
+CMD:park(playerid, params[])
+{
+	new vid = GetPlayerVehicleID(playerid);
+	new slot = Vehicle_GetSlot(vid);
+	if (slot != -1) ProcessVehiclePark(playerid, slot);
+	else SendErr(playerid, "Anda harus berada di dalam kendaraan pribadi.");
+	return 1;
+}
+
+CMD:hood(playerid, params[])
+{
+	new vid = GetPlayerVehicleID(playerid);
+	new slot = Vehicle_GetSlot(vid);
+	if (slot != -1) {
+		new bool:newHood = !gVehicleData[slot][vHood];
+		Vehicle_SetHood(vid, newHood);
+		SendRP(playerid, COLOR_INFO, "Kap mesin kendaraan %s.", newHood ? "dibuka" : "ditutup");
+	} else SendErr(playerid, "Anda harus berada di dalam kendaraan.");
+	return 1;
+}
+
+CMD:trunk(playerid, params[])
+{
+	new vid = GetPlayerVehicleID(playerid);
+	new slot = Vehicle_GetSlot(vid);
+	if (slot != -1) {
+		new bool:newTrunk = !gVehicleData[slot][vTrunkOpen];
+		Vehicle_SetTrunk(vid, newTrunk);
+		SendRP(playerid, COLOR_INFO, "Pintu bagasi kendaraan %s.", newTrunk ? "dibuka" : "ditutup");
+	} else SendErr(playerid, "Anda harus berada di dalam kendaraan.");
+	return 1;
+}
+
+CMD:refuel(playerid, params[])
+{
+	ProcessRefuel(playerid);
+	return 1;
+}
+
+CMD:fill(playerid, params[])
+{
+	ProcessRefuel(playerid);
+	return 1;
+}
+
+// jobs
+CMD:job(playerid, params[])
+{
+	ShowJobDialog(playerid);
+	return 1;
+}
+
+CMD:quitjob(playerid, params[])
+{
+	ProcessJobQuit(playerid);
+	return 1;
+}
+
+CMD:searchtrash(playerid, params[])
+{
+	ProcessSearchTrash(playerid);
+	return 1;
+}
+
+CMD:selltrash(playerid, params[])
+{
+	ProcessSellTrash(playerid);
+	return 1;
+}
+
+CMD:cutwood(playerid, params[])
+{
+	ProcessCutWood(playerid);
+	return 1;
+}
+
+CMD:sellwood(playerid, params[])
+{
+	ProcessSellWood(playerid);
+	return 1;
+}
+
+CMD:fish(playerid, params[])
+{
+	ProcessFish(playerid);
+	return 1;
+}
+
+CMD:sellfish(playerid, params[])
+{
+	ProcessSellFish(playerid);
+	return 1;
+}
+
+CMD:service(playerid, params[])
+{
+	if (gPlayerData[playerid][pJob] != JOB_MECHANIC) return SendErr(playerid, "Perintah ini khusus untuk Mekanik Bengkel.");
+	new type[16], targetid, price;
+	if (sscanf(params, "s[16]ud", type, targetid, price)) return SendSyntax(playerid, "/service [engine/body] [targetid] [harga]");
+	if (!IsPlayerConnected(targetid)) return SendErr(playerid, "Pemain tidak ditemukan.");
+	if (!IsPlayerInAnyVehicle(targetid)) return SendErr(playerid, "Target tidak berada di dalam kendaraan.");
+
+	new tVeh = GetPlayerVehicleID(targetid);
+	if (strcmp(type, "engine", true) == 0) {
+		SetVehicleHealth(tVeh, 1000.0);
+		TakePlayerMoneyEx(targetid, price, "service mesin");
+		GivePlayerMoneyEx(playerid, price, "upah service mekanik");
+		SendSucc(playerid, "Mesin kendaraan berhasil diperbaiki. Menerima bayaran $%d.", price);
+		SendSucc(targetid, "Mesin kendaraan Anda diperbaiki oleh Mekanik %s ($%d).", gPlayerData[playerid][pName], price);
+	} else if (strcmp(type, "body", true) == 0) {
+		RepairVehicle(tVeh);
+		TakePlayerMoneyEx(targetid, price, "service bodi");
+		GivePlayerMoneyEx(playerid, price, "upah service mekanik");
+		SendSucc(playerid, "Bodi kendaraan berhasil diperbaiki. Menerima bayaran $%d.", price);
+		SendSucc(targetid, "Bodi kendaraan Anda diperbaiki oleh Mekanik %s ($%d).", gPlayerData[playerid][pName], price);
+	} else {
+		SendSyntax(playerid, "/service [engine/body] [targetid] [harga]");
+	}
+	return 1;
+}
+
+// factions
+CMD:duty(playerid, params[])
+{
+	new bool:newduty = !gPlayerData[playerid][pDuty];
+	ProcessFactionDuty(playerid, newduty);
+	return 1;
+}
+
+CMD:cuff(playerid, params[])
+{
+	new targetid;
+	if (sscanf(params, "u", targetid)) return SendSyntax(playerid, "/cuff [targetid/nama]");
+	ProcessCuff(playerid, targetid);
+	return 1;
+}
+
+CMD:uncuff(playerid, params[])
+{
+	new targetid;
+	if (sscanf(params, "u", targetid)) return SendSyntax(playerid, "/uncuff [targetid/nama]");
+	ProcessUncuff(playerid, targetid);
+	return 1;
+}
+
+CMD:frisk(playerid, params[])
+{
+	new targetid;
+	if (sscanf(params, "u", targetid)) return SendSyntax(playerid, "/frisk [targetid/nama]");
+	ProcessFrisk(playerid, targetid);
+	return 1;
+}
+
+CMD:ticket(playerid, params[])
+{
+	new targetid, amount, reason[64];
+	if (sscanf(params, "uds[64]", targetid, amount, reason)) return SendSyntax(playerid, "/ticket [targetid] [denda] [alasan]");
+	ProcessTicket(playerid, targetid, amount, reason);
+	return 1;
+}
+
+CMD:arrest(playerid, params[])
+{
+	new targetid, timeMinutes;
+	if (sscanf(params, "ud", targetid, timeMinutes)) return SendSyntax(playerid, "/arrest [targetid] [menit]");
+	ProcessArrest(playerid, targetid, timeMinutes, 100);
+	return 1;
+}
+
+CMD:heal(playerid, params[])
+{
+	new targetid;
+	if (sscanf(params, "u", targetid)) return SendSyntax(playerid, "/heal [targetid]");
+	ProcessHeal(playerid, targetid);
+	return 1;
+}
+
+CMD:revive(playerid, params[])
+{
+	new targetid;
+	if (sscanf(params, "u", targetid)) return SendSyntax(playerid, "/revive [targetid]");
+	ProcessRevive(playerid, targetid);
+	return 1;
+}
+
+CMD:gov(playerid, params[])
+{
+	if (isnull(params)) return SendSyntax(playerid, "/gov [pengumuman resmi]");
+	ProcessGovBroadcast(playerid, params);
+	return 1;
+}
+
+CMD:settax(playerid, params[])
+{
+	new rate;
+	if (sscanf(params, "d", rate)) return SendSyntax(playerid, "/settax [0-25%]");
+	ProcessSetTax(playerid, rate);
+	return 1;
+}
+
+// helper procedures
+stock ProcessWhisper(playerid, targetid, const text[])
+{
+	if (targetid == -1 || text[0] == '\0') return SendSyntax(playerid, "/w [targetid] [pesan]");
+	if (!IsPlayerConnected(targetid) || !gPlayerData[targetid][pLoggedIn]) return SendErr(playerid, "Target tidak aktif.");
+	if (targetid == playerid) return SendErr(playerid, "Tidak bisa berbisik ke diri sendiri.");
+	if (!IsPlayerNear(playerid, targetid, RANGE_WHISPER)) return SendErr(playerid, "Target terlalu jauh.");
+
+	new msg[160];
+	format(msg, sizeof(msg), "(bisik ke %s) %s", gPlayerData[targetid][pName], text);
+	SendClientMessage(playerid, COLOR_YELLOW, msg);
+	format(msg, sizeof(msg), "(bisik dari %s) %s", gPlayerData[playerid][pName], text);
+	SendClientMessage(targetid, COLOR_YELLOW, msg);
+	return 1;
+}
+
+stock ProcessShout(playerid, const text[])
+{
+	new msg[160];
+	format(msg, sizeof(msg), "%s berteriak: %s!", gPlayerData[playerid][pName], text);
+	SendNearbyPlayer(playerid, COLOR_WHITE, msg, RANGE_SHOUT);
+	return 1;
+}
+
+stock ProcessLow(playerid, const text[])
+{
+	new msg[160];
+	format(msg, sizeof(msg), "(pelan) %s: %s", gPlayerData[playerid][pName], text);
+	SendNearbyPlayer(playerid, COLOR_DARKGREY, msg, RANGE_LOW);
+	return 1;
+}
+
+stock ProcessFindID(playerid, const query[])
+{
+	new targetName[MAX_PLAYER_NAME], found = 0;
+	SendRP(playerid, COLOR_LIGHTBLUE, "=== PENCARIAN PEMAIN ===");
+	for (new i = 0; i < MAX_PLAYERS; i++) {
+		if (!IsPlayerConnected(i) || !gPlayerData[i][pLoggedIn]) continue;
+		GetPlayerName(i, targetName, sizeof(targetName));
+		if (strfind(targetName, query, true) != -1 || i == strval(query)) {
+			SendRP(playerid, COLOR_WHITE, "ID: %d | %s | Level: %d | Ping: %d", i, targetName, gPlayerData[i][pLevel], GetPlayerPing(i));
+			found++;
+		}
+	}
+	if (!found) SendErr(playerid, "Tidak ada pemain ditemukan.");
+	return 1;
+}
+
+stock ProcessAdmins(playerid)
+{
+	SendRP(playerid, COLOR_LIGHTBLUE, "=== ADMINISTRATOR BERTUGAS ===");
+	new count = 0;
+	for (new i = 0; i < MAX_PLAYERS; i++) {
+		if (IsPlayerConnected(i) && gPlayerData[i][pLoggedIn] && gPlayerData[i][pAdmin] > 0) {
+			SendRP(playerid, COLOR_WHITE, "ID: %d | %s | Level: %d", i, gPlayerData[i][pName], gPlayerData[i][pAdmin]);
+			count++;
+		}
+	}
+	if (!count) SendRP(playerid, COLOR_GREY, "Tidak ada administrator online.");
+	return 1;
+}
+
+stock ProcessPM(playerid, targetid, const message[])
+{
+	if (!IsPlayerConnected(targetid) || !gPlayerData[targetid][pLoggedIn]) return SendErr(playerid, "Target tidak aktif.");
+	if (targetid == playerid) return SendErr(playerid, "Tidak bisa kirim PM ke diri sendiri.");
+	SendRP(playerid, COLOR_YELLOW, "PM Terkirim ke %s (ID %d): %s", gPlayerData[targetid][pName], targetid, message);
+	SendRP(targetid, COLOR_YELLOW, "PM Dari %s (ID %d): %s", gPlayerData[playerid][pName], playerid, message);
+	PlayerPlaySound(targetid, 1057, 0.0, 0.0, 0.0);
+	return 1;
+}
+
+stock ProcessReport(playerid, const text[])
+{
+	new msg[160];
+	format(msg, sizeof(msg), "[REPORT] %s (ID %d): %s", gPlayerData[playerid][pName], playerid, text);
+	SendSucc(playerid, "Laporan telah diteruskan ke admin.");
+	for (new i = 0; i < MAX_PLAYERS; i++) {
+		if (IsPlayerConnected(i) && gPlayerData[i][pAdmin] > 0) SendClientMessage(i, COLOR_ADMIN_CHAT, msg);
+	}
+	return 1;
+}
+
+stock ProcessAsk(playerid, const text[])
+{
+	new msg[160];
+	format(msg, sizeof(msg), "[ASK] %s (ID %d): %s", gPlayerData[playerid][pName], playerid, text);
+	SendSucc(playerid, "Pertanyaan telah diteruskan ke staf Helper.");
+	for (new i = 0; i < MAX_PLAYERS; i++) {
+		if (IsPlayerConnected(i) && gPlayerData[i][pAdmin] > 0) SendClientMessage(i, COLOR_LIGHTBLUE, msg);
+	}
+	return 1;
+}
+
+stock ShowHelpDialog(playerid)
+{
+	new buf[800];
+	format(buf, sizeof(buf),
+		"PANDUAN PERINTAH UTAMA:\n\n\
+1. Roleplay Chat:\n\
+   /me, /do, /b, /w [id], /s, /l, /pm [id], /id [nama], /admins\n\n\
+2. Inventaris & Toko:\n\
+   /inv, /buy (di toko 24/7), /gps\n\n\
+3. Telekomunikasi:\n\
+   /call, /p, /h, /sms, /setfreq, /r, /d, /m\n\n\
+4. Kendaraan:\n\
+   /v, /engine (N), /lights (H), /lock, /hood, /trunk, /refuel, /buyveh\n\n\
+5. Keuangan:\n\
+   /stats, /pay, /bank, /atm\n\n\
+6. Pekerjaan:\n\
+   /job, /quitjob, /searchtrash, /selltrash, /cutwood, /sellwood, /fish, /sellfish, /service");
+
+	ShowPlayerDialog(playerid, DIALOG_HELP, DIALOG_STYLE_MSGBOX,
+		"PANDUAN SERVER - NUSANTARA RP", buf, "Tutup", "");
+	return 1;
+}
+
+stock IsPlayerNear(playerid, targetid, Float:range)
+{
+	new Float:px, Float:py, Float:pz, Float:tx, Float:ty, Float:tz;
+	GetPlayerPos(playerid, px, py, pz);
+	GetPlayerPos(targetid, tx, ty, tz);
+	return (VectorSize(px - tx, py - ty, pz - tz) <= range);
+}

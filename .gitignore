@@ -1,6 +1,5 @@
-# Compiled binaries
+# Compiled gamemode binaries
 *.amx
-*.so
 *.dll
 *.exe
 
@@ -9,6 +8,7 @@
 *.db-journal
 *.log
 log.txt
+server_latest.log
 bans.json
 
 # Cache & OS files
