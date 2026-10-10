@@ -285,6 +285,7 @@ stock SpawnPlayerEx(playerid)
 
 	if (gPlayerData[playerid][pSpawned]) return 1;
 	gPlayerData[playerid][pSpawned] = true;
+	AC_OnPlayerSpawn(playerid);
 
 	SetPlayerSkin(playerid, gPlayerData[playerid][pSkin]);
 

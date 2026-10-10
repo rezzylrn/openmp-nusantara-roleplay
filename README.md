@@ -167,13 +167,37 @@ Pemain cukup mendekati objek di dunia lalu menekan tombol **Y**:
 
 ---
 
-## Server-Side Anti-Cheat Engine (`anticheat.inc`)
-Gamemode ini dilengkapi sistem proteksi server-side aktif untuk mencegah eksploitasi dan cheat:
-- **Anti-Weapon Hack:** Memverifikasi kepemilikan senjata resmi. Senjata ilegal (Minigun, RPG, AK47 cheat) langsung di-strip secara instan dan admin diberi notifikasi peringatan.
-- **Anti-Teleport & Airbreak:** Memantau perpindahan posisi delta per detik. Pemain yang teleport/airbreak otomatis ditarik kembali ke koordinat sah terakhir.
-- **Anti-Speed Hack:** Mendeteksi kecepatan abnormal kendaraan darat (> 240 KM/J) dan meredam kecepatan fisik kendaraan.
-- **Anti-Money Hack:** Sinkronisasi saldo uang client secara periodik dengan otoritas server untuk menangkal S0beit / Cheat Engine.
-- **Anti-Rapid Fire:** Membatasi interval fisik tembakan senjata (`OnPlayerWeaponShot`) untuk mencegah spam peluru abnormal.
+## Server-Side Anti-Cheat Engine (`gamemodes/anticheat/`)
+Gamemode ini mengadopsi arsitektur anti-cheat server-side modular yang dirancang khusus untuk menangkal berbagai eksploit dari cheat open-source terpopuler (seperti **mod_sa / s0beit**, **UltraFuck MoonLoader**, skrip **CLEO**, dan **RakSAMP packet flooders**):
+
+### 1. Senjata & Amunisi (`ac_weapons.inc`)
+- **Anti-Weapon Spawner:** Memverifikasi status kepemilikan senjata resmi di server. Senjata ilegal (Minigun, RPG, AK-47 cheat) langsung di-strip seketika dan admin menerima alert otomatis.
+- **Anti-Rapid Fire:** Membatasi interval fisik tembakan per-senjata (contoh: Deagle min. 600ms, Shotgun min. 800ms, Sniper min. 800ms) untuk menggagalkan modifikasi rate-of-fire.
+- **Anti-No Reload & Infinite Clip:** Melacak kapasitas magasin nyata per senjata (Deagle 7 butir, M4 50 butir, Shotgun 8 butir). Menembak melampaui kapasitas tanpa jeda animasi reload (> 1.25s) otomatis dibatalkan.
+- **Anti-Crasher Bullets & Melee Exploit:** Memblokir paket tembakan berpeluru (`OnPlayerWeaponShot`) yang dikirim dari senjata non-peluru (tinju, pisau, tongkat golf, kamera) serta memfilter koordinat tembakan korup / NaN.
+
+### 2. Pergerakan & Posisi (`ac_movement.inc`)
+- **Anti-Airbreak & Foot Speedhack:** Memantau kecepatan gerak horizontal jalan kaki (maksimal 22 m/s). Pemain yang bergerak abnormal otomatis dikembalikan ke posisi sah terakhir (*rubberband*).
+- **Anti-Teleport & Click Warp:** Mendeteksi perpindahan posisi instan (> 60 meter per detik) dan langsung membatalkan perpindahan posisi.
+- **Anti-Flyhack / Air Walk:** Mendeteksi kenaikan elevasi Z tanpa tangga, parasut, air, atau melompat, serta memulihkan posisi ke darat.
+- **Anti-Jetpack:** Memblokir penggunaan jetpack tanpa otorisasi staf admin.
+
+### 3. Kendaraan (`ac_vehicles.inc`)
+- **Anti-Car Jacker / Remote Vehicle Warp:** Memvalidasi jarak pemain saat memasuki kendaraan sebagai pengemudi. Jika jarak pemain terhadap pintu mobil > 7.5 meter, pemain dikeluarkan paksa dan dikembalikan ke posisi awal.
+- **Anti-Vehicle Speedhack & Nitro Multiplier:** Mengawasi kecepatan fisik mobil darat (> 230 KM/J) dan meredam kecepatan fisik kendaraan seketika.
+- **Anti-Car Fly (Mobil Terbang):** Mencegah mobil darat terbang di udara tanpa ramp/stunt dengan menetralkan vektor kecepatan vertikal Z.
+- **Anti-Car Slapper & Crasher:** Memvalidasi paket `OnUnoccupiedVehicleUpdate` (mobil kosong). Lompatan posisi mobil kosong > 12m atau manipulasi dari jarak jauh (> 55m) langsung ditolak.
+
+### 4. Pertarungan & Combat (`ac_combat.inc`)
+- **Anti-Silent Aim (Camera FOV Vector):** Menghitung *dot product* antara vektor hadap kamera pemain (`GetPlayerCameraFrontVector`) dengan vektor posisi sasaran. Jika tembakan mengarah di luar sudut pandang (< 0.1 dot product / > 84 derajat) atau mengenai punggung lawan tanpa membidik, peluru otomatis dibatalkan.
+- **Anti-Hitbox & Offset Manipulation:** Menolak peluru dengan offset model di luar batas wajar hitbox karakter (> 3.8 meter).
+- **Anti-Out of Stream Damager:** Menolak damage terhadap pemain yang berada di luar streaming radius penembak.
+- **Anti-Fake Kill / Death Flooder:** Mencegah spam paket `OnPlayerDeath` berulang (< 3 detik antar kematian) dan memvalidasi jarak pembunuh (jarak melee maks. 5.5m).
+- **Anti-Godmode / Health Lock:** Melacak konsistensi pengurangan HP setelah menerima damage terverifikasi server.
+
+### 5. Tindakan Troll & Exploit (`ac_troll.inc`)
+- **Anti-Pickup Teleport:** Memverifikasi jarak pemain saat mengambil pickup (`OnPlayerPickUpPickup`). Pengambilan dari jarak > 5.5 meter otomatis dibatalkan.
+- **Anti-Vehicle Tuning Crasher:** Memvalidasi `CARMODTYPE` pada `OnVehicleMod` untuk mencegah injeksi komponen tuning palsu yang dapat meng-crash client pemain lain di sekitar bengkel.
 
 ---
 

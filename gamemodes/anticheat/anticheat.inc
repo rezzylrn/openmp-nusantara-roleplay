@@ -5,6 +5,8 @@
 
 // ---------------------------------------------------------------------------
 // Server-Side Anti-Cheat Master Controller (open.mp)
+// Multi-layer counter-measure suite against open-source cheats:
+// mod_sa (s0beit), UltraFuck, MoonLoader lua cheats, CLEO, and packet flooders
 // ---------------------------------------------------------------------------
 
 enum E_AC_DATA {
@@ -18,7 +20,19 @@ enum E_AC_DATA {
 	acLastShotTick,
 	acWarnings,
 	bool:acIgnoreTeleport,
-	acIgnoreTick
+	acIgnoreTick,
+	// Extended fields
+	acShotsInClip,
+	acLastWeaponFired,
+	acLastDeathTick,
+	bool:acIsDead,
+	Float:acExpectedHealth,
+	acGodmodeHits,
+	Float:acPreEnterX,
+	Float:acPreEnterY,
+	Float:acPreEnterZ,
+	acLastPickupTick,
+	acFlyTicks
 };
 
 new gACData[MAX_PLAYERS][E_AC_DATA];
@@ -54,6 +68,40 @@ stock AC_ResetPlayer(playerid)
 	gACData[playerid][acWarnings] = 0;
 	gACData[playerid][acIgnoreTeleport] = true;
 	gACData[playerid][acIgnoreTick] = gettime() + 4;
+
+	gACData[playerid][acShotsInClip] = 0;
+	gACData[playerid][acLastWeaponFired] = 0;
+	gACData[playerid][acLastDeathTick] = 0;
+	gACData[playerid][acIsDead] = false;
+	gACData[playerid][acExpectedHealth] = 100.0;
+	gACData[playerid][acGodmodeHits] = 0;
+	gACData[playerid][acPreEnterX] = 0.0;
+	gACData[playerid][acPreEnterY] = 0.0;
+	gACData[playerid][acPreEnterZ] = 0.0;
+	gACData[playerid][acLastPickupTick] = 0;
+	gACData[playerid][acFlyTicks] = 0;
+	return 1;
+}
+
+stock AC_OnPlayerSpawn(playerid)
+{
+	if (playerid < 0 || playerid >= MAX_PLAYERS) return 0;
+	gACData[playerid][acIsDead] = false;
+	gACData[playerid][acGodmodeHits] = 0;
+	gACData[playerid][acIgnoreTeleport] = true;
+	gACData[playerid][acIgnoreTick] = gettime() + 4;
+	gACData[playerid][acShotsInClip] = 0;
+	gACData[playerid][acFlyTicks] = 0;
+
+	new Float:px, Float:py, Float:pz;
+	GetPlayerPos(playerid, px, py, pz);
+	gACData[playerid][acLastX] = px;
+	gACData[playerid][acLastY] = py;
+	gACData[playerid][acLastZ] = pz;
+	gACData[playerid][acPreEnterX] = px;
+	gACData[playerid][acPreEnterY] = py;
+	gACData[playerid][acPreEnterZ] = pz;
+	gACData[playerid][acLastPosTick] = gettime();
 	return 1;
 }
 
@@ -85,6 +133,9 @@ stock AC_SetPlayerPos(playerid, Float:x, Float:y, Float:z)
 	gACData[playerid][acLastX] = x;
 	gACData[playerid][acLastY] = y;
 	gACData[playerid][acLastZ] = z;
+	gACData[playerid][acPreEnterX] = x;
+	gACData[playerid][acPreEnterY] = y;
+	gACData[playerid][acPreEnterZ] = z;
 	SetPlayerPos(playerid, x, y, z);
 	return 1;
 }
@@ -105,13 +156,17 @@ stock AC_SyncMoney(playerid)
 #include "ac_weapons.inc"
 #include "ac_movement.inc"
 #include "ac_vehicles.inc"
+#include "ac_combat.inc"
+#include "ac_troll.inc"
 
 stock AC_Init()
 {
 	print("[ANTICHEAT] Server-Side Anti-Cheat Engine Loaded:");
-	print("  - ac_weapons  : Anti-Weapon Spawner, Rapid Fire, Silent-Aim Range");
-	print("  - ac_movement : Anti-Airbreak, Teleport, Noclip, Jetpack");
-	print("  - ac_vehicles : Anti-Car Slapper, Crasher, Speedhack, Remote Warp");
+	print("  - ac_weapons  : Anti-Weapon Spawner, Rapid Fire, No-Reload, Crasher Bullets");
+	print("  - ac_movement : Anti-Airbreak, Teleport/Click Warp, Flyhack, Foot Speedhack");
+	print("  - ac_vehicles : Anti-Car Jacker/Warp, Speedhack, Car Fly, Car Slapper/Crasher");
+	print("  - ac_combat   : Anti-Silent Aim, FOV Camera Check, Fake Kill Flooder, Godmode");
+	print("  - ac_troll    : Anti-Pickup Teleport, Invalid Vehicle Tuning Crasher");
 	return 1;
 }
 

@@ -180,6 +180,9 @@ public OnPlayerSpawn(playerid)
 
 public OnPlayerDeath(playerid, killerid, WEAPON:reason)
 {
+	// anti-cheat validation (Fake Kill & Death Flooder)
+	if (!AC_ValidateDeath(playerid, killerid, reason)) return 0;
+
 	gPlayerData[playerid][pDeaths]++;
 
 	if (killerid != INVALID_PLAYER_ID && killerid != playerid && IsPlayerConnected(killerid)) {
@@ -251,19 +254,20 @@ public OnPlayerKeyStateChange(playerid, KEY:newkeys, KEY:oldkeys)
 	return 1;
 }
 
-// weapon anti-cheat hook
+// weapon anti-cheat hook (Rapid Fire, No-Reload, Crasher Bullets, Silent Aim)
 public OnPlayerWeaponShot(playerid, WEAPON:weaponid, BULLET_HIT_TYPE:hittype, hitid, Float:fX, Float:fY, Float:fZ)
 {
-	#pragma unused hittype, hitid, fX, fY, fZ
-	if (!AC_ValidateShot(playerid, weaponid)) return 0;
+	if (!AC_ValidateShot(playerid, weaponid, hittype, hitid, fX, fY, fZ)) return 0;
+	if (hittype == BULLET_HIT_TYPE_PLAYER) {
+		if (!AC_ValidateBulletHit(playerid, weaponid, hitid, fX, fY, fZ)) return 0;
+	}
 	return 1;
 }
 
 // damage anti-cheat hook (Silent Aim & Range validation)
 public OnPlayerGiveDamage(playerid, damagedid, Float:amount, WEAPON:weaponid, bodypart)
 {
-	#pragma unused amount, bodypart
-	if (!AC_ValidateDamage(playerid, damagedid, weaponid)) return 0;
+	if (!AC_ValidateDamage(playerid, damagedid, amount, weaponid, bodypart)) return 0;
 	return 1;
 }
 
@@ -272,6 +276,23 @@ public OnUnoccupiedVehicleUpdate(vehicleid, playerid, passenger_seat, Float:new_
 {
 	#pragma unused passenger_seat, vel_x, vel_y, vel_z
 	if (!AC_OnUnoccupiedVehicleUpdate(vehicleid, playerid, new_x, new_y, new_z)) return 0;
+	return 1;
+}
+
+// pickup anti-cheat hook (Anti-Pickup Teleport)
+public OnPlayerPickUpPickup(playerid, pickupid)
+{
+	if (!AC_ValidatePickup(playerid, pickupid)) return 0;
+	return 1;
+}
+
+// vehicle mod anti-cheat hook (Anti-Vehicle Crasher / Invalid Component Tuning)
+public OnVehicleMod(playerid, vehicleid, componentid)
+{
+	if (!AC_ValidateVehicleMod(playerid, vehicleid, componentid)) {
+		RemoveVehicleComponent(vehicleid, componentid);
+		return 0;
+	}
 	return 1;
 }
 
@@ -290,11 +311,18 @@ public OnPlayerClickTextDraw(playerid, Text:clickedid)
 	return 1;
 }
 
-// speedometer toggle
+// speedometer toggle & Car Jacker anti-cheat hook
 public OnPlayerStateChange(playerid, PLAYER_STATE:newstate, PLAYER_STATE:oldstate)
 {
-	if (newstate == PLAYER_STATE_DRIVER) ShowPlayerSpeedo(playerid);
-	else if (oldstate == PLAYER_STATE_DRIVER && newstate == PLAYER_STATE_ONFOOT) HidePlayerSpeedo(playerid);
+	if (oldstate == PLAYER_STATE_ONFOOT && newstate == PLAYER_STATE_DRIVER) {
+		if (!AC_ValidateVehicleEntry(playerid, GetPlayerVehicleID(playerid))) {
+			return 1;
+		}
+		ShowPlayerSpeedo(playerid);
+	}
+	else if (oldstate == PLAYER_STATE_DRIVER && newstate == PLAYER_STATE_ONFOOT) {
+		HidePlayerSpeedo(playerid);
+	}
 	return 1;
 }
 
