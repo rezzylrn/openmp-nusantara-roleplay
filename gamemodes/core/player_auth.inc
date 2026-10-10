@@ -335,6 +335,9 @@ stock SpawnPlayerEx(playerid)
 {
 	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
 
+	// Cegah double-spawn: kalau sudah pernah spawn di sesi ini, skip welcome msg & HUD
+	new bool:doWelcome = !gPlayerData[playerid][pSpawned];
+
 	SetPlayerSkin(playerid, gPlayerData[playerid][pSkin]);
 
 	new Float:px = gPlayerData[playerid][pLastX];
@@ -356,13 +359,15 @@ stock SpawnPlayerEx(playerid)
 	SetPlayerMoneyEx(playerid, gPlayerData[playerid][pMoney]);
 	Faction_ApplyWeapons(playerid);
 
-	ShowPlayerHUD(playerid);
+	if (doWelcome) {
+		ShowPlayerHUD(playerid);
 
-	SendRP(playerid, COLOR_LIGHTBLUE, "============================================================");
-	SendRP(playerid, COLOR_WHITE, "Selamat datang di Nusantara Roleplay [open.mp v1.5.8]");
-	SendRP(playerid, COLOR_WHITE, "Akun UCP: {33CCFF}%s {FFFFFF}| Karakter: {FFFF00}%s", gPlayerData[playerid][pUCPName], gPlayerData[playerid][pName]);
-	SendRP(playerid, COLOR_WHITE, "Tips: Tekan {FFFF00}Y{FFFFFF} untuk interaksi cepat, ketik {FFFF00}/help{FFFFFF} atau {FFFF00}/inv{FFFFFF}.");
-	SendRP(playerid, COLOR_LIGHTBLUE, "============================================================");
+		SendRP(playerid, COLOR_LIGHTBLUE, "============================================================");
+		SendRP(playerid, COLOR_WHITE, "Selamat datang di Nusantara Roleplay [open.mp v1.5.8]");
+		SendRP(playerid, COLOR_WHITE, "Akun UCP: {33CCFF}%s {FFFFFF}| Karakter: {FFFF00}%s", gPlayerData[playerid][pUCPName], gPlayerData[playerid][pName]);
+		SendRP(playerid, COLOR_WHITE, "Tips: Tekan {FFFF00}Y{FFFFFF} untuk interaksi cepat, ketik {FFFF00}/help{FFFFFF} atau {FFFF00}/inv{FFFFFF}.");
+		SendRP(playerid, COLOR_LIGHTBLUE, "============================================================");
+	}
 
 	DB_SavePlayerData(playerid);
 	gPlayerData[playerid][pPaycheckTimer] = PAYCHECK_INTERVAL;

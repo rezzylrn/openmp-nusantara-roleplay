@@ -301,11 +301,11 @@ stock InitPlayerTextDraws(playerid)
     if (playerid < 0 || playerid >= MAX_PLAYERS) return 0;
 
     // ==================== PANEL HUD (kanan-atas) ====================
-    // Rata kanan: x Create = tepi kanan (620), x TextSize = tepi kiri (440).
-    gTD_PlayerText[playerid][pTD_HudPanel] = CreatePlayerTextDraw(playerid, 620.0, 34.0, "_");
+    // Standar LEFT-aligned box: x=440 (kiri), TextSize=620 (kanan).
+    gTD_PlayerText[playerid][pTD_HudPanel] = CreatePlayerTextDraw(playerid, 440.0, 34.0, "_");
     PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_HudPanel], 0.0, 11.6);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_HudPanel], 440.0, 0.0);
-    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_HudPanel], TEXT_DRAW_ALIGN_RIGHT);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_HudPanel], 620.0, 0.0);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_HudPanel], TEXT_DRAW_ALIGN_LEFT);
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_HudPanel], TD_COLOR_WHITE);
     PlayerTextDrawUseBox(playerid, gTD_PlayerText[playerid][pTD_HudPanel], true);
     PlayerTextDrawBoxColour(playerid, gTD_PlayerText[playerid][pTD_HudPanel], TD_COLOR_PANEL);
@@ -415,10 +415,11 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_HudLevelVal], true);
 
     // ================= PANEL SPEEDOMETER (kanan-bawah) =================
-    gTD_PlayerText[playerid][pTD_SpdPanel] = CreatePlayerTextDraw(playerid, 620.0, 330.0, "_");
+    // Standar LEFT-aligned box: x=440 (kiri), TextSize=620 (kanan).
+    gTD_PlayerText[playerid][pTD_SpdPanel] = CreatePlayerTextDraw(playerid, 440.0, 330.0, "_");
     PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_SpdPanel], 0.0, 9.4);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_SpdPanel], 440.0, 0.0);
-    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_SpdPanel], TEXT_DRAW_ALIGN_RIGHT);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_SpdPanel], 620.0, 0.0);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_SpdPanel], TEXT_DRAW_ALIGN_LEFT);
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_SpdPanel], TD_COLOR_WHITE);
     PlayerTextDrawUseBox(playerid, gTD_PlayerText[playerid][pTD_SpdPanel], true);
     PlayerTextDrawBoxColour(playerid, gTD_PlayerText[playerid][pTD_SpdPanel], TD_COLOR_PANEL);
@@ -499,11 +500,11 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_SpdLockVal], true);
 
     // =================== BANNER ALERT (tengah-bawah) ===================
-    // Rata tengah: x Create = pusat, x TextSize = lebar total box.
-    gTD_PlayerText[playerid][pTD_AlertPanel] = CreatePlayerTextDraw(playerid, 320.0, 418.0, "_");
+    // Standar LEFT-aligned box: x=130 (kiri), TextSize=510 (kanan, lebar 380).
+    gTD_PlayerText[playerid][pTD_AlertPanel] = CreatePlayerTextDraw(playerid, 130.0, 418.0, "_");
     PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_AlertPanel], 0.0, 2.6);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_AlertPanel], 380.0, 0.0);
-    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_AlertPanel], TEXT_DRAW_ALIGN_CENTER);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_AlertPanel], 510.0, 0.0);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_AlertPanel], TEXT_DRAW_ALIGN_LEFT);
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_AlertPanel], TD_COLOR_WHITE);
     PlayerTextDrawUseBox(playerid, gTD_PlayerText[playerid][pTD_AlertPanel], true);
     PlayerTextDrawBoxColour(playerid, gTD_PlayerText[playerid][pTD_AlertPanel], TD_COLOR_ALERT_BG);
@@ -520,10 +521,11 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_AlertText], true);
 
     // ================ BANNER SUBTITLE (di atas alert) ================
-    gTD_PlayerText[playerid][pTD_SubPanel] = CreatePlayerTextDraw(playerid, 320.0, 392.0, "_");
+    // Standar LEFT-aligned box: x=155 (kiri), TextSize=485 (kanan, lebar 330).
+    gTD_PlayerText[playerid][pTD_SubPanel] = CreatePlayerTextDraw(playerid, 155.0, 392.0, "_");
     PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_SubPanel], 0.0, 2.2);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_SubPanel], 330.0, 0.0);
-    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_SubPanel], TEXT_DRAW_ALIGN_CENTER);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_SubPanel], 485.0, 0.0);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_SubPanel], TEXT_DRAW_ALIGN_LEFT);
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_SubPanel], TD_COLOR_WHITE);
     PlayerTextDrawUseBox(playerid, gTD_PlayerText[playerid][pTD_SubPanel], true);
     PlayerTextDrawBoxColour(playerid, gTD_PlayerText[playerid][pTD_SubPanel], TD_COLOR_SUB_BG);
@@ -540,10 +542,11 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_SubText], true);
 
     // ================== SMARTPHONE UI (kanan layar) ==================
-    gTD_PlayerText[playerid][pTD_PhoneBody] = CreatePlayerTextDraw(playerid, 560.0, 180.0, "_");
+    // Standar LEFT-aligned box: x=497 (kiri), TextSize=623 (kanan, lebar 126).
+    gTD_PlayerText[playerid][pTD_PhoneBody] = CreatePlayerTextDraw(playerid, 497.0, 180.0, "_");
     PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneBody], 0.0, 16.5);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneBody], 126.0, 0.0);
-    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_PhoneBody], TEXT_DRAW_ALIGN_CENTER);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneBody], 623.0, 0.0);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_PhoneBody], TEXT_DRAW_ALIGN_LEFT);
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneBody], TD_COLOR_WHITE);
     PlayerTextDrawUseBox(playerid, gTD_PlayerText[playerid][pTD_PhoneBody], true);
     PlayerTextDrawBoxColour(playerid, gTD_PlayerText[playerid][pTD_PhoneBody], TD_COLOR_PHONE_BG);
@@ -576,7 +579,7 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneApp1], TD_COLOR_WHITE);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_PhoneApp1], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_PhoneApp1], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp1], 615.0, 12.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp1], 615.0, 242.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_PhoneApp1], true);
 
     gTD_PlayerText[playerid][pTD_PhoneApp2] = CreatePlayerTextDraw(playerid, 502.0, 244.0, "~w~2. Pesan SMS (/sms)");
@@ -585,7 +588,7 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneApp2], TD_COLOR_WHITE);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_PhoneApp2], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_PhoneApp2], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp2], 615.0, 12.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp2], 615.0, 256.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_PhoneApp2], true);
 
     gTD_PlayerText[playerid][pTD_PhoneApp3] = CreatePlayerTextDraw(playerid, 502.0, 258.0, "~w~3. GPS Peta (/gps)");
@@ -594,7 +597,7 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneApp3], TD_COLOR_WHITE);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_PhoneApp3], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_PhoneApp3], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp3], 615.0, 12.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp3], 615.0, 270.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_PhoneApp3], true);
 
     gTD_PlayerText[playerid][pTD_PhoneApp4] = CreatePlayerTextDraw(playerid, 502.0, 272.0, "~w~4. Info Pulsa & Saldo");
@@ -603,7 +606,7 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneApp4], TD_COLOR_WHITE);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_PhoneApp4], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_PhoneApp4], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp4], 615.0, 12.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp4], 615.0, 284.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_PhoneApp4], true);
 
     gTD_PlayerText[playerid][pTD_PhoneApp5] = CreatePlayerTextDraw(playerid, 502.0, 286.0, "~w~5. Mode: ~g~Dering");
@@ -612,7 +615,7 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneApp5], TD_COLOR_WHITE);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_PhoneApp5], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_PhoneApp5], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp5], 615.0, 12.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp5], 615.0, 298.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_PhoneApp5], true);
 
     gTD_PlayerText[playerid][pTD_PhoneApp6] = CreatePlayerTextDraw(playerid, 502.0, 304.0, "~r~6. Tutup Ponsel (/p)");
@@ -621,14 +624,15 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneApp6], TD_COLOR_WHITE);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_PhoneApp6], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_PhoneApp6], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp6], 615.0, 12.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp6], 615.0, 316.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_PhoneApp6], true);
 
     // ================= INVENTARIS UI (tengah layar) =================
-    gTD_PlayerText[playerid][pTD_InvBackdrop] = CreatePlayerTextDraw(playerid, 320.0, 120.0, "_");
+    // Standar LEFT-aligned box: x=130 (kiri), TextSize=510 (kanan, lebar 380).
+    gTD_PlayerText[playerid][pTD_InvBackdrop] = CreatePlayerTextDraw(playerid, 130.0, 120.0, "_");
     PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_InvBackdrop], 0.0, 24.5);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_InvBackdrop], 380.0, 0.0);
-    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_InvBackdrop], TEXT_DRAW_ALIGN_CENTER);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_InvBackdrop], 510.0, 0.0);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_InvBackdrop], TEXT_DRAW_ALIGN_LEFT);
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_InvBackdrop], TD_COLOR_WHITE);
     PlayerTextDrawUseBox(playerid, gTD_PlayerText[playerid][pTD_InvBackdrop], true);
     PlayerTextDrawBoxColour(playerid, gTD_PlayerText[playerid][pTD_InvBackdrop], TD_COLOR_INV_BG);
@@ -654,7 +658,7 @@ stock InitPlayerTextDraws(playerid)
         PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_InvSlot1 + s], TD_COLOR_WHITE);
         PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_InvSlot1 + s], TEXT_DRAW_FONT_1);
         PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_InvSlot1 + s], true);
-        PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_InvSlot1 + s], slotCoords[s][0] + 75.0, 28.0);
+        PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_InvSlot1 + s], slotCoords[s][0] + 78.0, slotCoords[s][1] + 30.0);
         PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_InvSlot1 + s], true);
     }
 
@@ -672,7 +676,7 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_InvBtnUse], TD_COLOR_CASH);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_InvBtnUse], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_InvBtnUse], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_InvBtnUse], 215.0, 14.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_InvBtnUse], 215.0, 330.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_InvBtnUse], true);
 
     gTD_PlayerText[playerid][pTD_InvBtnGive] = CreatePlayerTextDraw(playerid, 230.0, 316.0, "[ BERIKAN ]");
@@ -681,7 +685,7 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_InvBtnGive], TD_COLOR_BANK);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_InvBtnGive], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_InvBtnGive], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_InvBtnGive], 305.0, 14.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_InvBtnGive], 305.0, 330.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_InvBtnGive], true);
 
     gTD_PlayerText[playerid][pTD_InvBtnDrop] = CreatePlayerTextDraw(playerid, 320.0, 316.0, "[ BUANG ]");
@@ -690,7 +694,7 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_InvBtnDrop], TD_COLOR_HUNGER);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_InvBtnDrop], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_InvBtnDrop], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_InvBtnDrop], 385.0, 14.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_InvBtnDrop], 385.0, 330.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_InvBtnDrop], true);
 
     gTD_PlayerText[playerid][pTD_InvBtnClose] = CreatePlayerTextDraw(playerid, 410.0, 316.0, "[ TUTUP ]");
@@ -699,14 +703,15 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_InvBtnClose], TD_COLOR_ENGINE_OFF);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_InvBtnClose], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_InvBtnClose], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_InvBtnClose], 475.0, 14.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_InvBtnClose], 475.0, 330.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_InvBtnClose], true);
 
     // ================= DASHBOARD KENDARAAN (tengah layar) =================
-    gTD_PlayerText[playerid][pTD_VehDashBg] = CreatePlayerTextDraw(playerid, 320.0, 175.0, "_");
+    // Standar LEFT-aligned box: x=170 (kiri), TextSize=470 (kanan, lebar 300).
+    gTD_PlayerText[playerid][pTD_VehDashBg] = CreatePlayerTextDraw(playerid, 170.0, 175.0, "_");
     PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_VehDashBg], 0.0, 18.0);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_VehDashBg], 300.0, 0.0);
-    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_VehDashBg], TEXT_DRAW_ALIGN_CENTER);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_VehDashBg], 470.0, 0.0);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_VehDashBg], TEXT_DRAW_ALIGN_LEFT);
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_VehDashBg], TD_COLOR_WHITE);
     PlayerTextDrawUseBox(playerid, gTD_PlayerText[playerid][pTD_VehDashBg], true);
     PlayerTextDrawBoxColour(playerid, gTD_PlayerText[playerid][pTD_VehDashBg], TD_COLOR_PANEL);
@@ -725,7 +730,7 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_VehDashEngine], TD_COLOR_WHITE);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_VehDashEngine], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_VehDashEngine], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_VehDashEngine], 450.0, 12.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_VehDashEngine], 450.0, 216.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_VehDashEngine], true);
 
     gTD_PlayerText[playerid][pTD_VehDashLock] = CreatePlayerTextDraw(playerid, 180.0, 222.0, "2. [ KUNCI PINTU: KUNCI / BUKA ]");
@@ -734,7 +739,7 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_VehDashLock], TD_COLOR_WHITE);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_VehDashLock], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_VehDashLock], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_VehDashLock], 450.0, 12.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_VehDashLock], 450.0, 234.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_VehDashLock], true);
 
     gTD_PlayerText[playerid][pTD_VehDashLights] = CreatePlayerTextDraw(playerid, 180.0, 240.0, "3. [ LAMPU UTAMA: NYALA / MATI ]");
@@ -743,7 +748,7 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_VehDashLights], TD_COLOR_WHITE);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_VehDashLights], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_VehDashLights], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_VehDashLights], 450.0, 12.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_VehDashLights], 450.0, 252.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_VehDashLights], true);
 
     gTD_PlayerText[playerid][pTD_VehDashHood] = CreatePlayerTextDraw(playerid, 180.0, 258.0, "4. [ KAP MESIN DEPAN: BUKA / TUTUP ]");
@@ -752,7 +757,7 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_VehDashHood], TD_COLOR_WHITE);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_VehDashHood], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_VehDashHood], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_VehDashHood], 450.0, 12.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_VehDashHood], 450.0, 270.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_VehDashHood], true);
 
     gTD_PlayerText[playerid][pTD_VehDashTrunk] = CreatePlayerTextDraw(playerid, 180.0, 276.0, "5. [ BAGASI BELAKANG: BUKA / TUTUP ]");
@@ -761,23 +766,24 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_VehDashTrunk], TD_COLOR_WHITE);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_VehDashTrunk], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_VehDashTrunk], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_VehDashTrunk], 450.0, 12.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_VehDashTrunk], 450.0, 288.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_VehDashTrunk], true);
 
-    gTD_PlayerText[playerid][pTD_VehDashClose] = CreatePlayerTextDraw(playerid, 320.0, 302.0, "~r~[ X. TUTUP PANEL ]");
+    gTD_PlayerText[playerid][pTD_VehDashClose] = CreatePlayerTextDraw(playerid, 245.0, 302.0, "~r~[ X. TUTUP PANEL ]");
     PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_VehDashClose], 0.20, 0.90);
-    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_VehDashClose], TEXT_DRAW_ALIGN_CENTER);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_VehDashClose], TEXT_DRAW_ALIGN_LEFT);
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_VehDashClose], TD_COLOR_WHITE);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_VehDashClose], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_VehDashClose], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_VehDashClose], 130.0, 14.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_VehDashClose], 395.0, 316.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_VehDashClose], true);
 
     // ================= ATM / BANK UI (tengah layar) =================
-    gTD_PlayerText[playerid][pTD_BankBg] = CreatePlayerTextDraw(playerid, 320.0, 160.0, "_");
+    // Standar LEFT-aligned box: x=160 (kiri), TextSize=480 (kanan, lebar 320).
+    gTD_PlayerText[playerid][pTD_BankBg] = CreatePlayerTextDraw(playerid, 160.0, 160.0, "_");
     PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_BankBg], 0.0, 18.0);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_BankBg], 320.0, 0.0);
-    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_BankBg], TEXT_DRAW_ALIGN_CENTER);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_BankBg], 480.0, 0.0);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_BankBg], TEXT_DRAW_ALIGN_LEFT);
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_BankBg], TD_COLOR_WHITE);
     PlayerTextDrawUseBox(playerid, gTD_PlayerText[playerid][pTD_BankBg], true);
     PlayerTextDrawBoxColour(playerid, gTD_PlayerText[playerid][pTD_BankBg], TD_COLOR_PANEL);
@@ -803,7 +809,7 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_BankBtnWithdraw], TD_COLOR_CASH);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_BankBtnWithdraw], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_BankBtnWithdraw], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_BankBtnWithdraw], 465.0, 14.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_BankBtnWithdraw], 465.0, 226.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_BankBtnWithdraw], true);
 
     gTD_PlayerText[playerid][pTD_BankBtnDeposit] = CreatePlayerTextDraw(playerid, 175.0, 234.0, "2. [ SETOR TUNAI / DEPOSIT ]");
@@ -812,7 +818,7 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_BankBtnDeposit], TD_COLOR_BANK);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_BankBtnDeposit], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_BankBtnDeposit], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_BankBtnDeposit], 465.0, 14.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_BankBtnDeposit], 465.0, 248.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_BankBtnDeposit], true);
 
     gTD_PlayerText[playerid][pTD_BankBtnTransfer] = CreatePlayerTextDraw(playerid, 175.0, 256.0, "3. [ TRANSFER DANA ANTAR WARGA ]");
@@ -821,23 +827,24 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_BankBtnTransfer], TD_COLOR_ACCENT);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_BankBtnTransfer], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_BankBtnTransfer], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_BankBtnTransfer], 465.0, 14.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_BankBtnTransfer], 465.0, 270.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_BankBtnTransfer], true);
 
-    gTD_PlayerText[playerid][pTD_BankBtnClose] = CreatePlayerTextDraw(playerid, 320.0, 290.0, "~r~[ X. KELUARKAN KARTU ]");
+    gTD_PlayerText[playerid][pTD_BankBtnClose] = CreatePlayerTextDraw(playerid, 230.0, 290.0, "~r~[ X. KELUARKAN KARTU ]");
     PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_BankBtnClose], 0.20, 0.90);
-    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_BankBtnClose], TEXT_DRAW_ALIGN_CENTER);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_BankBtnClose], TEXT_DRAW_ALIGN_LEFT);
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_BankBtnClose], TD_COLOR_WHITE);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_BankBtnClose], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_BankBtnClose], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_BankBtnClose], 150.0, 14.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_BankBtnClose], 410.0, 304.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_BankBtnClose], true);
 
     // ================= MENU INTERAKSI CEPAT (tengah layar) =================
-    gTD_PlayerText[playerid][pTD_ActBg] = CreatePlayerTextDraw(playerid, 320.0, 140.0, "_");
+    // Standar LEFT-aligned box: x=170 (kiri), TextSize=470 (kanan, lebar 300).
+    gTD_PlayerText[playerid][pTD_ActBg] = CreatePlayerTextDraw(playerid, 170.0, 140.0, "_");
     PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_ActBg], 0.0, 21.0);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_ActBg], 300.0, 0.0);
-    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_ActBg], TEXT_DRAW_ALIGN_CENTER);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_ActBg], 470.0, 0.0);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_ActBg], TEXT_DRAW_ALIGN_LEFT);
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_ActBg], TD_COLOR_WHITE);
     PlayerTextDrawUseBox(playerid, gTD_PlayerText[playerid][pTD_ActBg], true);
     PlayerTextDrawBoxColour(playerid, gTD_PlayerText[playerid][pTD_ActBg], TD_COLOR_PANEL);
@@ -856,7 +863,7 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_ActBtnInv], TD_COLOR_WHITE);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_ActBtnInv], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_ActBtnInv], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_ActBtnInv], 450.0, 12.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_ActBtnInv], 450.0, 184.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_ActBtnInv], true);
 
     gTD_PlayerText[playerid][pTD_ActBtnPhone] = CreatePlayerTextDraw(playerid, 180.0, 190.0, "2. [ SMARTPHONE / HP ]");
@@ -865,7 +872,7 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_ActBtnPhone], TD_COLOR_WHITE);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_ActBtnPhone], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_ActBtnPhone], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_ActBtnPhone], 450.0, 12.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_ActBtnPhone], 450.0, 202.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_ActBtnPhone], true);
 
     gTD_PlayerText[playerid][pTD_ActBtnID] = CreatePlayerTextDraw(playerid, 180.0, 208.0, "3. [ KARTU IDENTITAS KTP ]");
@@ -874,7 +881,7 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_ActBtnID], TD_COLOR_WHITE);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_ActBtnID], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_ActBtnID], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_ActBtnID], 450.0, 12.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_ActBtnID], 450.0, 220.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_ActBtnID], true);
 
     gTD_PlayerText[playerid][pTD_ActBtnVeh] = CreatePlayerTextDraw(playerid, 180.0, 226.0, "4. [ KONTROL KENDARAAN ]");
@@ -883,7 +890,7 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_ActBtnVeh], TD_COLOR_WHITE);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_ActBtnVeh], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_ActBtnVeh], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_ActBtnVeh], 450.0, 12.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_ActBtnVeh], 450.0, 238.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_ActBtnVeh], true);
 
     gTD_PlayerText[playerid][pTD_ActBtnStats] = CreatePlayerTextDraw(playerid, 180.0, 244.0, "5. [ STATISTIK KARAKTER ]");
@@ -892,7 +899,7 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_ActBtnStats], TD_COLOR_WHITE);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_ActBtnStats], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_ActBtnStats], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_ActBtnStats], 450.0, 12.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_ActBtnStats], 450.0, 256.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_ActBtnStats], true);
 
     gTD_PlayerText[playerid][pTD_ActBtnHelp] = CreatePlayerTextDraw(playerid, 180.0, 262.0, "6. [ PANDUAN / BANTUAN ]");
@@ -901,16 +908,16 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_ActBtnHelp], TD_COLOR_WHITE);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_ActBtnHelp], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_ActBtnHelp], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_ActBtnHelp], 450.0, 12.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_ActBtnHelp], 450.0, 274.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_ActBtnHelp], true);
 
-    gTD_PlayerText[playerid][pTD_ActBtnClose] = CreatePlayerTextDraw(playerid, 320.0, 292.0, "~r~[ X. TUTUP MENU ]");
+    gTD_PlayerText[playerid][pTD_ActBtnClose] = CreatePlayerTextDraw(playerid, 250.0, 292.0, "~r~[ X. TUTUP MENU ]");
     PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_ActBtnClose], 0.20, 0.90);
-    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_ActBtnClose], TEXT_DRAW_ALIGN_CENTER);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_ActBtnClose], TEXT_DRAW_ALIGN_LEFT);
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_ActBtnClose], TD_COLOR_WHITE);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_ActBtnClose], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_ActBtnClose], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_ActBtnClose], 130.0, 14.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_ActBtnClose], 390.0, 306.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_ActBtnClose], true);
 
     // Setel ulang keadaan berjalan.
@@ -1427,6 +1434,10 @@ stock HidePlayerActMenu(playerid)
 stock ProcessPlayerClickTD(playerid, PlayerText:playertextid)
 {
     if (playertextid == PlayerText:INVALID_TEXT_DRAW) {
+        // Debounce: abaikan penutupan jika ada klik valid di 200ms terakhir
+        if (GetTickCount() - gLastValidClickTick[playerid] < 200) {
+            return 1;
+        }
         if (gPhoneOpen[playerid]) HidePlayerPhone(playerid);
         if (gInventoryOpen[playerid]) HidePlayerInventoryUI(playerid);
         if (gVehDashOpen[playerid]) HidePlayerVehDash(playerid);
@@ -1434,6 +1445,9 @@ stock ProcessPlayerClickTD(playerid, PlayerText:playertextid)
         if (gActMenuOpen[playerid]) HidePlayerActMenu(playerid);
         return 1;
     }
+
+    // Catat timestamp klik valid
+    gLastValidClickTick[playerid] = GetTickCount();
 
     // 1. SMARTPHONE APPS
     if (gPhoneOpen[playerid]) {

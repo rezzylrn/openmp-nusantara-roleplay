@@ -536,6 +536,7 @@ new bool:gInventoryOpen[MAX_PLAYERS];
 new bool:gVehDashOpen[MAX_PLAYERS];
 new bool:gBankUIOpen[MAX_PLAYERS];
 new bool:gActMenuOpen[MAX_PLAYERS];
+new gLastValidClickTick[MAX_PLAYERS];
 new gPendingCharName[MAX_PLAYERS][24];
 new gPendingCharDOB[MAX_PLAYERS][16];
 new gUserCharIDs[MAX_PLAYERS][3];
