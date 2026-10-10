@@ -137,7 +137,13 @@ public OnPlayerConnect(playerid)
 public RP_DelayLogin(playerid)
 {
 	if (!IsPlayerConnected(playerid)) return 1;
-	ShowUCPInputPrompt(playerid);
+
+	// spectating mode: kamera melayang, block class selection screen
+	TogglePlayerSpectating(playerid, true);
+	SetPlayerColor(playerid, COLOR_GREY);
+
+	// auto-detect UCP dari nama samp player
+	DB_CheckUCPByPlayerName(playerid);
 	return 1;
 }
 
@@ -153,12 +159,15 @@ public OnPlayerDisconnect(playerid, reason)
 
 public OnPlayerRequestClass(playerid, classid)
 {
-	if (gPlayerData[playerid][pLoggedIn]) {
-		SpawnPlayer(playerid);
-		return 1;
-	}
-	SetPlayerPos(playerid, SPAWN_X, SPAWN_Y, SPAWN_Z);
-	return 1;
+	// block tombol spawn & class selection screen
+	return 0;
+}
+
+public OnPlayerRequestSpawn(playerid)
+{
+	// block tombol spawn (hanya bisa via dialog character selection)
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	return 0;
 }
 
 public OnPlayerSpawn(playerid)
@@ -289,21 +298,33 @@ public OnPlayerStateChange(playerid, PLAYER_STATE:newstate, PLAYER_STATE:oldstat
 	return 1;
 }
 
+// admin click map teleport
+public OnPlayerClickMap(playerid, Float:fX, Float:fY, Float:fZ)
+{
+	if (!IsPlayerConnected(playerid)) return 1;
+	if (gPlayerData[playerid][pAdmin] >= 1) {
+		AC_SetPlayerPos(playerid, fX, fY, fZ + 3.0);
+		SetPlayerPosFindZ(playerid, fX, fY, fZ);
+		SendInfo(playerid, "Teleport ke koordinat peta (%.1f, %.1f, %.1f).", fX, fY, fZ);
+		return 1;
+	}
+	return 1;
+}
+
 // dialog responses
 public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 {
 	if (!response) {
-		if (dialogid == DIALOG_UCP_LOGIN || dialogid == DIALOG_LOGIN || dialogid == DIALOG_UCP_REG_CODE || dialogid == DIALOG_CHAR_SELECT) {
-			SendErr(playerid, "Anda harus masuk atau mendaftar untuk bermain.");
-			SetTimerEx("RP_DelayLogin", 1000, false, "i", playerid);
+		if (dialogid == DIALOG_LOGIN || dialogid == DIALOG_UCP_OTP_VERIFY || dialogid == DIALOG_CHAR_SELECT) {
+			SendClientMessage(playerid, COLOR_ERROR, "[NUSANTARA RP] Sesi login dibatalkan.");
+			Kick(playerid);
 		}
 		return 1;
 	}
 
 	switch (dialogid) {
-		case DIALOG_UCP_LOGIN:          ProcessUCPInput(playerid, inputtext);
 		case DIALOG_LOGIN:              ProcessUCPLogin(playerid, inputtext);
-		case DIALOG_UCP_REG_CODE:       ProcessUCPRegisterCode(playerid, inputtext);
+		case DIALOG_UCP_OTP_VERIFY:     ProcessUCPOtpVerify(playerid, inputtext);
 		case DIALOG_UCP_REG_PASS:       ProcessUCPRegisterPass(playerid, inputtext);
 		case DIALOG_CHAR_SELECT:        ProcessCharSelect(playerid, listitem);
 		case DIALOG_CHAR_CREATE_NAME:   ProcessCharCreateName(playerid, inputtext);

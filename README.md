@@ -1,6 +1,6 @@
 # Nusantara Roleplay (open.mp)
 
-Gamemode Roleplay modern dan modular yang dibangun untuk platform **open.mp** (Pawn 3.10) dengan standar komunitas roleplay Indonesia (referensi Jogjagamers / JGRP & server roleplay terkemuka). Dilengkapi plugin **MySQL (R41-4)**, parser **sscanf2**, command processor cepat **izcmd**, autentikasi **UCP & Multi-Character**, antarmuka **Full Clickable TextDraws (Minim Command)**, serta interaksi cepat menggunakan **Tombol Y & N**.
+Gamemode Roleplay modern dan modular yang dibangun untuk platform **open.mp** (Pawn 3.10) dengan standar server roleplay profesional. Dilengkapi plugin **MySQL (R41-4)**, parser **sscanf2**, command processor cepat **izcmd**, autentikasi **UCP Otomatis & Multi-Character**, sistem registrasi aman berbasis **OTP/PIN Bot**, antarmuka **Full Clickable TextDraws (Minim Command)**, serta interaksi cepat menggunakan **Tombol Y & N**.
 
 ---
 
@@ -112,19 +112,25 @@ Server ini mengadopsi antarmuka grafis interaktif berbasis kursor mouse (`Select
 
 ---
 
-## Autentikasi UCP & Multi-Character (JGRP Standard)
+## Autentikasi UCP & Multi-Character (Sistem OTP Bot)
 
-- **Login Akun UCP:** Pemain memasukkan akun UCP master.
-- **Pengecekan Registrasi Otomatis:**
-  - Jika **belum terdaftar**: Meminta input **4-8 digit Kode Keamanan / PIN**, lalu dilanjutkan pembuatan kata sandi.
-  - Jika **sudah terdaftar**: Meminta kata sandi UCP terenkripsi **Bcrypt 12-Round Asynchronous** (`samp_bcrypt.so`).
+- **Identifikasi Akun Otomatis:** Nama UCP diambil langsung dari nama player SA-MP saat terhubung (tanpa dialog input nama tambahan).
+- **Verifikasi Status Akun:**
+  - **Belum terdaftar:** Server otomatis menolak koneksi dan mengarahkan pemain untuk mendaftar melalui Bot resmi Discord/Telegram untuk memperoleh Kode OTP/PIN.
+  - **Pendaftaran via Bot (Password Kosong):** Server meminta **Kode Verifikasi (OTP/PIN)** yang dikirim bot. Setelah PIN cocok, pemain diarahkan membuat kata sandi baru (dienkripsi dengan **Bcrypt 12-Round**).
+  - **Akun Aktif:** Pemain langsung diminta kata sandi dan diverifikasi asinkron via `samp_bcrypt`.
 - **Multi-Character Selection (Maks. 3 Karakter):**
-  - Menampilkan daftar karakter yang terikat ke akun UCP (Nama, Level, Faksi).
-  - Opsi `[+] Buat Karakter Baru` jika slot masih tersedia (< 3 slot).
+  - Kamera spectate sinematik di atas kota, menonaktifkan tombol native `<< >> Spawn` SA-MP sepenuhnya.
+  - Klik slot karakter -> **Langsung load dan spawn ke dunia permainan** (anti-tenggelam dengan `SetPlayerPosFindZ` dan auto-unfreeze 750ms).
 - **Pembuatan Karakter Baru:**
-  - **Validasi Nama Ketat (`First_Last`):** Wajib format `Nama_Belakang` (contoh: `Javier_Travors`, `Bryan_Calister`). Tidak mengizinkan angka atau simbol aneh.
-  - **Tanggal Lahir:** Format `DD/MM/YYYY` (contoh: `15/08/2000`).
-  - **Jenis Kelamin & Karakter Awal:** Pria / Wanita beserta pemilihan skin starter pack.
+  - **Validasi Format Nama (`First_Last`):** Wajib format `Nama_Belakang` (contoh: `Javier_Travors`, `Bryan_Calister`).
+  - **Data Kelahiran & Gender:** Input tanggal lahir (`DD/MM/YYYY`) dan opsi gender Pria/Wanita.
+
+---
+
+## Fitur Administrator
+- **Teleportasi Klik Peta (Click-on-Map Teleport):** Admin dapat membuka peta (ESC > Map) dan langsung klik kanan di mana saja untuk berteleportasi seketika ke lokasi tujuan. Proteksi anti-cheat otomatis tersinkronisasi.
+- **Perintah Staf Modern (`/a`, `/goto`, `/gethere`, `/setskin`, `/veh`, dll.)**: Berbasis `izcmd` O(1) cepat.
 
 ---
 

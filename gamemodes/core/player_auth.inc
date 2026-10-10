@@ -3,9 +3,10 @@
 #endif
 #define _INC_rp_player_auth
 
-// ucp pending buffers
-new gPendingUCPCode[MAX_PLAYERS][16];
+// pending buffers
+new gPendingUCPOtp[MAX_PLAYERS][16];
 
+// bcrypt callbacks
 forward OnPlayerPasswordHashed(playerid);
 public OnPlayerPasswordHashed(playerid)
 {
@@ -16,7 +17,7 @@ public OnPlayerPasswordHashed(playerid)
 	format(gPlayerData[playerid][pPassword], 65, "%s", hash);
 	format(gPlayerData[playerid][pSalt], 65, "bcrypt");
 
-	DB_RegisterUCP(playerid, gPlayerData[playerid][pUCPName], hash, "bcrypt", gPendingUCPCode[playerid]);
+	DB_UpdateUCPPassword(playerid, hash);
 	return 1;
 }
 
@@ -26,12 +27,11 @@ public OnPlayerPasswordVerified(playerid, bool:success)
 	if (!IsPlayerConnected(playerid)) return 0;
 
 	if (!success) {
-		SendErr(playerid, "Kata sandi yang Anda masukkan salah.");
+		SendErr(playerid, "Kata sandi salah.");
 		ShowUCPLoginDialog(playerid);
 		return 0;
 	}
 
-	SendSucc(playerid, "Autentikasi UCP berhasil! Memuat karakter Anda...");
 	DB_LoadUCPCharacters(playerid);
 	return 1;
 }
@@ -108,110 +108,76 @@ stock ResetPlayerData(playerid)
 }
 
 // ---------------------------------------------------------------------------
-// UCP Authentication Dialogs
+// UCP Authentication Dialogs (Auto-detect dari nama samp player)
 // ---------------------------------------------------------------------------
-stock ShowUCPInputPrompt(playerid)
+stock ShowUCPNotRegisteredKick(playerid)
 {
-	if (!IsPlayerConnected(playerid)) return 0;
-	new name[MAX_PLAYER_NAME], str[320];
-	GetPlayerName(playerid, name, sizeof(name));
-
-	format(str, sizeof(str),
-		"{FFFFFF}Selamat datang di {33CCFF}Nusantara Roleplay{FFFFFF}!\n\n\
-Nama Client Anda: {FFFF00}%s\n\n\
-Silakan masukkan {33CCFF}Nama Akun UCP{FFFFFF} Anda:\n\
-(Jika belum memiliki akun UCP, ketik nama akun UCP yang ingin Anda daftarkan)", name);
-
-	ShowPlayerDialog(playerid, DIALOG_UCP_LOGIN, DIALOG_STYLE_INPUT,
-		"LOGIN AKUN UCP - NUSANTARA RP", str, "Lanjut", "Keluar");
+	SendClientMessage(playerid, COLOR_ERROR,
+		"[NUSANTARA RP] Akun UCP belum terdaftar. Silakan registrasi via bot resmi untuk mendapat Kode Verifikasi (OTP/PIN).");
+	SendClientMessage(playerid, COLOR_INFO,
+		"[INFO] Koneksi diputus otomatis dalam 5 detik.");
+	SetTimerEx("RP_KickNotRegistered", 5000, false, "i", playerid);
 	return 1;
 }
 
-stock ProcessUCPInput(playerid, const input[])
+forward RP_KickNotRegistered(playerid);
+public RP_KickNotRegistered(playerid)
 {
-	if (!IsPlayerConnected(playerid)) return 0;
-	if (strlen(input) < 3 || strlen(input) > 20) {
-		SendErr(playerid, "Nama UCP minimal 3 dan maksimal 20 karakter.");
-		ShowUCPInputPrompt(playerid);
-		return 0;
-	}
-
-	for (new i = 0, len = strlen(input); i < len; i++) {
-		if (!((input[i] >= 'a' && input[i] <= 'z') || (input[i] >= 'A' && input[i] <= 'Z') || (input[i] >= '0' && input[i] <= '9') || input[i] == '_')) {
-			SendErr(playerid, "Nama UCP hanya boleh mengandung huruf, angka, dan underscore.");
-			ShowUCPInputPrompt(playerid);
-			return 0;
-		}
-	}
-
-	format(gPlayerData[playerid][pUCPName], 24, "%s", input);
-	DB_CheckUCP(playerid, input);
+	if (IsPlayerConnected(playerid)) Kick(playerid);
 	return 1;
 }
 
 stock ShowUCPLoginDialog(playerid)
 {
 	if (!IsPlayerConnected(playerid)) return 0;
-	new str[320];
-	format(str, sizeof(str),
-		"{FFFFFF}Selamat datang kembali di {33CCFF}Nusantara Roleplay{FFFFFF}!\n\n\
-Akun UCP: {FFFF00}%s\n\
-Status: {2ECC71}Terdaftar di Database\n\n\
-Silakan masukkan kata sandi UCP Anda untuk masuk:", gPlayerData[playerid][pUCPName]);
-
 	ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD,
-		"MASUK AKUN UCP - NUSANTARA RP", str, "Masuk", "Kembali");
+		"Akun UCP Terdaftar",
+		"Masukkan kata sandi akun UCP Anda.", "Masuk", "Keluar");
 	return 1;
 }
 
 stock ProcessUCPLogin(playerid, const password[])
 {
 	if (!IsPlayerConnected(playerid)) return 0;
-
-	// Asynchronous 12-round bcrypt password verification
+	if (strlen(password) < 6) {
+		SendErr(playerid, "Kata sandi minimal 6 karakter.");
+		ShowUCPLoginDialog(playerid);
+		return 0;
+	}
 	bcrypt_verify(playerid, "OnPlayerPasswordVerified", password, gPlayerData[playerid][pPassword]);
 	return 1;
 }
 
-stock ShowUCPRegisterCodeDialog(playerid)
+// OTP/PIN verification untuk player yang sudah registrasi via bot tapi belum set password
+stock ShowUCPOtpVerifyDialog(playerid)
 {
 	if (!IsPlayerConnected(playerid)) return 0;
-	new str[360];
-	format(str, sizeof(str),
-		"{FFFFFF}Akun UCP {FFFF00}%s {FFFFFF}belum terdaftar di server.\n\n\
-Silakan buat {33CCFF}4 - 8 digit Kode Keamanan / PIN{FFFFFF} Anda:\n\
-(Kode ini berguna untuk keamanan akun Anda dan verifikasi masa depan)", gPlayerData[playerid][pUCPName]);
-
-	ShowPlayerDialog(playerid, DIALOG_UCP_REG_CODE, DIALOG_STYLE_INPUT,
-		"REGISTRASI UCP - KODE KEAMANAN", str, "Lanjut", "Kembali");
+	ShowPlayerDialog(playerid, DIALOG_UCP_OTP_VERIFY, DIALOG_STYLE_INPUT,
+		"Verifikasi Kode Pendaftaran",
+		"Masukkan 6 digit Kode Verifikasi (OTP/PIN) yang dikirim ke Anda melalui Bot resmi kami.", "Verifikasi", "Batal");
 	return 1;
 }
 
-stock ProcessUCPRegisterCode(playerid, const code[])
+stock ProcessUCPOtpVerify(playerid, const otp[])
 {
 	if (!IsPlayerConnected(playerid)) return 0;
-	if (strlen(code) < 4 || strlen(code) > 8) {
-		SendErr(playerid, "Kode keamanan harus berupa 4 - 8 digit angka.");
-		ShowUCPRegisterCodeDialog(playerid);
+	if (strlen(otp) < 4 || strlen(otp) > 8) {
+		SendErr(playerid, "Kode verifikasi 4-8 digit.");
+		ShowUCPOtpVerifyDialog(playerid);
 		return 0;
 	}
 
-	format(gPendingUCPCode[playerid], sizeof(gPendingUCPCode[]), "%s", code);
-	ShowUCPRegisterPassDialog(playerid);
+	format(gPendingUCPOtp[playerid], sizeof(gPendingUCPOtp[]), "%s", otp);
+	DB_VerifyUCPOtp(playerid, otp);
 	return 1;
 }
 
 stock ShowUCPRegisterPassDialog(playerid)
 {
 	if (!IsPlayerConnected(playerid)) return 0;
-	new str[300];
-	format(str, sizeof(str),
-		"{FFFFFF}UCP: {FFFF00}%s\n{FFFFFF}Kode Keamanan: {2ECC71}%s\n\n\
-Silakan buat {33CCFF}Kata Sandi{FFFFFF} untuk akun UCP Anda (Minimal 6 karakter):",
-		gPlayerData[playerid][pUCPName], gPendingUCPCode[playerid]);
-
 	ShowPlayerDialog(playerid, DIALOG_UCP_REG_PASS, DIALOG_STYLE_PASSWORD,
-		"REGISTRASI UCP - BUAT KATA SANDI", str, "Daftar", "Kembali");
+		"Buat Kata Sandi UCP",
+		"Kode verifikasi valid. Silakan buat kata sandi minimal 6 karakter untuk menyelesaikan pendaftaran akun UCP Anda.", "Buat Sandi", "Kembali");
 	return 1;
 }
 
@@ -219,30 +185,27 @@ stock ProcessUCPRegisterPass(playerid, const password[])
 {
 	if (!IsPlayerConnected(playerid)) return 0;
 	if (strlen(password) < 6) {
-		SendErr(playerid, "Kata sandi minimal harus 6 karakter.");
+		SendErr(playerid, "Kata sandi minimal 6 karakter.");
 		ShowUCPRegisterPassDialog(playerid);
 		return 0;
 	}
 
-	// Asynchronous 12-round bcrypt password hash
 	bcrypt_hash(playerid, "OnPlayerPasswordHashed", password, BCRYPT_COST);
 	return 1;
 }
 
 // ---------------------------------------------------------------------------
-// Character Selection & Creation Dialog Handlers
+// Character Selection & Creation
 // ---------------------------------------------------------------------------
 stock ProcessCharSelect(playerid, listitem)
 {
 	if (!IsPlayerConnected(playerid)) return 0;
 
 	if (listitem >= 0 && listitem < 3 && gUserCharIDs[playerid][listitem] > 0) {
-		// Muat karakter yang sudah ada
 		DB_LoadCharacter(playerid, gUserCharIDs[playerid][listitem]);
 		return 1;
 	}
 
-	// Buat karakter baru
 	ShowCharCreateNameDialog(playerid);
 	return 1;
 }
@@ -250,18 +213,9 @@ stock ProcessCharSelect(playerid, listitem)
 stock ShowCharCreateNameDialog(playerid)
 {
 	if (!IsPlayerConnected(playerid)) return 0;
-	new str[380];
-	format(str, sizeof(str),
-		"{FFFFFF}Buat Karakter Baru untuk Akun UCP {33CCFF}%s{FFFFFF}.\n\n\
-Masukkan Nama Karakter Roleplay Anda:\n\
-{FFFF00}Format Wajib: Nama_Belakang{FFFFFF} (Contoh: {2ECC71}Javier_Travors{FFFFFF}, {2ECC71}Bryan_Calister{FFFFFF})\n\n\
-Aturan:\n\
-- Wajib diawali huruf kapital di kedua kata\n\
-- Wajib dipisah satu tanda garis bawah (underscore)\n\
-- Tidak boleh menggunakan angka atau simbol lain", gPlayerData[playerid][pUCPName]);
-
 	ShowPlayerDialog(playerid, DIALOG_CHAR_CREATE_NAME, DIALOG_STYLE_INPUT,
-		"BUAT KARAKTER - NAMA ROLEPLAY", str, "Lanjut", "Batal");
+		"Nama Karakter Roleplay",
+		"Masukkan nama karakter dengan format Nama_Belakang (contoh: Javier_Travors).", "Lanjut", "Batal");
 	return 1;
 }
 
@@ -270,7 +224,7 @@ stock ProcessCharCreateName(playerid, const name[])
 	if (!IsPlayerConnected(playerid)) return 0;
 
 	if (!IsValidRoleplayName(name)) {
-		SendErr(playerid, "Format nama salah! Gunakan format Nama_Belakang (Contoh: Javier_Travors) tanpa angka.");
+		SendErr(playerid, "Format nama tidak valid. Contoh: Javier_Travors");
 		ShowCharCreateNameDialog(playerid);
 		return 0;
 	}
@@ -283,14 +237,9 @@ stock ProcessCharCreateName(playerid, const name[])
 stock ShowCharCreateDOBDialog(playerid)
 {
 	if (!IsPlayerConnected(playerid)) return 0;
-	new str[300];
-	format(str, sizeof(str),
-		"{FFFFFF}Karakter: {FFFF00}%s{FFFFFF}\n\n\
-Masukkan {33CCFF}Tanggal Lahir{FFFFFF} Karakter Anda:\n\
-Format: {FFFF00}DD/MM/YYYY{FFFFFF} (Contoh: 15/08/2000)", gPendingCharName[playerid]);
-
 	ShowPlayerDialog(playerid, DIALOG_CHAR_CREATE_DOB, DIALOG_STYLE_INPUT,
-		"BUAT KARAKTER - TANGGAL LAHIR", str, "Lanjut", "Kembali");
+		"Tanggal Lahir",
+		"Format DD/MM/YYYY (contoh: 15/08/2000).", "Lanjut", "Kembali");
 	return 1;
 }
 
@@ -298,7 +247,7 @@ stock ProcessCharCreateDOB(playerid, const dob[])
 {
 	if (!IsPlayerConnected(playerid)) return 0;
 	if (strlen(dob) < 8 || strlen(dob) > 10) {
-		SendErr(playerid, "Format tanggal lahir salah! Contoh: 15/08/2000");
+		SendErr(playerid, "Format tanggal lahir tidak valid.");
 		ShowCharCreateDOBDialog(playerid);
 		return 0;
 	}
@@ -312,9 +261,8 @@ stock ShowCharCreateGenderDialog(playerid)
 {
 	if (!IsPlayerConnected(playerid)) return 0;
 	ShowPlayerDialog(playerid, DIALOG_CHAR_CREATE_GENDER, DIALOG_STYLE_LIST,
-		"BUAT KARAKTER - JENIS KELAMIN",
-		"1. Laki-Laki (Pria)\n2. Perempuan (Wanita)",
-		"Pilih", "Kembali");
+		"Jenis Kelamin",
+		"Laki-Laki\nPerempuan", "Pilih", "Kembali");
 	return 1;
 }
 
@@ -329,14 +277,14 @@ stock ProcessCharCreateGender(playerid, listitem)
 }
 
 // ---------------------------------------------------------------------------
-// Ingame Spawn & Disconnect Handlers
+// In-game Spawn (Anti-tenggelam & automatic load)
 // ---------------------------------------------------------------------------
 stock SpawnPlayerEx(playerid)
 {
 	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
 
-	// Cegah double-spawn: kalau sudah pernah spawn di sesi ini, skip welcome msg & HUD
-	new bool:doWelcome = !gPlayerData[playerid][pSpawned];
+	if (gPlayerData[playerid][pSpawned]) return 1;
+	gPlayerData[playerid][pSpawned] = true;
 
 	SetPlayerSkin(playerid, gPlayerData[playerid][pSkin]);
 
@@ -344,33 +292,44 @@ stock SpawnPlayerEx(playerid)
 	new Float:py = gPlayerData[playerid][pLastY];
 	new Float:pz = gPlayerData[playerid][pLastZ];
 	new Float:pa = gPlayerData[playerid][pLastA];
+
 	if (px == 0.0 && py == 0.0 && pz == 0.0) {
 		px = SPAWN_X; py = SPAWN_Y; pz = SPAWN_Z; pa = SPAWN_A;
 	}
-	SetPlayerPos(playerid, px, py, pz);
-	SetPlayerFacingAngle(playerid, pa);
+
+	pz += 0.5;
+	if (gPlayerData[playerid][pInterior] == 0) {
+		SetPlayerPosFindZ(playerid, px, py, pz);
+		SetPlayerFacingAngle(playerid, pa);
+	} else {
+		SetPlayerPos(playerid, px, py, pz);
+		SetPlayerFacingAngle(playerid, pa);
+	}
+
 	SetPlayerInterior(playerid, gPlayerData[playerid][pInterior]);
 	SetPlayerVirtualWorld(playerid, gPlayerData[playerid][pVirtualWorld]);
 
+	TogglePlayerControllable(playerid, false);
+	SetTimerEx("RP_UnfreezeAfterSpawn", 750, false, "i", playerid);
+
 	SetPlayerHealth(playerid, 100.0);
 	SetPlayerArmour(playerid, 0.0);
-	gPlayerData[playerid][pSpawned] = true;
 
 	SetPlayerMoneyEx(playerid, gPlayerData[playerid][pMoney]);
 	Faction_ApplyWeapons(playerid);
 
-	if (doWelcome) {
-		ShowPlayerHUD(playerid);
+	ShowPlayerHUD(playerid);
+	UpdatePlayerHUD(playerid);
 
-		SendRP(playerid, COLOR_LIGHTBLUE, "============================================================");
-		SendRP(playerid, COLOR_WHITE, "Selamat datang di Nusantara Roleplay [open.mp v1.5.8]");
-		SendRP(playerid, COLOR_WHITE, "Akun UCP: {33CCFF}%s {FFFFFF}| Karakter: {FFFF00}%s", gPlayerData[playerid][pUCPName], gPlayerData[playerid][pName]);
-		SendRP(playerid, COLOR_WHITE, "Tips: Tekan {FFFF00}Y{FFFFFF} untuk interaksi cepat, ketik {FFFF00}/help{FFFFFF} atau {FFFF00}/inv{FFFFFF}.");
-		SendRP(playerid, COLOR_LIGHTBLUE, "============================================================");
-	}
-
-	DB_SavePlayerData(playerid);
 	gPlayerData[playerid][pPaycheckTimer] = PAYCHECK_INTERVAL;
+	return 1;
+}
+
+forward RP_UnfreezeAfterSpawn(playerid);
+public RP_UnfreezeAfterSpawn(playerid)
+{
+	if (!IsPlayerConnected(playerid)) return 0;
+	TogglePlayerControllable(playerid, true);
 	return 1;
 }
 

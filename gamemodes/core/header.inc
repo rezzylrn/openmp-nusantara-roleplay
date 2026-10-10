@@ -184,6 +184,7 @@ enum E_VEHICLE_DATA {
 #define DIALOG_UCP_LOGIN          1
 #define DIALOG_UCP_REG_CODE       2
 #define DIALOG_UCP_REG_PASS       3
+#define DIALOG_UCP_OTP_VERIFY     40
 #define DIALOG_CHAR_SELECT        4
 #define DIALOG_CHAR_CREATE_NAME   5
 #define DIALOG_CHAR_CREATE_DOB    6

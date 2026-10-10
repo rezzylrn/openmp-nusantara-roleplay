@@ -11,9 +11,11 @@ DROP TABLE IF EXISTS `ucp_accounts`;
 CREATE TABLE `ucp_accounts` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `ucp_name` VARCHAR(24) NOT NULL UNIQUE,
-  `password` VARCHAR(64) NOT NULL,
-  `salt` VARCHAR(64) NOT NULL,
-  `security_code` VARCHAR(16) NOT NULL,
+  `player_name` VARCHAR(24) NOT NULL DEFAULT '',
+  `password` VARCHAR(64) NOT NULL DEFAULT '',
+  `salt` VARCHAR(64) NOT NULL DEFAULT '',
+  `security_code` VARCHAR(16) NOT NULL DEFAULT '',
+  `pin_used` TINYINT DEFAULT 0,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

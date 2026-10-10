@@ -10,6 +10,8 @@
 #define MYSQL_DB       "roleplay"
 
 forward OnUCPCheck(playerid);
+forward OnUCPCheckByName(playerid);
+forward OnUCPPasswordUpdated(playerid);
 forward OnUCPRegistered(playerid);
 forward OnUCPCharactersLoaded(playerid);
 forward OnCharacterCreated(playerid);
@@ -32,9 +34,11 @@ stock DB_Init()
 	mysql_tquery(gDB, "CREATE TABLE IF NOT EXISTS ucp_accounts (\
 		id INT AUTO_INCREMENT PRIMARY KEY, \
 		ucp_name VARCHAR(24) NOT NULL UNIQUE, \
-		password VARCHAR(64) NOT NULL, \
-		salt VARCHAR(64) NOT NULL, \
-		security_code VARCHAR(16) NOT NULL, \
+		player_name VARCHAR(24) NOT NULL DEFAULT '', \
+		password VARCHAR(64) NOT NULL DEFAULT '', \
+		salt VARCHAR(64) NOT NULL DEFAULT '', \
+		security_code VARCHAR(16) NOT NULL DEFAULT '', \
+		pin_used TINYINT DEFAULT 0, \
 		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)");
 
 	// 2. multi-characters table
@@ -121,33 +125,107 @@ stock DB_Shutdown()
 }
 
 // ---------------------------------------------------------------------------
-// UCP Check & Login Flow
+// UCP Check & Login Flow (Auto-detect dari nama samp player)
 // ---------------------------------------------------------------------------
-stock DB_CheckUCP(playerid, const ucpName[])
+stock DB_CheckUCPByPlayerName(playerid)
 {
 	if (!gDBReady) return 0;
-	new query[160];
+	new playerName[MAX_PLAYER_NAME];
+	GetPlayerName(playerid, playerName, sizeof(playerName));
+
+	format(gPlayerData[playerid][pUCPName], 24, "%s", playerName);
+
+	new query[192];
 	mysql_format(gDB, query, sizeof(query),
-		"SELECT id, password, salt, security_code FROM ucp_accounts WHERE ucp_name = '%e' LIMIT 1", ucpName);
-	mysql_tquery(gDB, query, "OnUCPCheck", "i", playerid);
+		"SELECT id, password, salt, security_code, pin_used FROM ucp_accounts WHERE ucp_name = '%e' OR player_name = '%e' LIMIT 1",
+		playerName, playerName);
+	mysql_tquery(gDB, query, "OnUCPCheckByName", "i", playerid);
 	return 1;
 }
 
-public OnUCPCheck(playerid)
+public OnUCPCheckByName(playerid)
 {
 	if (!IsPlayerConnected(playerid)) return 0;
 	new rows = cache_num_rows();
 
-	if (rows > 0) {
-		// ucp sudah terdaftar -> minta password
-		cache_get_value_name_int(0, "id", gPlayerData[playerid][pUCPID]);
-		cache_get_value_name(0, "password", gPlayerData[playerid][pPassword], 65);
-		cache_get_value_name(0, "salt", gPlayerData[playerid][pSalt], 65);
-		ShowUCPLoginDialog(playerid);
-	} else {
-		// ucp belum terdaftar -> minta kode verifikasi / pin
-		ShowUCPRegisterCodeDialog(playerid);
+	if (rows == 0) {
+		// Akun belum ada -> kick dengan info registrasi via bot
+		ShowUCPNotRegisteredKick(playerid);
+		return 1;
 	}
+
+	cache_get_value_name_int(0, "id", gPlayerData[playerid][pUCPID]);
+	cache_get_value_name(0, "password", gPlayerData[playerid][pPassword], 65);
+	cache_get_value_name(0, "salt", gPlayerData[playerid][pSalt], 65);
+
+	if (strlen(gPlayerData[playerid][pPassword]) == 0) {
+		// pass masih kosong -> player daftar via bot, harus verifikasi OTP/PIN dulu
+		ShowUCPOtpVerifyDialog(playerid);
+	} else {
+		// akun aktif -> langsung minta password
+		ShowUCPLoginDialog(playerid);
+	}
+	return 1;
+}
+
+// OTP/PIN verification: cocokkan otp dari input player dengan security_code di DB
+stock DB_VerifyUCPOtp(playerid, const otp[])
+{
+	if (!gDBReady || gPlayerData[playerid][pUCPID] <= 0) return 0;
+	new query[224];
+	mysql_format(gDB, query, sizeof(query),
+		"SELECT security_code, pin_used FROM ucp_accounts WHERE id = %d LIMIT 1", gPlayerData[playerid][pUCPID]);
+	mysql_tquery(gDB, query, "OnUCPOtpChecked", "is", playerid, otp);
+	return 1;
+}
+
+forward OnUCPOtpChecked(playerid, const otp[]);
+public OnUCPOtpChecked(playerid, const otp[])
+{
+	if (!IsPlayerConnected(playerid)) return 0;
+	if (cache_num_rows() == 0) {
+		SendErr(playerid, "Data registrasi tidak ditemukan.");
+		Kick(playerid);
+		return 0;
+	}
+
+	new dbOtp[16], pinUsed;
+	cache_get_value_name(0, "security_code", dbOtp, 16);
+	cache_get_value_name_int(0, "pin_used", pinUsed);
+
+	if (strcmp(dbOtp, otp, false) != 0) {
+		SendErr(playerid, "Kode verifikasi salah. Ambil ulang via bot resmi.");
+		ShowUCPOtpVerifyDialog(playerid);
+		return 0;
+	}
+	if (pinUsed != 0) {
+		SendErr(playerid, "Kode verifikasi sudah dipakai. Hubungi admin.");
+		ShowUCPOtpVerifyDialog(playerid);
+		return 0;
+	}
+
+	// OTP valid -> lanjut buat password
+	ShowUCPRegisterPassDialog(playerid);
+	return 1;
+}
+
+// Update password setelah OTP valid (mark pin sebagai dipakai)
+stock DB_UpdateUCPPassword(playerid, const hash[])
+{
+	if (!gDBReady || gPlayerData[playerid][pUCPID] <= 0) return 0;
+	new query[384];
+	mysql_format(gDB, query, sizeof(query),
+		"UPDATE ucp_accounts SET password = '%e', salt = 'bcrypt', pin_used = 1 WHERE id = %d",
+		hash, gPlayerData[playerid][pUCPID]);
+	mysql_tquery(gDB, query, "OnUCPPasswordUpdated", "i", playerid);
+	return 1;
+}
+
+public OnUCPPasswordUpdated(playerid)
+{
+	if (!IsPlayerConnected(playerid)) return 0;
+	format(gPlayerData[playerid][pPassword], 65, "%s", "updated");
+	DB_LoadUCPCharacters(playerid);
 	return 1;
 }
 
@@ -156,8 +234,8 @@ stock DB_RegisterUCP(playerid, const ucpName[], const pass[], const salt[], cons
 	if (!gDBReady) return 0;
 	new query[384];
 	mysql_format(gDB, query, sizeof(query),
-		"INSERT INTO ucp_accounts (ucp_name, password, salt, security_code) VALUES ('%e', '%e', '%e', '%e')",
-		ucpName, pass, salt, secCode);
+		"INSERT INTO ucp_accounts (ucp_name, player_name, password, salt, security_code) VALUES ('%e', '%e', '%e', '%e', '%e')",
+		ucpName, ucpName, pass, salt, secCode);
 	mysql_tquery(gDB, query, "OnUCPRegistered", "i", playerid);
 	return 1;
 }
@@ -166,7 +244,6 @@ public OnUCPRegistered(playerid)
 {
 	if (!IsPlayerConnected(playerid)) return 0;
 	gPlayerData[playerid][pUCPID] = cache_insert_id();
-	SendSucc(playerid, "Akun UCP berhasil didaftarkan! Melanjutkan ke pemilihan karakter...");
 	DB_LoadUCPCharacters(playerid);
 	return 1;
 }
@@ -340,6 +417,9 @@ public OnCharacterLoaded(playerid)
 	}
 
 	gPlayerData[playerid][pLoggedIn] = true;
+
+	// Matikan spectating mode dan spawn langsung (otomatis tanpa tombol spawn)
+	TogglePlayerSpectating(playerid, false);
 	SpawnPlayerEx(playerid);
 	return 1;
 }
