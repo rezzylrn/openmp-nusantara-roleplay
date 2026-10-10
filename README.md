@@ -21,25 +21,35 @@ Kode sumber diorganisasi secara modular langsung di dalam direktori `gamemodes/`
 │   └── include/                    # Include library (open.mp, a_mysql, sscanf2, izcmd, samp_bcrypt)
 └── gamemodes/
     ├── main.pwn                    # Master entry point, click handler & callback router
-    └── modules/
-        ├── header.inc              # Definisi, warna, enums, & konfigurasi global
-        ├── database.inc            # Koneksi MySQL R41-4, UCP auth & multi-character queries
-        ├── textdraws.inc           # Full Clickable TextDraws (HUD, Speedo, Phone, Inv, Veh, Bank, Menu)
-        ├── inventory.inc           # Sistem 12 slot inventaris, penggunaan item, & sistem give
-        ├── phone.inc               # Telekomunikasi (Ponsel /call /sms, HT /r, GPS)
-        ├── shops.inc               # Toko 24/7 & katalog belanja (/buy)
-        ├── player_stats.inc        # Statistik (/stats), level/EXP, lapar & haus
-        ├── economy.inc             # Saldo Cash, Bank, ATM, Payday 60 menit, & /pay
-        ├── factions.inc            # SAPD (Polisi), SAMD (Medis), SAGOV, & Gangs
-        ├── vehicles.inc            # Kendaraan pribadi dinamis, bensin, mesin, bagasi
-        ├── jobs.inc                # 8 Pekerjaan & handler interaksi tombol Y (KEY_YES)
-        ├── commands_rp.inc         # Perintah roleplay berbasis izcmd (/inv, /give, /showid, dll.)
-        ├── admin.inc               # Manajemen staf admin berbasis izcmd (CMD:*)
-        ├── anticheat.inc           # Server-side Anti-Cheat (Weapon, Speed, Airbreak, Money, Rapid-Fire)
-        ├── properties.inc          # Real Estate & Housing dinamis (Grove St, Idlewood, Vinewood, dll.)
-        ├── police_mdc.inc          # SAPD Mobile Data Computer (MDC), Cek Plat, & Speed Radar
-        ├── workshop.inc            # Bengkel tuning mekanik (Velg, Hidrolik, Nitro, Spoiler, Cat)
-        └── debug_tests.inc         # Test suite otomatis (14 pengujian sistem)
+    ├── core/                       # Inti gamemode & autentikasi
+    │   ├── header.inc              # Definisi, warna, enums, & model data master
+    │   ├── database.inc            # Pool koneksi MySQL R41-4 & skema database
+    │   └── player_auth.inc         # Autentikasi UCP & multi-char bcrypt
+    ├── anticheat/                  # Server-side Anti-Cheat Engine (Modular)
+    │   ├── anticheat.inc           # Master controller & administrative alerts
+    │   ├── ac_weapons.inc          # Anti-Weapon Spawner, Rapid Fire, Silent-Aim Range
+    │   ├── ac_movement.inc         # Anti-Airbreak, Teleport, Noclip, Jetpack
+    │   └── ac_vehicles.inc         # Anti-Car Slapper, Crasher, Speedhack, Carjack
+    ├── systems/                    # Sistem dunia & ekonomi dinamis
+    │   ├── economy.inc             # Saldo Cash, Bank, ATM, Payday 60 menit, & /pay
+    │   ├── inventory.inc           # Sistem 12 slot inventaris, use item, & give
+    │   ├── properties.inc          # Real Estate & Housing dinamis (Grove St, Idlewood, dll.)
+    │   ├── vehicles.inc            # Kendaraan pribadi dinamis, bensin, mesin, bagasi
+    │   ├── shops.inc               # Toko 24/7 & katalog belanja
+    │   └── workshop.inc            # Bengkel tuning mekanik (Velg, Hidrolik, Nitro, Cat)
+    ├── gameplay/                   # Alur permainan & faksi
+    │   ├── factions.inc            # SAPD (Polisi), SAMD (Medis), SAGOV, & Gangs
+    │   ├── jobs.inc                # 8 Pekerjaan & handler interaksi tombol Y
+    │   ├── police_mdc.inc          # SAPD Mobile Data Computer (MDC), Cek Plat, & Speed Radar
+    │   ├── phone.inc               # Telekomunikasi (Ponsel, SMS, HT /r, GPS)
+    │   └── player_stats.inc        # Statistik (/stats), level/EXP, lapar & haus
+    ├── ui/                         # Grafis & TextDraw Interaktif
+    │   └── textdraws.inc           # Full Clickable TextDraws (HUD, Speedo, Phone, Inv, Veh, Bank)
+    ├── commands/                   # Command processor (izcmd)
+    │   ├── commands_rp.inc         # Perintah roleplay warga (/inv, /give, /showid, dll.)
+    │   └── admin.inc               # Manajemen staf admin & moderasi
+    └── tests/                      # Pengujian & Diagnostik Otomatis
+        └── debug_tests.inc         # Automated unit test suite (14 pengujian)
 ```
 
 ---

@@ -4,26 +4,38 @@
 #include <izcmd>
 #include <samp_bcrypt>
 
-// core modules
-#include "modules/header.inc"
-#include "modules/database.inc"
-#include "modules/textdraws.inc"
-#include "modules/inventory.inc"
-#include "modules/phone.inc"
-#include "modules/shops.inc"
-#include "modules/player_stats.inc"
-#include "modules/economy.inc"
-#include "modules/factions.inc"
-#include "modules/vehicles.inc"
-#include "modules/jobs.inc"
-#include "modules/commands_rp.inc"
-#include "modules/player_auth.inc"
-#include "modules/admin.inc"
-#include "modules/anticheat.inc"
-#include "modules/properties.inc"
-#include "modules/police_mdc.inc"
-#include "modules/workshop.inc"
-#include "modules/debug_tests.inc"
+// 1. Core modules
+#include "core/header.inc"
+#include "core/database.inc"
+#include "core/player_auth.inc"
+
+// 2. Anti-Cheat Engine (Multi-Vector Security)
+#include "anticheat/anticheat.inc"
+
+// 3. User Interface (Full Clickable TextDraws)
+#include "ui/textdraws.inc"
+
+// 4. World Systems
+#include "systems/economy.inc"
+#include "systems/inventory.inc"
+#include "systems/properties.inc"
+#include "systems/vehicles.inc"
+#include "systems/shops.inc"
+#include "systems/workshop.inc"
+
+// 5. Gameplay & Factions
+#include "gameplay/factions.inc"
+#include "gameplay/jobs.inc"
+#include "gameplay/police_mdc.inc"
+#include "gameplay/phone.inc"
+#include "gameplay/player_stats.inc"
+
+// 6. Commands & Admin
+#include "commands/commands_rp.inc"
+#include "commands/admin.inc"
+
+// 7. Test Suite
+#include "tests/debug_tests.inc"
 
 main()
 {
@@ -233,7 +245,24 @@ public OnPlayerKeyStateChange(playerid, KEY:newkeys, KEY:oldkeys)
 // weapon anti-cheat hook
 public OnPlayerWeaponShot(playerid, WEAPON:weaponid, BULLET_HIT_TYPE:hittype, hitid, Float:fX, Float:fY, Float:fZ)
 {
-	if (!AC_OnPlayerWeaponShot(playerid, weaponid)) return 0;
+	#pragma unused hittype, hitid, fX, fY, fZ
+	if (!AC_ValidateShot(playerid, weaponid)) return 0;
+	return 1;
+}
+
+// damage anti-cheat hook (Silent Aim & Range validation)
+public OnPlayerGiveDamage(playerid, damagedid, Float:amount, WEAPON:weaponid, bodypart)
+{
+	#pragma unused amount, bodypart
+	if (!AC_ValidateDamage(playerid, damagedid, weaponid)) return 0;
+	return 1;
+}
+
+// unoccupied vehicle anti-cheat hook (Anti-Car Slapper & Crasher)
+public OnUnoccupiedVehicleUpdate(vehicleid, playerid, passenger_seat, Float:new_x, Float:new_y, Float:new_z, Float:vel_x, Float:vel_y, Float:vel_z)
+{
+	#pragma unused passenger_seat, vel_x, vel_y, vel_z
+	if (!AC_OnUnoccupiedVehicleUpdate(vehicleid, playerid, new_x, new_y, new_z)) return 0;
 	return 1;
 }
 
