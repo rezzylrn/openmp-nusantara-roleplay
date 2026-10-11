@@ -561,8 +561,8 @@ chmod +x run-server.sh
 
 ## Kontak & Pengembang
 - **GitHub**: [@rezzylrn](https://github.com/rezzylrn)
-- **Discord**: `@rezz` (`rezzylrn`)
-- **Telegram**: [@rezzylrn](https://t.me/rezzylrn)
+- **Discord**: `@rezz.910` (`Gracious`)
+- **Telegram**: [@gracxq](https://t.me/gracxq)
 
 ---
 
