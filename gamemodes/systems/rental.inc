@@ -188,7 +188,7 @@ stock OnRentalDialogResponse(playerid, listitem)
 	}
 
 	gPlayerRentalVeh[playerid] = v;
-	PutPlayerInVehicle(playerid, v, 0);
+	AC_PutPlayerInVehicle(playerid, v, 0);
 
 	PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
 	new succRent[144];

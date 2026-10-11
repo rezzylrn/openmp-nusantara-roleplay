@@ -252,11 +252,16 @@ public RunAutomatedRPTests()
 		if (gHouseData[h][hUsed]) houseCount++;
 	}
 
-	if (houseCount >= 6) {
-		printf("  -> PASS: %d Real estate properties active across Los Santos with 3D labels.", houseCount);
+	gPlayerData[testPlayer][pLoggedIn] = true;
+	gPlayerData[testPlayer][pID] = 1;
+	gPlayerData[testPlayer][pMoney] = 50000;
+	new houseBuyOk = ProcessBuyHouse(testPlayer, 0);
+
+	if (houseCount >= 6 && houseBuyOk && gHouseData[0][hOwnerID] == gPlayerData[testPlayer][pID]) {
+		printf("  -> PASS: %d Real estate properties active across Los Santos, deed transaction confirmed.", houseCount);
 		passCount++;
 	} else {
-		printf("  -> FAIL: Insufficient house count (%d).", houseCount);
+		printf("  -> FAIL: Housing verification failed (Count: %d, BuyOk: %d).", houseCount, houseBuyOk);
 		failCount++;
 	}
 

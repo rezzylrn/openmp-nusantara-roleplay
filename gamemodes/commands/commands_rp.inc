@@ -537,6 +537,34 @@ CMD:lights(playerid, params[])
 	return 1;
 }
 
+CMD:buyhouse(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	new h = House_CheckNearby(playerid);
+	if (h == -1) return SendErr(playerid, "Anda tidak berada di depan rumah yang dijual.");
+	if (gHouseData[h][hOwnerID] != 0) return SendErr(playerid, "Rumah ini sudah ada pemiliknya.");
+	return ProcessBuyHouse(playerid, h);
+}
+
+CMD:lockhouse(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	new h = House_CheckNearby(playerid);
+	if (h == -1) h = House_CheckInside(playerid);
+	if (h == -1) return SendErr(playerid, "Anda harus berada di dekat pintu rumah.");
+	if (gHouseData[h][hOwnerID] != gPlayerData[playerid][pID] && gPlayerSharedHouse[playerid] != h) {
+		return SendErr(playerid, "Anda bukan pemilik atau pemegang kunci rumah ini.");
+	}
+	gHouseData[h][hLocked] = !gHouseData[h][hLocked];
+	House_RefreshDisplay(h);
+	if (gHouseData[h][hLocked]) {
+		SendSucc(playerid, "Pintu rumah telah dikunci.");
+	} else {
+		SendInfo(playerid, "Pintu rumah telah dibuka.");
+	}
+	return 1;
+}
+
 CMD:lock(playerid, params[])
 {
 	new vid = GetPlayerVehicleID(playerid);

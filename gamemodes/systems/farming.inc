@@ -90,19 +90,19 @@ Dialog:DialogFarmShop(playerid, response, listitem, inputtext[])
 	switch (listitem) {
 		case 0: { // Bibit Gandum $15
 			if (gPlayerData[playerid][pMoney] < 15) return SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Uang Anda tidak cukup ($15).");
-			GivePlayerMoneyEx(playerid, -15);
+			TakePlayerMoneyEx(playerid, 15, "beli bibit gandum");
 			GivePlayerItem(playerid, ITEM_WHEATSEED, 1);
 			SendClientMessage(playerid, COLOR_SUCCESS, "[SUKSES] Anda membeli 1x Bibit Gandum seharga $15.");
 		}
 		case 1: { // Bibit Jagung $20
 			if (gPlayerData[playerid][pMoney] < 20) return SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Uang Anda tidak cukup ($20).");
-			GivePlayerMoneyEx(playerid, -20);
+			TakePlayerMoneyEx(playerid, 20, "beli bibit jagung");
 			GivePlayerItem(playerid, ITEM_CORNSEED, 1);
 			SendClientMessage(playerid, COLOR_SUCCESS, "[SUKSES] Anda membeli 1x Bibit Jagung seharga $20.");
 		}
 		case 2: { // Gembor Air $35
 			if (gPlayerData[playerid][pMoney] < 35) return SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Uang Anda tidak cukup ($35).");
-			GivePlayerMoneyEx(playerid, -35);
+			TakePlayerMoneyEx(playerid, 35, "beli gembor air");
 			GivePlayerItem(playerid, ITEM_WATERCAN, 1);
 			SendClientMessage(playerid, COLOR_SUCCESS, "[SUKSES] Anda membeli 1x Gembor Penyiram Air seharga $35.");
 		}

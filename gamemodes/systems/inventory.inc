@@ -117,7 +117,7 @@ stock GivePlayerItem(playerid, itemtype, amount)
 		}
 	}
 
-	SendErr(playerid, "Inventaris Anda sudah penuh (Maksimal 12 slot barang).");
+	SendErr(playerid, "Inventaris Anda sudah penuh (Maksimal 25 slot barang).");
 	return 0;
 }
 

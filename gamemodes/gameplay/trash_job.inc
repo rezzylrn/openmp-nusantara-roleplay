@@ -73,7 +73,7 @@ stock ProcessStartTrash(playerid)
 	gTrashCollected[playerid] = 0;
 	gHoldingTrashBag[playerid] = false;
 
-	PutPlayerInVehicle(playerid, veh, 0);
+	AC_PutPlayerInVehicle(playerid, veh, 0);
 	SetPlayerCheckpoint(playerid, gTrashStops[0][0], gTrashStops[0][1], gTrashStops[0][2], 4.5);
 
 	SendClientMessage(playerid, COLOR_SUCCESS, "[KEBERSIHAN] Rute dinas kebersihan dimulai! Menuju checkpoint tong sampah pertama.");

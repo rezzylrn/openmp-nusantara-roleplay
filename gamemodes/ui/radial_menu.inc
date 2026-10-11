@@ -566,8 +566,8 @@ Dialog:DialogPayCashAmount(playerid, response, listitem, inputtext[])
 		return 1;
 	}
 
-	GivePlayerMoneyEx(playerid, -amount);
-	GivePlayerMoneyEx(targetid, amount);
+	TakePlayerMoneyEx(playerid, amount, "beri uang");
+	GivePlayerMoneyEx(targetid, amount, "terima uang");
 
 	new msg[144];
 	format(msg, sizeof(msg), "[INFO] Anda memberikan uang sebesar $%d kepada %s.", amount, gPlayerData[targetid][pName]);

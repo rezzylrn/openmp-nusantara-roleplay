@@ -56,7 +56,7 @@ stock ShowAdminPanelDialog(playerid)
 
 Dialog:DialogAdminMain(playerid, response, listitem, inputtext[])
 {
-	if (!response) return 1;
+	if (!response || gPlayerData[playerid][pAdmin] < 1) return 1;
 
 	switch (listitem) {
 		case 0: { // 1. Teleportasi Lokasi
@@ -277,7 +277,7 @@ Dialog:DialogAdminKick(playerid, response, listitem, inputtext[])
 
 Dialog:DialogAdminKickReason(playerid, response, listitem, inputtext[])
 {
-	if (!response) return 1;
+	if (!response || gPlayerData[playerid][pAdmin] < 1) return 1;
 	new targetid = gAdminSelectedTarget[playerid];
 	if (!IsPlayerConnected(targetid)) return 1;
 
@@ -295,7 +295,7 @@ Dialog:DialogAdminKickReason(playerid, response, listitem, inputtext[])
 
 Dialog:DialogAdminBan(playerid, response, listitem, inputtext[])
 {
-	if (!response) return 1;
+	if (!response || gPlayerData[playerid][pAdmin] < 2) return 1;
 	new targetid = strval(inputtext);
 	if (!IsPlayerConnected(targetid) || targetid == playerid) {
 		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] ID pemain tidak valid.");
@@ -311,7 +311,7 @@ Dialog:DialogAdminBan(playerid, response, listitem, inputtext[])
 
 Dialog:DialogAdminBanReason(playerid, response, listitem, inputtext[])
 {
-	if (!response) return 1;
+	if (!response || gPlayerData[playerid][pAdmin] < 2) return 1;
 	new targetid = gAdminSelectedTarget[playerid];
 	if (!IsPlayerConnected(targetid)) return 1;
 

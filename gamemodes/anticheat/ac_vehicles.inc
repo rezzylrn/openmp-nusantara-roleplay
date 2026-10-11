@@ -12,6 +12,7 @@
 stock AC_ValidateVehicleEntry(playerid, vehicleid)
 {
 	if (!IsPlayerConnected(playerid) || !IsValidVehicle(vehicleid)) return 1;
+	if (gACData[playerid][acIgnoreTeleport]) return 1;
 
 	new Float:vx, Float:vy, Float:vz;
 	GetVehiclePos(vehicleid, vx, vy, vz);

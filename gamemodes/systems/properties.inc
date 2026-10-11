@@ -139,6 +139,45 @@ stock House_CheckInside(playerid)
 	return -1;
 }
 
+new gSelectedHouse[MAX_PLAYERS];
+
+stock ProcessBuyHouse(playerid, houseid)
+{
+	if (playerid < 0 || playerid >= MAX_PLAYERS || !gPlayerData[playerid][pLoggedIn]) return 0;
+	if (houseid < 0 || houseid >= MAX_HOUSES || !gHouseData[houseid][hUsed]) return 0;
+
+	if (gHouseData[houseid][hOwnerID] != 0) {
+		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Rumah ini sudah dimiliki oleh warga lain.");
+		return 0;
+	}
+
+	if (gPlayerData[playerid][pMoney] < gHouseData[houseid][hPrice]) {
+		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Uang tunai Anda tidak mencukupi untuk membeli rumah ini.");
+		return 0;
+	}
+
+	TakePlayerMoneyEx(playerid, gHouseData[houseid][hPrice], "beli properti rumah");
+	gHouseData[houseid][hOwnerID] = gPlayerData[playerid][pID];
+	format(gHouseData[houseid][hOwnerName], 24, "%s", gPlayerData[playerid][pName]);
+	gHouseData[houseid][hLocked] = true;
+	House_RefreshDisplay(houseid);
+
+	new msg[144];
+	format(msg, sizeof(msg), "[SUKSES] Selamat! Anda resmi membeli rumah di %s seharga $%d.",
+		gHouseData[houseid][hAddress], gHouseData[houseid][hPrice]);
+	SendClientMessage(playerid, COLOR_SUCCESS, msg);
+	PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
+	return 1;
+}
+
+Dialog:DialogBuyHouseConfirm(playerid, response, listitem, inputtext[])
+{
+	if (!response) return 1;
+	new houseid = gSelectedHouse[playerid];
+	ProcessBuyHouse(playerid, houseid);
+	return 1;
+}
+
 stock ProcessHouseInteraction(playerid)
 {
 	new hEnter = House_CheckNearby(playerid);
@@ -150,12 +189,12 @@ stock ProcessHouseInteraction(playerid)
 			format(str, sizeof(str),
 				"{FFFFFF}Alamat: {FFFF00}%s\n{FFFFFF}Harga Rumah: {2ECC71}$%d\n\n{FFFFFF}Apakah Anda yakin ingin membeli properti rumah ini?",
 				gHouseData[hEnter][hAddress], gHouseData[hEnter][hPrice]);
-			gSelectedInvSlot[playerid] = hEnter;
-			ShowPlayerDialog(playerid, DIALOG_HELP, DIALOG_STYLE_MSGBOX, "BELI PROPERTI RUMAH", str, "Beli", "Batal");
+			gSelectedHouse[playerid] = hEnter;
+			Dialog_Show(playerid, DialogBuyHouseConfirm, DIALOG_STYLE_MSGBOX, "{FFFFFF}BELI PROPERTI RUMAH", str, "Beli", "Batal");
 			return 1;
 		} else {
 			// Rumah sudah ada pemilik
-			if (gHouseData[hEnter][hLocked] && gHouseData[hEnter][hOwnerID] != gPlayerData[playerid][pID]) {
+			if (gHouseData[hEnter][hLocked] && gHouseData[hEnter][hOwnerID] != gPlayerData[playerid][pID] && gPlayerSharedHouse[playerid] != hEnter) {
 				SendErr(playerid, "Pintu rumah ini terkunci oleh pemiliknya.");
 				return 1;
 			}

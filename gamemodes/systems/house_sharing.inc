@@ -10,8 +10,6 @@
 ==============================================================================
 */
 
-new gPlayerSharedHouse[MAX_PLAYERS] = {-1, ...};
-
 stock HouseSharing_Init()
 {
 	for (new i = 0; i < MAX_PLAYERS; i++) {

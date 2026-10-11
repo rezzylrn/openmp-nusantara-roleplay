@@ -154,6 +154,23 @@ stock AC_SetPlayerPos(playerid, Float:x, Float:y, Float:z)
 	return 1;
 }
 
+stock AC_PutPlayerInVehicle(playerid, vehicleid, seatid)
+{
+	if (!IsPlayerConnected(playerid) || !IsValidVehicle(vehicleid)) return 0;
+	gACData[playerid][acIgnoreTeleport] = true;
+	gACData[playerid][acIgnoreTick] = gettime() + 3;
+	new Float:vx, Float:vy, Float:vz;
+	GetVehiclePos(vehicleid, vx, vy, vz);
+	gACData[playerid][acLastX] = vx;
+	gACData[playerid][acLastY] = vy;
+	gACData[playerid][acLastZ] = vz;
+	gACData[playerid][acPreEnterX] = vx;
+	gACData[playerid][acPreEnterY] = vy;
+	gACData[playerid][acPreEnterZ] = vz;
+	PutPlayerInVehicle(playerid, vehicleid, seatid);
+	return 1;
+}
+
 // Sinkronisasi otoritas saldo uang server (Anti-Cheat Engine / S0beit)
 stock AC_SyncMoney(playerid)
 {

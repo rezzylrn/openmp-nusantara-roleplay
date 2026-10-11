@@ -123,7 +123,7 @@ stock ShowPoliceMDCDialog(playerid)
 
 Dialog:DialogPoliceMDCMain(playerid, response, listitem, inputtext[])
 {
-	if (!response) return 1;
+	if (!response || gPlayerData[playerid][pFaction] != FACTION_POLICE || !gPlayerData[playerid][pDuty]) return 1;
 
 	switch (listitem) {
 		case 0: { // 1. Citizen Lookup

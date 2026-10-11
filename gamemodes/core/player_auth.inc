@@ -292,7 +292,6 @@ stock SpawnPlayerEx(playerid)
 
 	if (gPlayerData[playerid][pSpawned]) return 1;
 	gPlayerData[playerid][pSpawned] = true;
-	AC_OnPlayerSpawn(playerid);
 
 	SetPlayerSkin(playerid, gPlayerData[playerid][pSkin]);
 
@@ -313,6 +312,8 @@ stock SpawnPlayerEx(playerid)
 		SetPlayerPos(playerid, px, py, pz);
 		SetPlayerFacingAngle(playerid, pa);
 	}
+
+	AC_OnPlayerSpawn(playerid);
 
 	SetPlayerInterior(playerid, gPlayerData[playerid][pInterior]);
 	SetPlayerVirtualWorld(playerid, gPlayerData[playerid][pVirtualWorld]);

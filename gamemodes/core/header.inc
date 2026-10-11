@@ -299,6 +299,7 @@ enum E_VEHICLE_DATA {
 forward ShowPlayerActionHub(playerid);
 forward SpawnPlayerEx(playerid);
 forward RP_AutoSpawnPlayer(playerid);
+forward AC_OnPlayerSpawn(playerid);
 forward IsPlayerNearAnyATM(playerid, Float:range = 2.5);
 forward IsPlayerNearAnyTrash(playerid, Float:range = 2.5);
 forward ProcessDoorEnter(playerid);
@@ -660,6 +661,7 @@ new gGiveTarget[MAX_PLAYERS];
 new gGiveItemType[MAX_PLAYERS];
 new bool:gPhoneOpen[MAX_PLAYERS];
 new bool:gInventoryOpen[MAX_PLAYERS];
+new gPlayerSharedHouse[MAX_PLAYERS] = {-1, ...};
 
 // forward prototypes
 forward Float:GetItemWeight(itemtype);
