@@ -183,8 +183,10 @@
 #define pTD_InjuredHeader   68
 #define pTD_InjuredTimer    69
 #define pTD_InjuredInfo     70
+// --- Mobile Touch Action Button ---
+#define pTD_ActionBtn       71
 // --- penanda batas (harus terakhir) ---
-#define pTD_COUNT           71
+#define pTD_COUNT           72
 
 // Index pertama/terakhir tiap panel, untuk loop show/hide.
 #define TD_HUD_FIRST       pTD_HudPanel
@@ -921,6 +923,19 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_InjuredInfo], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_InjuredInfo], true);
 
+    // ==================== MOBILE TOUCH ACTION BUTTON ====================
+    // Tombol sentuh layar/mouse tengah-bawah untuk membuka Menu Aksi tanpa ketik command
+    gTD_PlayerText[playerid][pTD_ActionBtn] = CreatePlayerTextDraw(playerid, 275.0, 430.0, "~g~~h~[ ⚡ AKSI / MENU ]");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_ActionBtn], 0.18, 0.85);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_ActionBtn], TEXT_DRAW_ALIGN_LEFT);
+    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_ActionBtn], TD_COLOR_WHITE);
+    PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_ActionBtn], TEXT_DRAW_FONT_2);
+    PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_ActionBtn], true);
+    PlayerTextDrawUseBox(playerid, gTD_PlayerText[playerid][pTD_ActionBtn], true);
+    PlayerTextDrawBoxColour(playerid, gTD_PlayerText[playerid][pTD_ActionBtn], 0x0A3311E6);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_ActionBtn], 365.0, 442.0);
+    PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_ActionBtn], true);
+
     // Setel ulang keadaan berjalan.
     gTD_HUD[playerid] = false;
     gTD_Speedo[playerid] = false;
@@ -971,6 +986,8 @@ stock ShowPlayerHUD(playerid)
     for (new e = TD_ZONE_FIRST; e <= TD_ZONE_LAST; e++)
         PlayerTextDrawShow(playerid, gTD_PlayerText[playerid][e]);
 
+    PlayerTextDrawShow(playerid, gTD_PlayerText[playerid][pTD_ActionBtn]);
+
     gTD_HUD[playerid] = true;
     UpdatePlayerHUD(playerid);
     UpdatePlayerZoneHUD(playerid);
@@ -987,6 +1004,8 @@ stock HidePlayerHUD(playerid)
 
     for (new e = TD_ZONE_FIRST; e <= TD_ZONE_LAST; e++)
         PlayerTextDrawHide(playerid, gTD_PlayerText[playerid][e]);
+
+    PlayerTextDrawHide(playerid, gTD_PlayerText[playerid][pTD_ActionBtn]);
 
     gTD_HUD[playerid] = false;
     return 1;
@@ -1829,6 +1848,12 @@ stock ProcessPlayerClickTD(playerid, PlayerText:playertextid)
             HidePlayerActMenu(playerid);
             return 1;
         }
+    }
+
+    // 6. MOBILE TOUCH ACTION BUTTON (On-Screen Touchscreen Widget)
+    if (playertextid == gTD_PlayerText[playerid][pTD_ActionBtn]) {
+        ShowPlayerActionHub(playerid);
+        return 1;
     }
     return 1;
 }

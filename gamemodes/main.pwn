@@ -59,7 +59,10 @@
 #include "gameplay/phone.inc"
 #include "gameplay/player_stats.inc"
 
-// 6. Commands & Admin
+// 6. Action Hub & Unified Interaction
+#include "ui/action_hub.inc"
+
+// 7. Commands & Admin
 #include "commands/commands_rp.inc"
 #include "commands/admin.inc"
 
@@ -319,15 +322,9 @@ public OnPlayerKeyStateChange(playerid, KEY:newkeys, KEY:oldkeys)
 		return 1;
 	}
 
-	// Key N (KEY_NO) untuk Dashboard Kendaraan (di mobil) atau Menu Cepat (jalan kaki)
-	if ((newkeys & KEY_NO) && !(oldkeys & KEY_NO)) {
-		if (IsPlayerInAnyVehicle(playerid)) {
-			if (GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
-				ShowPlayerVehDash(playerid);
-			}
-		} else {
-			ShowPlayerActMenu(playerid);
-		}
+	// Key N (KEY_NO) atau Key H (KEY_CTRL_BACK) untuk Pusat Aksi & Interaksi Cepat (Mobile / Desktop Hub)
+	if (((newkeys & KEY_NO) && !(oldkeys & KEY_NO)) || ((newkeys & KEY_CTRL_BACK) && !(oldkeys & KEY_CTRL_BACK))) {
+		ShowPlayerActionHub(playerid);
 		return 1;
 	}
 	return 1;
@@ -563,6 +560,17 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		case DIALOG_GYM_STYLES: OnGymStyleDialogResponse(playerid, listitem);
 		case DIALOG_FASTFOOD_MENU: OnFastFoodDialogResponse(playerid, listitem);
 		case DIALOG_ACCESSORIES: OnAccessoriesDialogResponse(playerid, listitem);
+		case DIALOG_ACTION_HUB: OnActionHubDialogResponse(playerid, listitem);
+		case DIALOG_ACTION_NEAR_PLAYER: OnActionNearPlayerResponse(playerid, listitem);
+		case DIALOG_ACTION_PLATE_INPUT: {
+			if (response && strlen(inputtext) > 0) ProcessCustomPlate(playerid, inputtext);
+		}
+		case DIALOG_ACTION_TAG_INPUT: {
+			if (response && strlen(inputtext) > 0) ProcessTagGraffiti(playerid, inputtext);
+		}
+		case DIALOG_ACTION_AD_INPUT: {
+			if (response && strlen(inputtext) > 0) ProcessSendAdvertisement(playerid, inputtext);
+		}
 	}
 	return 1;
 }

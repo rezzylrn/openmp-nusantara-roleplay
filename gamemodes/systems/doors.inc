@@ -303,6 +303,30 @@ stock ProcessDoorExit(playerid)
 	return 0;
 }
 
+stock IsPlayerNearAnyEntranceDoor(playerid)
+{
+	new pVW = GetPlayerVirtualWorld(playerid);
+	new pInt = GetPlayerInterior(playerid);
+	for (new i = 0; i < MAX_DYNAMIC_DOORS; i++) {
+		if (gDoors[i][dUsed] && gDoors[i][dExtVW] == pVW && gDoors[i][dExtInterior] == pInt) {
+			if (IsPlayerNearPoint(playerid, gDoors[i][dExtX], gDoors[i][dExtY], gDoors[i][dExtZ], RANGE_DOOR_INTERACTION)) return 1;
+		}
+	}
+	return 0;
+}
+
+stock IsPlayerNearAnyExitDoor(playerid)
+{
+	new pVW = GetPlayerVirtualWorld(playerid);
+	new pInt = GetPlayerInterior(playerid);
+	for (new i = 0; i < MAX_DYNAMIC_DOORS; i++) {
+		if (gDoors[i][dUsed] && gDoors[i][dIntVW] == pVW && gDoors[i][dIntInterior] == pInt) {
+			if (IsPlayerNearPoint(playerid, gDoors[i][dIntX], gDoors[i][dIntY], gDoors[i][dIntZ], RANGE_DOOR_INTERACTION)) return 1;
+		}
+	}
+	return 0;
+}
+
 // Default Presets untuk Kota Los Santos
 stock Doors_CreateDefaultSet()
 {

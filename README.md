@@ -248,6 +248,21 @@ Gamemode ini mengadopsi arsitektur anti-cheat server-side modular yang dirancang
 ---
 
 ## TextDraw & HUD Lanjutan (`ui/textdraws.inc`)
+- **Pusat Aksi Kontekstual & Tombol Sentuh Mobile (`ui/action_hub.inc`):**
+  - **Zero-Command Roleplay Experience:** Mengeliminasi keharusan mengetik puluhan perintah slash command yang melelahkan bagi pemain Mobile (Touchscreen) dan Desktop.
+  - **Tombol Sentuh Layar `[ ⚡ AKSI / MENU ]`:** Widget TextDraw interaktif di tengah-bawah layar yang dapat langsung disentuh/diklik di layar HP atau PC untuk membuka menu aksi konteks.
+  - **Dukungan Tombol Cepat Keyboard:** Cukup tekan tombol **N**, tombol **H**, atau tombol **Y** (atau perintah `/menu` / `/action` / `/aksi`).
+  - **Deteksi Konteks Otomatis (Auto-Detect Proximity):**
+    - Saat menyetir: Langsung menampilkan kontrol mesin, kunci pintu, lampu, kap, bagasi, argometer taksi, kabel derek towtruck, sita depo, isi bensin, dan plat kustom DMV.
+    - Di dekat kendaraan luar: Langsung menampilkan buka bagasi, lockpick bobol kunci, mutilasi chop shop, tambal ban kempes, dan tuang bensin jerigen.
+    - Di dekat toko 24/7: Belanja kasir atau todong senjata rampok kasir.
+    - Di dekat ATM / Bank: Tarik, setor, transfer, cek saldo, atau bayar denda tilang ETLE.
+    - Di dekat tong sampah: Mengais rongsokan daur ulang atau buang barang.
+    - Di dekat tanaman ganja: Rawat & panen daun ganja, atau hanguskan (polisi).
+    - Di dekat pantai: Pindai detektor logam, gali pasir harta karun, atau mancing.
+    - Di dekat api unggun: Masak ikan mentah atau santap ikan bakar.
+    - Di dekat dinding grafiti: Semprot cat grafiti atau bersihkan coretan liar.
+    - Di dekat vending machine, bar, gym, fast food, ammunation, DMV, stasiun rental, pintu gedung, atau pemain lain: Langsung menampilkan seluruh opsi interaksi terkait!
 - **Smartphone TextDraw OS Modern (OLED Screen & Glassmorphism):**
   - Tampilan visual smartphone realistis di kanan layar:
     - Titanium bezel frame & OLED deep dark screen.

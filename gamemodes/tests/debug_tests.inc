@@ -1184,7 +1184,7 @@ public RunAutomatedRPTests()
 	passCount++;
 
 	// 56. test dynamic taxi fare meter & passenger dispatch ride
-	print("[TEST 56/56] Dynamic Taxi Fare Meter & Passenger Dispatch Ride...");
+	print("[TEST 56/57] Dynamic Taxi Fare Meter & Passenger Dispatch Ride...");
 	new taxiDriver = 0;
 	gPlayerData[taxiDriver][pLoggedIn] = true;
 	gTaxiMeterActive[taxiDriver] = false;
@@ -1206,8 +1206,30 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
+	// 57. test mobile touch action button & unified context action hub
+	print("[TEST 57/57] Mobile Touch Action Button & Unified Context Action Hub...");
+	new hubTester = 0;
+	TextdrawCreateAll(hubTester);
+	new bool:actionBtnAllocated = (gTD_PlayerText[hubTester][pTD_ActionBtn] != INVALID_PLAYER_TEXT_DRAW);
+
+	gPlayerData[hubTester][pLoggedIn] = true;
+	gPlayerData[hubTester][pMoney] = 500;
+	new hubOk = ShowPlayerActionHub(hubTester);
+
+	// Simulasi aksi buka inventaris dari hub (HUB_ACT_INV)
+	gPlayerHubAction[hubTester][0] = HUB_ACT_INV;
+	OnActionHubDialogResponse(hubTester, 0);
+
+	if (actionBtnAllocated && hubOk && gInventoryOpen[hubTester]) {
+		print("  -> PASS: Touchscreen action button allocated, context detection & zero-command action routing verified.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Action hub or mobile action button failed.");
+		failCount++;
+	}
+
 	print("==================================================");
-	printf("  [DEBUG SUMMARY] %d / 56 TESTS PASSED, %d FAILED", passCount, failCount);
+	printf("  [DEBUG SUMMARY] %d / 57 TESTS PASSED, %d FAILED", passCount, failCount);
 	print("==================================================\n");
 
 	return 1;

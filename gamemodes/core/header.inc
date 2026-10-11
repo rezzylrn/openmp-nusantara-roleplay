@@ -278,11 +278,18 @@ enum E_VEHICLE_DATA {
 #define DIALOG_GYM_STYLES         66
 #define DIALOG_FASTFOOD_MENU      67
 #define DIALOG_ACCESSORIES        68
+#define DIALOG_ACTION_HUB         70
+#define DIALOG_ACTION_NEAR_PLAYER 71
+#define DIALOG_ACTION_JOBS_MENU   72
+#define DIALOG_ACTION_AD_INPUT    73
+#define DIALOG_ACTION_PLATE_INPUT 74
+#define DIALOG_ACTION_TAG_INPUT   75
 
 #define LANG_ID                   0
 #define LANG_EN                   1
 
 // Dynamic Systems Forward Declarations
+forward ShowPlayerActionHub(playerid);
 forward IsPlayerNearAnyATM(playerid, Float:range = 2.5);
 forward IsPlayerNearAnyTrash(playerid, Float:range = 2.5);
 forward ProcessDoorEnter(playerid);

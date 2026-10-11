@@ -12,13 +12,13 @@
 
 #define MAX_FASTFOOD_OUTLETS    3
 
-static const Float:gFastFoodSpots[MAX_FASTFOOD_OUTLETS][3] = {
+stock const Float:gFastFoodSpots[MAX_FASTFOOD_OUTLETS][3] = {
 	{1199.0, -918.0, 43.0},  // Burger Shot Marina
 	{2393.0, -1898.0, 13.5}, // Cluckin Bell Willowfield
 	{2105.0, -1806.0, 13.5}  // Well Stacked Pizza Idlewood
 };
 
-static const gFastFoodNames[][] = {
+stock const gFastFoodNames[][] = {
 	"Burger Shot Marina",
 	"Cluckin Bell Willowfield",
 	"Well Stacked Pizza Idlewood"

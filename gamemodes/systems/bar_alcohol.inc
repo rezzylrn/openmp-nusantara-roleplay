@@ -12,7 +12,7 @@
 
 #define MAX_BAR_LOCATIONS       3
 
-static const Float:gBarSpots[MAX_BAR_LOCATIONS][3] = {
+stock const Float:gBarSpots[MAX_BAR_LOCATIONS][3] = {
 	{1830.0, -1680.0, 13.5}, // Alhambra Club Bar
 	{2306.0, -1650.0, 14.5}, // Ten Green Bottles Ganton
 	{2422.0, -1226.0, 25.5}  // Pig Pen Club

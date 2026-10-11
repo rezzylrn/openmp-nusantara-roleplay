@@ -290,8 +290,23 @@ CMD:hp(playerid, params[])
 CMD:menu(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
-	ShowPlayerActMenu(playerid);
+	ShowPlayerActionHub(playerid);
 	return 1;
+}
+
+CMD:action(playerid, params[])
+{
+	return cmd_menu(playerid, params);
+}
+
+CMD:aksi(playerid, params[])
+{
+	return cmd_menu(playerid, params);
+}
+
+CMD:interaksi(playerid, params[])
+{
+	return cmd_menu(playerid, params);
 }
 
 CMD:lang(playerid, params[])
