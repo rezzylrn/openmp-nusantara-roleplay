@@ -6,26 +6,33 @@
 /*
 ==============================================================================
  traffic_camera.inc
- NUSANTARA ROLEPLAY - Electronic Traffic Law Enforcement (ETLE Speed Trap)
+ NUSANTARA ROLEPLAY - Dynamic Electronic Traffic Law Enforcement (ETLE)
 ==============================================================================
 */
 
-#define MAX_SPEED_CAMERAS       5
-#define SPEED_CAMERA_TICKET_FEE 150
+#define MAX_SPEED_CAMERAS       30
+#define DEFAULT_CAMERA_FEE      150
 #define SPEED_TRAP_COOLDOWN     10
 
 enum E_SPEED_CAMERA {
+	bool:camUsed,
+	camDBID,
 	Float:camX,
 	Float:camY,
 	Float:camZ,
 	Float:camLimitKmh,
+	camFee,
 	camName[48],
 	camObject,
 	Text3D:camLabel
 };
 
 new gSpeedCameras[MAX_SPEED_CAMERAS][E_SPEED_CAMERA];
+new gTotalSpeedCameras = 0;
 new gPlayerCameraCooldown[MAX_PLAYERS];
+
+forward OnTrafficCamerasLoaded();
+forward OnTrafficCameraCreated(slot);
 
 stock TrafficCamera_Init()
 {
@@ -33,37 +40,145 @@ stock TrafficCamera_Init()
 		gPlayerCameraCooldown[i] = 0;
 	}
 
-	// 1. Pershing Square Central Boulevard (Batas: 100 KM/J)
-	TrafficCamera_Register(0, 1481.0, -1700.0, 13.5, 100.0, "Pershing Square Central");
+	for (new i = 0; i < MAX_SPEED_CAMERAS; i++) {
+		gSpeedCameras[i][camUsed] = false;
+		gSpeedCameras[i][camDBID] = 0;
+		gSpeedCameras[i][camObject] = INVALID_OBJECT_ID;
+		gSpeedCameras[i][camLabel] = Text3D:INVALID_3DTEXT_ID;
+	}
+	gTotalSpeedCameras = 0;
 
-	// 2. Commerce / Mulholland Express Freeway (Batas: 120 KM/J)
-	TrafficCamera_Register(1, 1650.0, -1120.0, 24.0, 120.0, "Commerce Express Freeway");
-
-	// 3. Idlewood Boulevard Avenue (Batas: 90 KM/J)
-	TrafficCamera_Register(2, 1950.0, -1770.0, 13.5, 90.0, "Idlewood Main Boulevard");
-
-	print("[TRAFFIC CAMERA] 3 Kamera tilang elektronik ETLE Los Santos aktif.");
+	if (gDBReady) {
+		mysql_tquery(gDB, "SELECT * FROM `etle_cameras` ORDER BY `id` ASC", "OnTrafficCamerasLoaded", "");
+	} else {
+		TrafficCamera_CreateDefaults();
+	}
 	return 1;
 }
 
-stock TrafficCamera_Register(slot, Float:x, Float:y, Float:z, Float:limit, const name[])
+public OnTrafficCamerasLoaded()
 {
-	if (slot < 0 || slot >= MAX_SPEED_CAMERAS) return 0;
+	new rows = cache_num_rows();
+	if (rows == 0) {
+		TrafficCamera_CreateDefaults();
+		return 1;
+	}
+
+	for (new i = 0; i < rows && i < MAX_SPEED_CAMERAS; i++) {
+		gSpeedCameras[i][camUsed] = true;
+		cache_get_value_name_int(i, "id", gSpeedCameras[i][camDBID]);
+		cache_get_value_name_float(i, "posx", gSpeedCameras[i][camX]);
+		cache_get_value_name_float(i, "posy", gSpeedCameras[i][camY]);
+		cache_get_value_name_float(i, "posz", gSpeedCameras[i][camZ]);
+		cache_get_value_name_float(i, "speed_limit", gSpeedCameras[i][camLimitKmh]);
+		cache_get_value_name_int(i, "ticket_fee", gSpeedCameras[i][camFee]);
+		cache_get_value_name(i, "name", gSpeedCameras[i][camName], 48);
+
+		TrafficCamera_CreateVisuals(i);
+		gTotalSpeedCameras++;
+	}
+
+	printf("[ETLE] %d Kamera tilang elektronik dinamis berhasil dimuat dari MySQL.", gTotalSpeedCameras);
+	return 1;
+}
+
+stock TrafficCamera_CreateVisuals(slot)
+{
+	if (slot < 0 || slot >= MAX_SPEED_CAMERAS || !gSpeedCameras[slot][camUsed]) return 0;
+
+	// Tiang kamera speed trap (Model 18880)
+	gSpeedCameras[slot][camObject] = CreateObject(18880,
+		gSpeedCameras[slot][camX],
+		gSpeedCameras[slot][camY],
+		gSpeedCameras[slot][camZ],
+		0.0, 0.0, 0.0, 150.0);
+
+	new lbl[200];
+	format(lbl, sizeof(lbl),
+		"{FF3B30}[ KAMERA ETLE #%d ]\n{FFFFFF}%s\n{FFFF00}Batas: %.0f KM/J | {FFCC00}Denda: $%d",
+		slot + 1, gSpeedCameras[slot][camName], gSpeedCameras[slot][camLimitKmh], gSpeedCameras[slot][camFee]);
+
+	gSpeedCameras[slot][camLabel] = Create3DTextLabel(lbl, 0xFF3B30FF,
+		gSpeedCameras[slot][camX],
+		gSpeedCameras[slot][camY],
+		gSpeedCameras[slot][camZ] + 2.5,
+		25.0, 0, true);
+	return 1;
+}
+
+stock TrafficCamera_Create(Float:x, Float:y, Float:z, Float:limit, fee, const name[])
+{
+	new slot = -1;
+	for (new i = 0; i < MAX_SPEED_CAMERAS; i++) {
+		if (!gSpeedCameras[i][camUsed]) {
+			slot = i;
+			break;
+		}
+	}
+	if (slot == -1) return -1;
+
+	gSpeedCameras[slot][camUsed] = true;
 	gSpeedCameras[slot][camX] = x;
 	gSpeedCameras[slot][camY] = y;
 	gSpeedCameras[slot][camZ] = z;
 	gSpeedCameras[slot][camLimitKmh] = limit;
+	gSpeedCameras[slot][camFee] = (fee <= 0) ? DEFAULT_CAMERA_FEE : fee;
 	format(gSpeedCameras[slot][camName], 48, "%s", name);
 
-	// Tiang kamera speed trap (Model 18880 / 1224)
-	gSpeedCameras[slot][camObject] = CreateObject(18880, x, y, z, 0.0, 0.0, 0.0, 150.0);
+	TrafficCamera_CreateVisuals(slot);
+	gTotalSpeedCameras++;
 
-	new lbl[160];
-	format(lbl, sizeof(lbl),
-		"{FF3B30}[ KAMERA SPEED TRAP ETLE ]\n{FFFFFF}%s\n{FFFF00}Batas Maksimal: %.0f KM/J\n{FFCC00}Denda Tilang: $%d",
-		name, limit, SPEED_CAMERA_TICKET_FEE);
+	if (gDBReady) {
+		new query[320];
+		mysql_format(gDB, query, sizeof(query),
+			"INSERT INTO `etle_cameras` (`name`, `posx`, `posy`, `posz`, `speed_limit`, `ticket_fee`) \
+			VALUES ('%e', %.2f, %.2f, %.2f, %.2f, %d)",
+			name, x, y, z, limit, gSpeedCameras[slot][camFee]);
+		mysql_tquery(gDB, query, "OnTrafficCameraCreated", "i", slot);
+	}
+	return slot;
+}
 
-	gSpeedCameras[slot][camLabel] = Create3DTextLabel(lbl, 0xFF3B30FF, x, y, z + 2.5, 25.0, 0, true);
+public OnTrafficCameraCreated(slot)
+{
+	if (slot >= 0 && slot < MAX_SPEED_CAMERAS && gSpeedCameras[slot][camUsed]) {
+		gSpeedCameras[slot][camDBID] = cache_insert_id();
+	}
+	return 1;
+}
+
+stock TrafficCamera_Destroy(slot)
+{
+	if (slot < 0 || slot >= MAX_SPEED_CAMERAS || !gSpeedCameras[slot][camUsed]) return 0;
+
+	if (IsValidObject(gSpeedCameras[slot][camObject])) {
+		DestroyObject(gSpeedCameras[slot][camObject]);
+		gSpeedCameras[slot][camObject] = INVALID_OBJECT_ID;
+	}
+	if (gSpeedCameras[slot][camLabel] != Text3D:INVALID_3DTEXT_ID) {
+		Delete3DTextLabel(gSpeedCameras[slot][camLabel]);
+		gSpeedCameras[slot][camLabel] = Text3D:INVALID_3DTEXT_ID;
+	}
+
+	if (gDBReady && gSpeedCameras[slot][camDBID] > 0) {
+		new query[128];
+		mysql_format(gDB, query, sizeof(query), "DELETE FROM `etle_cameras` WHERE `id`=%d", gSpeedCameras[slot][camDBID]);
+		mysql_tquery(gDB, query, "", "");
+	}
+
+	gSpeedCameras[slot][camUsed] = false;
+	gSpeedCameras[slot][camDBID] = 0;
+	gTotalSpeedCameras--;
+	return 1;
+}
+
+stock TrafficCamera_CreateDefaults()
+{
+	print("[ETLE] Memasang kamera tilang elektronik dinamis bawaan Los Santos...");
+	TrafficCamera_Create(1481.0, -1700.0, 13.5, 100.0, 150, "Pershing Square Central");
+	TrafficCamera_Create(1650.0, -1120.0, 24.0, 120.0, 200, "Commerce Express Freeway");
+	TrafficCamera_Create(1950.0, -1770.0, 13.5, 90.0, 150, "Idlewood Main Boulevard");
+	TrafficCamera_Create(390.0, -1880.0, 7.8, 80.0, 100, "Santa Maria Highway");
 	return 1;
 }
 
@@ -75,7 +190,7 @@ stock ProcessTrafficCameraTick(playerid)
 	new vehicleid = GetPlayerVehicleID(playerid);
 	if (vehicleid < 1) return 0;
 
-	// Petugas kepolisian atau ambulans on-duty yang sedang darurat dibebaskan dari tilang
+	// Petugas kepolisian atau medis on-duty darurat dibebaskan dari tilang
 	if (gPlayerData[playerid][pDuty] && (gPlayerData[playerid][pFaction] == FACTION_POLICE || gPlayerData[playerid][pFaction] == FACTION_MEDIC)) {
 		return 0;
 	}
@@ -86,40 +201,41 @@ stock ProcessTrafficCameraTick(playerid)
 	new Float:speed = TD_GetVehicleSpeedKmh(vehicleid);
 
 	for (new i = 0; i < MAX_SPEED_CAMERAS; i++) {
-		if (gSpeedCameras[i][camLimitKmh] <= 0.0) continue;
+		if (!gSpeedCameras[i][camUsed] || gSpeedCameras[i][camLimitKmh] <= 0.0) continue;
 
-		if (IsPlayerNearPoint(playerid, gSpeedCameras[i][camX], gSpeedCameras[i][camY], gSpeedCameras[i][camZ], 18.0)) {
+		if (IsPlayerNearPoint(playerid, gSpeedCameras[i][camX], gSpeedCameras[i][camY], gSpeedCameras[i][camZ], 20.0)) {
 			if (speed > gSpeedCameras[i][camLimitKmh]) {
 				// Terkena tilang kecepatan
 				gPlayerCameraCooldown[playerid] = now + SPEED_TRAP_COOLDOWN;
 
+				new fee = gSpeedCameras[i][camFee];
 				gPlayerData[playerid][pTickets]++;
-				gPlayerData[playerid][pTicketAmount] += SPEED_CAMERA_TICKET_FEE;
+				gPlayerData[playerid][pTicketAmount] += fee;
 				DB_SavePlayerData(playerid);
 
 				// Efek suara jepretan kamera tilang
 				PlayerPlaySound(playerid, 1133, 0.0, 0.0, 0.0);
 
-				new alertMsg[128];
+				new alertMsg[144];
 				if (gPlayerData[playerid][pLanguage] == LANG_EN) {
 					format(alertMsg, sizeof(alertMsg),
-						"[ETLE CAMERA] Speed violation: %.0f KM/H (Limit: %.0f KM/H)! Fine: $%d (/payticket)",
-						speed, gSpeedCameras[i][camLimitKmh], SPEED_CAMERA_TICKET_FEE);
+						"[ETLE #%d] Speed violation: %.0f KM/H (Limit: %.0f KM/H)! Fine: $%d (/payticket)",
+						i + 1, speed, gSpeedCameras[i][camLimitKmh], fee);
 				} else {
 					format(alertMsg, sizeof(alertMsg),
-						"[KAMERA ETLE] Pelanggaran kecepatan: %.0f KM/J (Batas: %.0f KM/J)! Denda: $%d (/payticket)",
-						speed, gSpeedCameras[i][camLimitKmh], SPEED_CAMERA_TICKET_FEE);
+						"[ETLE #%d] Pelanggaran kecepatan: %.0f KM/J (Batas: %.0f KM/J)! Denda: $%d (/payticket)",
+						i + 1, speed, gSpeedCameras[i][camLimitKmh], fee);
 				}
 				ShowPlayerAlertEx(playerid, alertMsg, 4000);
 
-				// Broadcast ke radio kepolisian jika melaju sangat kencang (> 140 KM/J)
-				if (speed > 140.0) {
+				// Broadcast ke radio kepolisian jika melaju sangat kencang (> 135 KM/J)
+				if (speed > 135.0) {
 					new radioAlert[160];
 					new vehName[32];
 					GetVehicleModelName(GetVehicleModel(vehicleid), vehName, sizeof(vehName));
 					format(radioAlert, sizeof(radioAlert),
-						"[ETLE SPEED TRAP] %s berkecepatan tinggi (%.0f KM/J) terdeteksi di %s!",
-						vehName, speed, gSpeedCameras[i][camName]);
+						"[ETLE SPEED TRAP] %s melaju kencang (%.0f KM/J) di %s (#%d)!",
+						vehName, speed, gSpeedCameras[i][camName], i + 1);
 
 					for (new p = 0; p < MAX_PLAYERS; p++) {
 						if (IsPlayerConnected(p) && gPlayerData[p][pLoggedIn] && gPlayerData[p][pDuty] && gPlayerData[p][pFaction] == FACTION_POLICE) {

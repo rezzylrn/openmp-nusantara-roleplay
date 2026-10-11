@@ -90,7 +90,11 @@ enum {
 	ITEM_ROD,           // Joran Pancing
 	ITEM_BAIT,          // Umpan Ikan
 	ITEM_WOOD,          // Balok Kayu
-	ITEM_RECYCLED       // Barang Rongsokan
+	ITEM_RECYCLED,      // Barang Rongsokan
+	ITEM_LOCKPICK,      // Obeng Pembobol Kunci (Lockpick)
+	ITEM_CROWBAR,       // Linggis Pembongkar (Crowbar)
+	ITEM_CONTRABAND,    // Paket Kontraband Gelap
+	ITEM_CARPARTS       // Suku Cadang Mobil Curian
 };
 
 enum E_ITEM_DATA {
@@ -240,6 +244,10 @@ enum E_VEHICLE_DATA {
 #define DIALOG_RENTAL_MENU        48
 #define DIALOG_TRUNK_WEAPON       49
 #define DIALOG_PAY_TICKETS        50
+#define DIALOG_BLACKMARKET_BUY    53
+#define DIALOG_BLACKMARKET_SELL   54
+#define DIALOG_CHOPSHOP_CONFIRM   55
+#define DIALOG_SMUGGLE_MENU       56
 
 #define LANG_ID                   0
 #define LANG_EN                   1
@@ -471,6 +479,10 @@ stock GetItemName(itemtype, dest[], len = sizeof(dest))
 		case ITEM_BAIT:      format(dest, len, "Umpan Ikan");
 		case ITEM_WOOD:      format(dest, len, "Balok Kayu");
 		case ITEM_RECYCLED:  format(dest, len, "Barang Rongsokan");
+		case ITEM_LOCKPICK:  format(dest, len, "Obeng Lockpick");
+		case ITEM_CROWBAR:   format(dest, len, "Linggis Baja (Crowbar)");
+		case ITEM_CONTRABAND:format(dest, len, "Paket Kontraband");
+		case ITEM_CARPARTS:  format(dest, len, "Suku Cadang Mobil Curian");
 		default:             format(dest, len, "Kosong");
 	}
 	return 1;

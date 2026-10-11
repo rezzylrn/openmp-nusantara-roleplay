@@ -316,17 +316,53 @@ Gamemode ini mengadopsi arsitektur anti-cheat server-side modular yang dirancang
 
 ---
 
-## Sistem Tilang Elektronik ETLE & Speed Trap (`systems/traffic_camera.inc`)
-- **3 Titik Kamera Tilang Otomatis di Jalan Protokol:**
-  - Pershing Square Central (Batas: 100 KM/J).
-  - Mulholland / Commerce Express Freeway (Batas: 120 KM/J).
-  - Idlewood Main Boulevard (Batas: 90 KM/J).
-- **Mekanisme Pelanggaran:**
-  - Efek audio jepretan kamera tilang (Sound 1133) & toast alert di layar.
-  - Denda tilang $150 langsung masuk ke catatan tunggakan karakter (`pTickets`, `pTicketAmount`).
-  - Broadcast otomatis ke radio frekuensi polisi jika melaju ekstrem (> 140 KM/J).
-  - Pengecualian otomatis untuk armada darurat (Polisi SAPD & Ambulans SAMD on-duty).
-  - Perintah Warga: `/tickets` untuk mengecek tagihan dan `/payticket` / `/bayartilang` untuk melunasi denda via rekening bank/cash.
+## Sistem Kamera Tilang Elektronik Dinamis ETLE (`systems/traffic_camera.inc`)
+- **Jaringan Kamera Speed Trap Dinamis Berbasis Database (Tabel `etle_cameras`):**
+  - Kamera tilang sepenuhnya dinamis — admin dapat memasang atau menghapus kamera langsung dari dalam game.
+  - Perintah Admin:
+    - `/createetle [batas_kmh] [denda] [nama_lokasi...]`: Menaruh kamera ETLE baru (objek 18880 + 3D Text Label).
+    - `/destroyetle [camera_id]`: Menghapus kamera dari dunia dan database MySQL.
+    - `/etles`: Menampilkan jumlah kamera tilang aktif.
+  - Preset bawaan: Pershing Square (100 KM/J), Commerce Freeway (120 KM/J), Idlewood Boulevard (90 KM/J), Santa Maria Highway (80 KM/J).
+- **Mekanisme Pelanggaran Otomatis:**
+  - Deteksi kecepatan real-time saat berkendara.
+  - Audio shutter jepretan kamera tilang (Sound 1133) & toast notification bilingual (ID/EN).
+  - Denda langsung tercatat di profil karakter (`pTickets`, `pTicketAmount`).
+  - Broadcast darurat otomatis ke radio polisi SAPD jika melaju kencang (> 135 KM/J).
+  - Armada darurat dinas kepolisian dan paramedis ambulans otomatis dikecualikan.
+  - Perintah Warga: `/tickets` (cek tagihan surat tilang) dan `/payticket` / `/bayartilang` (pelunasan via bank/cash).
+
+---
+
+## Ekonomi Bawah Tanah & Pekerjaan Ilegal (`gameplay/illegal_activities.inc`)
+- **1. Penyelundupan Paket Kontraband Gelap (Contraband Runner Sidejob):**
+  - Markas sindikat rahasia di Ocean Docks (`/smuggle` atau `/selundup`).
+  - Mengambil paket kontraband gelap (`ITEM_CONTRABAND`) dan mengantarkannya ke titik drop acak di pinggiran kota (El Corona, Alhambra Backalley, Commerce Underground, Ocean Docks Pier).
+  - Hadiah pengantaran: Uang tunai kotor ($800 - $1.400) dan cooldown pengantaran 3 menit.
+  - Risiko: Jika tertangkap dan digeledah polisi (`/frisk` / `/confiscate`), barang bukti disita.
+- **2. Mutilasi Suku Cadang Kendaraan Curian (Illegal Chop Shop):**
+  - Lokasi bengkel rahasia peleburan rangka di Ocean Docks (`/chopveh` atau `/chopshop`).
+  - Membawa kendaraan apa saja dan membongkarnya menggunakan Linggis Baja (`ITEM_CROWBAR`) atau Toolkit.
+  - Hasil mutilasi: Uang tunai peleburan ($750 - $1.600) + 2x-4x Suku Cadang Curian (`ITEM_CARPARTS`).
+  - 35% Chance membunyikan alarm dan memicu laporan 911 ke patroli kepolisian SAPD.
+- **3. Pembobolan Kunci Kendaraan (Vehicle Lockpicking):**
+  - Berdiri di samping mobil terkunci mana saja dan gunakan `/lockpick` atau `/bobol`.
+  - Memerlukan Obeng Lockpick (`ITEM_LOCKPICK`). Animasi membongkar kunci, peluang keberhasilan 65%.
+  - Jika berhasil, kunci pintu terbuka, alarm mobil berbunyi nyaring, dan sinyal alarm 911 otomatis dikirim ke polisi terdekat.
+- **4. Pasar Gelap Bawah Tanah (Black Market Dealer):**
+  - Lokasi tersembunyi di gang kumuh Ocean Docks (`/blackmarket`, `/bm`, `/pasargelap`).
+  - Katalog Beli:
+    - Obeng Lockpick Pembobol Kunci ($150)
+    - Linggis Baja / Crowbar ($100)
+    - Pistol Rakitan Gelap Colt .45 + 50 Peluru ($1.200)
+    - Paket Kontraband Mentah ($250)
+  - Penadah Hasil Kejahatan (Menu Jual):
+    - Jual Suku Cadang Curian (`ITEM_CARPARTS`): $280 / pcs
+    - Jual Paket Kontraband (`ITEM_CONTRABAND`): $650 / pcs
+    - Jual Logam Daur Ulang (`ITEM_RECYCLED`): $35 / pcs
+- **5. Penyitaan Barang Bukti Kepolisian (`/confiscate` atau `/sita`):**
+  - Khusus petugas SAPD on-duty (`/duty`):
+  - Menggeledah dan menyita seluruh paket kontraband, suku cadang curian, dan lockpick dari tersangka kejahatan.
 
 ---
 

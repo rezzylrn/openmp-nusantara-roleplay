@@ -1084,6 +1084,75 @@ CMD:bayartilang(playerid, params[])
 	return cmd_payticket(playerid, params);
 }
 
+CMD:smuggle(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ProcessStartSmuggle(playerid);
+	return 1;
+}
+
+CMD:selundup(playerid, params[])
+{
+	return cmd_smuggle(playerid, params);
+}
+
+CMD:chopveh(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ProcessChopVehicle(playerid);
+	return 1;
+}
+
+CMD:chopshop(playerid, params[])
+{
+	return cmd_chopveh(playerid, params);
+}
+
+CMD:lockpick(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ProcessLockpickVehicle(playerid);
+	return 1;
+}
+
+CMD:bobol(playerid, params[])
+{
+	return cmd_lockpick(playerid, params);
+}
+
+CMD:blackmarket(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ShowBlackMarketDialog(playerid);
+	return 1;
+}
+
+CMD:bm(playerid, params[])
+{
+	return cmd_blackmarket(playerid, params);
+}
+
+CMD:pasargelap(playerid, params[])
+{
+	return cmd_blackmarket(playerid, params);
+}
+
+CMD:confiscate(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	new targetid;
+	if (sscanf(params, "u", targetid)) {
+		return SendSyntax(playerid, "/confiscate [playerid/Nama]");
+	}
+	ProcessConfiscateIllicitItems(playerid, targetid);
+	return 1;
+}
+
+CMD:sita(playerid, params[])
+{
+	return cmd_confiscate(playerid, params);
+}
+
 stock ShowHelpDialog(playerid)
 {
 	new buf[800];

@@ -166,3 +166,18 @@ CREATE TABLE `trash_bins` (
   `vw` INT DEFAULT 0,
   `capacity` INT DEFAULT 100
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ---------------------------------------------------------------------------
+-- Tabel: etle_cameras (Kamera Tilang Elektronik Dinamis / Speed Trap)
+-- ---------------------------------------------------------------------------
+DROP TABLE IF EXISTS `etle_cameras`;
+CREATE TABLE `etle_cameras` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `name` VARCHAR(64) NOT NULL,
+  `posx` FLOAT NOT NULL,
+  `posy` FLOAT NOT NULL,
+  `posz` FLOAT NOT NULL,
+  `speed_limit` FLOAT NOT NULL DEFAULT 100.0,
+  `ticket_fee` INT NOT NULL DEFAULT 150,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

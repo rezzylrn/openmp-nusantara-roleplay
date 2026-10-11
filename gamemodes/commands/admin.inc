@@ -351,3 +351,45 @@ CMD:trashes(playerid, params[])
 	SendInfo(playerid, "Total tong sampah terpasang: %d unit.", gTotalTrash);
 	return 1;
 }
+
+CMD:createetle(playerid, params[])
+{
+	if (!IsPlayerAdminEx(playerid, 3)) return SendErr(playerid, "Diperlukan admin level 3+.");
+	new Float:limit, fee, name[48];
+	if (sscanf(params, "fds[48]", limit, fee, name)) {
+		return SendSyntax(playerid, "/createetle [Batas KM/J] [Denda $] [Nama Lokasi]");
+	}
+	new Float:x, Float:y, Float:z;
+	GetPlayerPos(playerid, x, y, z);
+	new slot = TrafficCamera_Create(x, y, z, limit, fee, name);
+	if (slot != -1) {
+		new succMsg[160];
+		format(succMsg, sizeof(succMsg), "SUKSES: Kamera ETLE #%d ('%s') berhasil dipasang di titik Anda (Batas: %.0f KM/J, Denda: $%d).",
+			slot + 1, name, limit, fee);
+		SendClientMessage(playerid, COLOR_SUCCESS, succMsg);
+	} else {
+		SendErr(playerid, "Batas maksimal kamera ETLE tercapai (%d unit).", MAX_SPEED_CAMERAS);
+	}
+	return 1;
+}
+
+CMD:destroyetle(playerid, params[])
+{
+	if (!IsPlayerAdminEx(playerid, 3)) return SendErr(playerid, "Diperlukan admin level 3+.");
+	new camid;
+	if (sscanf(params, "d", camid)) return SendSyntax(playerid, "/destroyetle [camera_id]");
+	camid--;
+	if (camid < 0 || camid >= MAX_SPEED_CAMERAS || !gSpeedCameras[camid][camUsed]) return SendErr(playerid, "Kamera ETLE tidak valid.");
+	TrafficCamera_Destroy(camid);
+	new delMsg[80];
+	format(delMsg, sizeof(delMsg), "SUKSES: Kamera ETLE #%d berhasil dihapus dari dunia dan database.", camid + 1);
+	SendClientMessage(playerid, COLOR_SUCCESS, delMsg);
+	return 1;
+}
+
+CMD:etles(playerid, params[])
+{
+	if (!IsPlayerAdminEx(playerid, 1)) return SendErr(playerid, "Perintah khusus admin.");
+	SendInfo(playerid, "Total kamera tilang ETLE terpasang: %d unit.", gTotalSpeedCameras);
+	return 1;
+}

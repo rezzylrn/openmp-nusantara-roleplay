@@ -35,6 +35,7 @@
 #include "gameplay/armory.inc"
 #include "gameplay/jobs.inc"
 #include "gameplay/police_mdc.inc"
+#include "gameplay/illegal_activities.inc"
 #include "gameplay/phone.inc"
 #include "gameplay/player_stats.inc"
 
@@ -72,6 +73,7 @@ public OnGameModeInit()
 	TrafficCamera_Init();
 	Rental_Init();
 	Armory_Init();
+	IllegalActivities_Init();
 
 	// default class spawn
 	AddPlayerClass(0, SPAWN_X, SPAWN_Y, SPAWN_Z, SPAWN_A, WEAPON_FIST, 0, WEAPON_FIST, 0, WEAPON_FIST, 0);
@@ -509,6 +511,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		case DIALOG_ARMORY_MENU: OnFactionArmoryResponse(playerid, listitem);
 		case DIALOG_RENTAL_MENU: OnRentalDialogResponse(playerid, listitem);
 		case DIALOG_TRUNK_WEAPON: OnTrunkWeaponResponse(playerid, listitem);
+		case DIALOG_BLACKMARKET_BUY: OnBlackMarketBuyResponse(playerid, listitem);
+		case DIALOG_BLACKMARKET_SELL: OnBlackMarketSellResponse(playerid, listitem);
 	}
 	return 1;
 }
@@ -518,6 +522,10 @@ public OnPlayerEnterCheckpoint(playerid)
 {
 	if (gJobActive[playerid]) {
 		OnJobCheckpoint(playerid);
+		return 1;
+	}
+	if (gPlayerSmuggleActive[playerid]) {
+		ProcessSmuggleDelivery(playerid);
 		return 1;
 	}
 	// Sampai di tujuan GPS navigasi

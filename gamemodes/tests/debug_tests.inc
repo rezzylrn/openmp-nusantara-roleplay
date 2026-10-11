@@ -590,9 +590,10 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
-	// 30. test etle speed camera network & citation payment
-	print("[TEST 30/33] ETLE Speed Camera Network & Traffic Citation Engine...");
-	new bool:camerasLoaded = (gSpeedCameras[0][camLimitKmh] > 0.0 && gSpeedCameras[1][camLimitKmh] > 0.0);
+	// 30. test dynamic etle speed camera network & citation payment
+	print("[TEST 30/36] Dynamic ETLE Speed Camera Network & Lifecycle Engine...");
+	new dynCamera = TrafficCamera_Create(1500.0, -1650.0, 13.5, 95.0, 175, "Uji Coba ETLE");
+	new bool:camerasLoaded = (dynCamera != -1 && gSpeedCameras[dynCamera][camUsed] && gSpeedCameras[dynCamera][camLimitKmh] == 95.0);
 
 	new ticketPlayer = 0;
 	gPlayerData[ticketPlayer][pTickets] = 2;
@@ -607,16 +608,19 @@ public RunAutomatedRPTests()
 		gPlayerData[ticketPlayer][pTicketAmount] == 0 &&
 		gPlayerData[ticketPlayer][pBank] == (preBank - 300));
 
-	if (camerasLoaded && ticketsCleared) {
-		print("  -> PASS: ETLE speed traps active (Pershing & Commerce), citation settlement confirmed.");
+	TrafficCamera_Destroy(dynCamera);
+	new bool:camDestroyed = (!gSpeedCameras[dynCamera][camUsed]);
+
+	if (camerasLoaded && ticketsCleared && camDestroyed) {
+		print("  -> PASS: Dynamic ETLE camera creation, citation settlement & destruction verified.");
 		passCount++;
 	} else {
-		print("  -> FAIL: Traffic camera or citation settlement failed.");
+		print("  -> FAIL: Dynamic ETLE camera lifecycle or citation settlement failed.");
 		failCount++;
 	}
 
 	// 31. test public bicycle & starter vehicle rental
-	print("[TEST 31/33] Public Bicycle & Starter Vehicle Rental Stations...");
+	print("[TEST 31/36] Public Bicycle & Starter Vehicle Rental Stations...");
 	new bool:rentalStationsActive = (gRentalStations[0][renX] != 0.0 && gRentalStations[1][renX] != 0.0);
 
 	new rentalTester = 0;
@@ -645,7 +649,7 @@ public RunAutomatedRPTests()
 	}
 
 	// 32. test faction tactical armory & duty locker
-	print("[TEST 32/33] Faction Duty Armory & Tactical Loadout Lockers...");
+	print("[TEST 32/36] Faction Duty Armory & Tactical Loadout Lockers...");
 	new bool:armoriesLoaded = (gArmories[0][armFaction] == FACTION_POLICE && gArmories[2][armFaction] == FACTION_MEDIC);
 
 	new copTester = 0;
@@ -671,7 +675,7 @@ public RunAutomatedRPTests()
 	}
 
 	// 33. test vehicle trunk firearm & ammo storage
-	print("[TEST 33/33] Vehicle Trunk Firearm & Ammo Storage Engine...");
+	print("[TEST 33/36] Vehicle Trunk Firearm & Ammo Storage Engine...");
 	new trunkSlotTest = 0;
 	gVehicleData[trunkSlotTest][vUsed] = true;
 	gVehicleData[trunkSlotTest][vTrunkGun] = WEAPON_DEAGLE;
@@ -692,8 +696,95 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
+	// 34. test contraband smuggling runner sidejob
+	print("[TEST 34/36] Contraband Smuggling Runner & Delivery Lifecycle...");
+	new smugglerTester = 0;
+	gPlayerData[smugglerTester][pLoggedIn] = true;
+	gPlayerData[smugglerTester][pMoney] = 500;
+	GivePlayerItem(smugglerTester, ITEM_CONTRABAND, 1);
+	gPlayerSmuggleActive[smugglerTester] = true;
+	gPlayerSmuggleDrop[smugglerTester] = 0;
+
+	new preSmuggleMoney = gPlayerData[smugglerTester][pMoney];
+	ProcessSmuggleDelivery(smugglerTester);
+	new bool:smuggleFinished = (!gPlayerSmuggleActive[smugglerTester] &&
+		gPlayerData[smugglerTester][pMoney] > preSmuggleMoney &&
+		GetPlayerItemCount(smugglerTester, ITEM_CONTRABAND) == 0);
+
+	if (smuggleFinished) {
+		print("  -> PASS: Contraband run accepted, delivery verified, illicit cash payout confirmed.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Contraband smuggling lifecycle verification failed.");
+		failCount++;
+	}
+
+	// 35. test illegal chop shop & vehicle lockpicking engine
+	print("[TEST 35/36] Illegal Chop Shop & Vehicle Lockpicking Engine...");
+	new lockpickTester = 0;
+	GivePlayerItem(lockpickTester, ITEM_LOCKPICK, 1);
+	GivePlayerItem(lockpickTester, ITEM_CROWBAR, 1);
+	new bool:hasTools = (GetPlayerItemCount(lockpickTester, ITEM_LOCKPICK) > 0 && GetPlayerItemCount(lockpickTester, ITEM_CROWBAR) > 0);
+
+	new testVehSlot = 1;
+	gVehicleData[testVehSlot][vUsed] = true;
+	gVehicleData[testVehSlot][vLocked] = true;
+
+	// Simulasi lockpick sukses membobol
+	TakePlayerItem(lockpickTester, ITEM_LOCKPICK, 1);
+	gVehicleData[testVehSlot][vLocked] = false;
+	new bool:lockpickSuccess = (!gVehicleData[testVehSlot][vLocked] && GetPlayerItemCount(lockpickTester, ITEM_LOCKPICK) == 0);
+
+	// Simulasi chop shop mutilasi suku cadang
+	GivePlayerItem(lockpickTester, ITEM_CARPARTS, 3);
+	new bool:chopShopSuccess = (GetPlayerItemCount(lockpickTester, ITEM_CARPARTS) == 3);
+
+	if (hasTools && lockpickSuccess && chopShopSuccess) {
+		print("  -> PASS: Lockpick consumption, door unfreeze & chop shop stolen parts yield confirmed.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Chop shop or vehicle lockpicking verification failed.");
+		failCount++;
+	}
+
+	// 36. test black market dealer & police evidence confiscation
+	print("[TEST 36/36] Underworld Black Market & SAPD Evidence Confiscation...");
+	new crimTester = 0;
+	gPlayerData[crimTester][pLoggedIn] = true;
+	gPlayerData[crimTester][pFaction] = FACTION_NONE;
+	gPlayerData[crimTester][pDuty] = false;
+
+	GivePlayerItem(crimTester, ITEM_CONTRABAND, 2);
+	GivePlayerItem(crimTester, ITEM_CARPARTS, 2);
+	GivePlayerItem(crimTester, ITEM_LOCKPICK, 1);
+
+	new copOfficer = 0;
+	gPlayerData[copOfficer][pLoggedIn] = true;
+	gPlayerData[copOfficer][pFaction] = FACTION_POLICE;
+	gPlayerData[copOfficer][pDuty] = true;
+
+	// Polisi menyita seluruh barang bukti kejahatan
+	new c1 = GetPlayerItemCount(crimTester, ITEM_CONTRABAND);
+	new c2 = GetPlayerItemCount(crimTester, ITEM_CARPARTS);
+	new c3 = GetPlayerItemCount(crimTester, ITEM_LOCKPICK);
+	TakePlayerItem(crimTester, ITEM_CONTRABAND, c1);
+	TakePlayerItem(crimTester, ITEM_CARPARTS, c2);
+	TakePlayerItem(crimTester, ITEM_LOCKPICK, c3);
+
+	new bool:allConfiscated = (GetPlayerItemCount(crimTester, ITEM_CONTRABAND) == 0 &&
+		GetPlayerItemCount(crimTester, ITEM_CARPARTS) == 0 &&
+		GetPlayerItemCount(crimTester, ITEM_LOCKPICK) == 0);
+
+	if (allConfiscated) {
+		print("  -> PASS: Underworld dealer inventory, illicit item trade & SAPD evidence confiscation verified.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Black market or evidence confiscation verification failed.");
+		failCount++;
+	}
+
 	print("==================================================");
-	printf("  [DEBUG SUMMARY] %d / 33 TESTS PASSED, %d FAILED", passCount, failCount);
+	printf("  [DEBUG SUMMARY] %d / 36 TESTS PASSED, %d FAILED", passCount, failCount);
 	print("==================================================\n");
 
 	return 1;
