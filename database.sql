@@ -58,6 +58,7 @@ CREATE TABLE `characters` (
   `radiofreq` INT DEFAULT 0,
   `radiostatus` INT DEFAULT 0,
   `injured` INT DEFAULT 0,
+  `language` INT DEFAULT 0,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   INDEX (`ucp_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

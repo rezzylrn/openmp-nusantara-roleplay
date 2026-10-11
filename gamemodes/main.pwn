@@ -8,6 +8,7 @@
 #include "core/header.inc"
 #include "core/database.inc"
 #include "core/player_auth.inc"
+#include "core/localization.inc"
 
 // 2. Anti-Cheat Engine (Multi-Vector Security)
 #include "anticheat/anticheat.inc"
@@ -24,6 +25,7 @@
 #include "systems/workshop.inc"
 
 // 5. Gameplay & Factions
+#include "gameplay/mapping.inc"
 #include "gameplay/factions.inc"
 #include "gameplay/jobs.inc"
 #include "gameplay/police_mdc.inc"
@@ -85,6 +87,9 @@ public OnGameModeInit()
 	Create3DTextLabel("{00FF00}[ PASAR IKAN DERMAGA ]\n{FFFFFF}Gunakan /sellfish untuk menjual hasil tangkapan", COLOR_GREEN, FISH_PIER_X, FISH_PIER_Y, FISH_PIER_Z + 0.8, 15.0, 0, false);
 	Create3DTextLabel("{FFFF44}[ PENGEPUL RONGSOCKAN ]\n{FFFFFF}Gunakan /selltrash untuk menjual barang bekas", COLOR_YELLOW, TRASH_BUYER_X, TRASH_BUYER_Y, TRASH_BUYER_Z + 0.8, 15.0, 0, false);
 	Create3DTextLabel("{E67E22}[ PABRIK KAYU SAWMILL ]\n{FFFFFF}Gunakan /sellwood untuk menjual balok kayu", COLOR_ORANGE, SAWMILL_X, SAWMILL_Y, SAWMILL_Z + 0.8, 15.0, 0, false);
+
+	// Load modular world mapping
+	LoadNusantaraMapping();
 
 	// timers
 	gTimerTick = SetTimer("RP_Tick", 1000, true);
@@ -459,6 +464,19 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			}
 			CreateDispatchReport(playerid, gPending911Service[playerid], inputtext);
 		}
+		case DIALOG_LANGUAGE_SELECT: {
+			if (!response) return 1;
+			if (listitem == 0) {
+				SetPlayerLang(playerid, LANG_ID);
+				SendSucc(playerid, "Bahasa sistem berhasil diatur ke: Bahasa Indonesia.");
+			} else {
+				SetPlayerLang(playerid, LANG_EN);
+				SendSucc(playerid, "System language successfully set to: English.");
+			}
+			UpdatePlayerHUD(playerid);
+			PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
+			return 1;
+		}
 	}
 	return 1;
 }
@@ -486,6 +504,7 @@ public RP_Tick()
 		TickPaycheck(i);
 		AC_Tick(i);
 		ProcessPoliceRadarTick(i);
+		UpdatePlayerZoneHUD(i);
 	}
 	UpdateVehicleFuelLoop();
 	return 1;

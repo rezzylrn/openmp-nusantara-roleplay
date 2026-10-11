@@ -154,10 +154,17 @@ stock ShowBankDialog(playerid)
 		SendErr(playerid, "Anda harus berada di depan bank.");
 		return 0;
 	}
-	ShowPlayerDialog(playerid, DIALOG_BANK_MENU, DIALOG_STYLE_LIST,
-		"LOKAL BANK - NUSANTARA RP",
-		"Simpan dana (Deposit)\nTarik dana (Withdraw)\nTransfer rekening\nCek saldo",
-		"Pilih", "Batal");
+	if (gPlayerData[playerid][pLanguage] == LANG_EN) {
+		ShowPlayerDialog(playerid, DIALOG_BANK_MENU, DIALOG_STYLE_LIST,
+			"BANK OF NUSANTARA - BANKING SERVICES",
+			"Deposit Funds\nWithdraw Funds\nWire Transfer\nBalance Inquiry",
+			"Select", "Cancel");
+	} else {
+		ShowPlayerDialog(playerid, DIALOG_BANK_MENU, DIALOG_STYLE_LIST,
+			"LOKAL BANK - NUSANTARA RP",
+			"Simpan dana (Deposit)\nTarik dana (Withdraw)\nTransfer rekening\nCek saldo",
+			"Pilih", "Batal");
+	}
 	return 1;
 }
 
@@ -171,10 +178,17 @@ stock ShowATMDialog(playerid)
 		SendErr(playerid, "Anda harus berada di dekat ATM.");
 		return 0;
 	}
-	ShowPlayerDialog(playerid, DIALOG_ATM_MENU, DIALOG_STYLE_LIST,
-		"ATM - NUSANTARA RP",
-		"Tarik tunai (Withdraw)\nSimpan tunai (Deposit)\nCek saldo",
-		"Pilih", "Batal");
+	if (gPlayerData[playerid][pLanguage] == LANG_EN) {
+		ShowPlayerDialog(playerid, DIALOG_ATM_MENU, DIALOG_STYLE_LIST,
+			"ATM NUSANTARA - AUTOMATED TELLER MACHINE",
+			"Withdraw Cash ($1 - $1,000,000)\nDeposit Cash\nBalance Inquiry",
+			"Select", "Cancel");
+	} else {
+		ShowPlayerDialog(playerid, DIALOG_ATM_MENU, DIALOG_STYLE_LIST,
+			"ATM - NUSANTARA RP",
+			"Tarik tunai ($1 - $1.000.000)\nSimpan tunai (Deposit)\nCek saldo",
+			"Pilih", "Batal");
+	}
 	return 1;
 }
 

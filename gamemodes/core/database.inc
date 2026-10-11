@@ -399,6 +399,9 @@ public OnCharacterLoaded(playerid)
 	cache_get_value_name_int(0, "injured", injVal);
 	gPlayerData[playerid][pInjured] = (injVal != 0);
 
+	cache_get_value_name_int(0, "language", gPlayerData[playerid][pLanguage]);
+	if (gPlayerData[playerid][pLanguage] != LANG_EN) gPlayerData[playerid][pLanguage] = LANG_ID;
+
 	if (gPlayerData[playerid][pLevel] < 1) gPlayerData[playerid][pLevel] = 1;
 	if (gPlayerData[playerid][pHunger] < 0.0) gPlayerData[playerid][pHunger] = 100.0;
 	if (gPlayerData[playerid][pThirst] < 0.0) gPlayerData[playerid][pThirst] = 100.0;
@@ -439,7 +442,7 @@ stock DB_SavePlayerData(playerid)
 		faction=%d, factionrank=%d, duty=%d, job=%d, hunger=%.2f, thirst=%.2f, \
 		skin=%d, lastx=%.2f, lasty=%.2f, lastz=%.2f, lasta=%.2f, interior=%d, \
 		vworld=%d, cuffed=%d, warnings=%d, kills=%d, deaths=%d, playhours=%d, muted=%d, \
-		phone=%d, phonestatus=%d, radiofreq=%d, radiostatus=%d, injured=%d \
+		phone=%d, phonestatus=%d, radiofreq=%d, radiostatus=%d, injured=%d, language=%d \
 		WHERE id=%d",
 		gPlayerData[playerid][pMoney], gPlayerData[playerid][pBank],
 		gPlayerData[playerid][pLevel], gPlayerData[playerid][pExp],
@@ -453,7 +456,7 @@ stock DB_SavePlayerData(playerid)
 		gPlayerData[playerid][pPlayHours], _:gPlayerData[playerid][pMuted],
 		gPlayerData[playerid][pPhone], _:gPlayerData[playerid][pPhoneStatus],
 		gPlayerData[playerid][pRadioFreq], _:gPlayerData[playerid][pRadioStatus],
-		_:gPlayerData[playerid][pInjured], gPlayerData[playerid][pID]);
+		_:gPlayerData[playerid][pInjured], gPlayerData[playerid][pLanguage], gPlayerData[playerid][pID]);
 
 	mysql_tquery(gDB, query, "", "");
 	return 1;

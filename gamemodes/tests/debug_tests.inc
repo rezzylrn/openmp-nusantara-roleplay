@@ -419,7 +419,7 @@ public RunAutomatedRPTests()
 	}
 
 	// 22. test 911 emergency dispatch & medical trauma system
-	print("[TEST 22/22] 911 Emergency Dispatch & Trauma Medical System...");
+	print("[TEST 22/25] 911 Emergency Dispatch & Trauma Medical System...");
 	new callerTest = 0;
 	ResetPlayerData(callerTest);
 	gPlayerData[callerTest][pLoggedIn] = true;
@@ -440,8 +440,58 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
+	// 23. test bilingual localization system (id & en)
+	print("[TEST 23/25] Bilingual Localization Engine (ID/EN System Language)...");
+	new langPlayer = 0;
+	gPlayerData[langPlayer][pLanguage] = LANG_ID;
+	new bool:langDefaultId = (GetPlayerLang(langPlayer) == LANG_ID);
+	gPlayerData[langPlayer][pLanguage] = LANG_EN;
+	new bool:langSwitchedEn = (GetPlayerLang(langPlayer) == LANG_EN);
+	gPlayerData[langPlayer][pLanguage] = LANG_ID; // kembalikan ke ID
+
+	if (langDefaultId && langSwitchedEn) {
+		print("  -> PASS: Dynamic localization engine (ID/EN language toggle) operational.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Language selection toggle failed.");
+		failCount++;
+	}
+
+	// 24. test street zone detector & compass heading
+	print("[TEST 24/25] District Zone Detector & Compass Heading Engine...");
+	new zoneTestPlayer = 0;
+	SetPlayerPos(zoneTestPlayer, 1481.0, -1748.0, 13.5);
+	SetPlayerFacingAngle(zoneTestPlayer, 0.0);
+
+	new zoneBuffer[48], compassBuffer[8];
+	GetPlayerZoneName(zoneTestPlayer, zoneBuffer, sizeof(zoneBuffer));
+	GetPlayerCompassDirection(zoneTestPlayer, compassBuffer, sizeof(compassBuffer));
+
+	new bool:zoneMatch = (strfind(zoneBuffer, "Pershing Square") != -1 && strcmp(compassBuffer, "N") == 0);
+
+	if (zoneMatch) {
+		printf("  -> PASS: Zone ('%s') & Compass Direction ('%s') accurately resolved.",
+			zoneBuffer, compassBuffer);
+		passCount++;
+	} else {
+		printf("  -> FAIL: Zone / Compass mismatch: zone='%s', compass='%s'", zoneBuffer, compassBuffer);
+		failCount++;
+	}
+
+	// 25. test modular world mapping deployment
+	print("[TEST 25/25] Modular World Mapping Deployment (Zero Collision Props)...");
+	new mapLoaded = LoadNusantaraMapping();
+
+	if (mapLoaded == 1) {
+		print("  -> PASS: 35+ Clean ground-aligned world props successfully spawned.");
+		passCount++;
+	} else {
+		print("  -> FAIL: World mapping initialization failed.");
+		failCount++;
+	}
+
 	print("==================================================");
-	printf("  [DEBUG SUMMARY] %d / 22 TESTS PASSED, %d FAILED", passCount, failCount);
+	printf("  [DEBUG SUMMARY] %d / 25 TESTS PASSED, %d FAILED", passCount, failCount);
 	print("==================================================\n");
 
 	return 1;

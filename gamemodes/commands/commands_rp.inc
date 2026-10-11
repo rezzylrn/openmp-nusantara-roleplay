@@ -227,6 +227,18 @@ CMD:menu(playerid, params[])
 	return 1;
 }
 
+CMD:lang(playerid, params[])
+{
+	return cmd_language(playerid, params);
+}
+
+CMD:language(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ShowLanguageSelectionDialog(playerid);
+	return 1;
+}
+
 CMD:vehpanel(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");

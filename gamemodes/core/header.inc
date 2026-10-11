@@ -148,6 +148,8 @@ enum E_PLAYER_DATA {
 	pUCPName[24],
 	pBirthDate[16],
 	pGender,
+	// language & localization
+	pLanguage,
 	// job variables
 	pJobCooldown,
 	pTrashCount,
@@ -228,6 +230,10 @@ enum E_VEHICLE_DATA {
 #define DIALOG_TRUNK_TAKE_CASH    45
 #define DIALOG_911_SERVICE        43
 #define DIALOG_911_MESSAGE        44
+#define DIALOG_LANGUAGE_SELECT    46
+
+#define LANG_ID                   0
+#define LANG_EN                   1
 
 #define MAX_DISPATCHES            20
 

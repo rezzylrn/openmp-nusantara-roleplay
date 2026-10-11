@@ -89,6 +89,7 @@ stock ResetPlayerData(playerid)
 	gPlayerData[playerid][pRadioStatus] = false;
 	gPlayerData[playerid][pInjured] = false;
 	gPlayerData[playerid][pInjuredTime] = 0;
+	gPlayerData[playerid][pLanguage] = LANG_ID;
 
 	gPhoneOpen[playerid] = false;
 	gInventoryOpen[playerid] = false;

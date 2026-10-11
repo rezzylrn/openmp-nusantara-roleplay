@@ -171,8 +171,17 @@
 #define pTD_ActBtnStats     58
 #define pTD_ActBtnHelp      59
 #define pTD_ActBtnClose     60
+// --- Street Zone & Compass HUD ---
+#define pTD_ZoneBox         61
+#define pTD_ZoneCompass     62
+#define pTD_ZoneName        63
+// --- Critical Trauma & Injury Overlay ---
+#define pTD_InjuredBg       64
+#define pTD_InjuredHeader   65
+#define pTD_InjuredTimer    66
+#define pTD_InjuredInfo     67
 // --- penanda batas (harus terakhir) ---
-#define pTD_COUNT           61
+#define pTD_COUNT           68
 
 // Index pertama/terakhir tiap panel, untuk loop show/hide.
 #define TD_HUD_FIRST       pTD_HudPanel
@@ -187,6 +196,10 @@
 #define TD_BANK_LAST       pTD_BankBtnClose
 #define TD_ACT_FIRST       pTD_ActBg
 #define TD_ACT_LAST        pTD_ActBtnClose
+#define TD_ZONE_FIRST      pTD_ZoneBox
+#define TD_ZONE_LAST       pTD_ZoneName
+#define TD_INJURED_FIRST   pTD_InjuredBg
+#define TD_INJURED_LAST    pTD_InjuredInfo
 
 // ---------------------------------------------------------------------------
 // STATE MODUL
@@ -824,6 +837,55 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_ActBtnClose], 390.0, 306.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_ActBtnClose], true);
 
+    // ==================== STREET ZONE & COMPASS HUD ====================
+    gTD_PlayerText[playerid][pTD_ZoneBox] = CreatePlayerTextDraw(playerid, 28.0, 432.0, "_");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_ZoneBox], 0.0, 1.4);
+    PlayerTextDrawUseBox(playerid, gTD_PlayerText[playerid][pTD_ZoneBox], true);
+    PlayerTextDrawBoxColour(playerid, gTD_PlayerText[playerid][pTD_ZoneBox], 0x0D0D1ACC);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_ZoneBox], 195.0, 13.0);
+
+    gTD_PlayerText[playerid][pTD_ZoneCompass] = CreatePlayerTextDraw(playerid, 32.0, 433.0, "[ N ]");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_ZoneCompass], 0.19, 0.82);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_ZoneCompass], TEXT_DRAW_ALIGN_LEFT);
+    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_ZoneCompass], TD_COLOR_ACCENT);
+    PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_ZoneCompass], TEXT_DRAW_FONT_2);
+    PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_ZoneCompass], true);
+
+    gTD_PlayerText[playerid][pTD_ZoneName] = CreatePlayerTextDraw(playerid, 55.0, 433.0, "Pershing Square, Los Santos");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_ZoneName], 0.175, 0.82);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_ZoneName], TEXT_DRAW_ALIGN_LEFT);
+    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_ZoneName], TD_COLOR_WHITE);
+    PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_ZoneName], TEXT_DRAW_FONT_1);
+    PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_ZoneName], true);
+
+    // ==================== CRITICAL TRAUMA & INJURY OVERLAY ====================
+    gTD_PlayerText[playerid][pTD_InjuredBg] = CreatePlayerTextDraw(playerid, 160.0, 185.0, "_");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_InjuredBg], 0.0, 7.8);
+    PlayerTextDrawUseBox(playerid, gTD_PlayerText[playerid][pTD_InjuredBg], true);
+    PlayerTextDrawBoxColour(playerid, gTD_PlayerText[playerid][pTD_InjuredBg], 0x220000E6);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_InjuredBg], 480.0, 75.0);
+
+    gTD_PlayerText[playerid][pTD_InjuredHeader] = CreatePlayerTextDraw(playerid, 320.0, 192.0, "~r~~h~KONDISI KRITIS (INJURED)");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_InjuredHeader], 0.28, 1.15);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_InjuredHeader], TEXT_DRAW_ALIGN_CENTER);
+    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_InjuredHeader], 0xFF3B30FF);
+    PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_InjuredHeader], TEXT_DRAW_FONT_2);
+    PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_InjuredHeader], true);
+
+    gTD_PlayerText[playerid][pTD_InjuredTimer] = CreatePlayerTextDraw(playerid, 320.0, 212.0, "~w~Waktu Pertolongan Darurat: ~y~90 Detik");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_InjuredTimer], 0.20, 0.90);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_InjuredTimer], TEXT_DRAW_ALIGN_CENTER);
+    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_InjuredTimer], TD_COLOR_WHITE);
+    PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_InjuredTimer], TEXT_DRAW_FONT_1);
+    PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_InjuredTimer], true);
+
+    gTD_PlayerText[playerid][pTD_InjuredInfo] = CreatePlayerTextDraw(playerid, 320.0, 230.0, "~w~Gunakan ~g~/call 911 ~w~untuk memanggil Medis | Warga dapat membantu via ~g~/treat [id]");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_InjuredInfo], 0.175, 0.82);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_InjuredInfo], TEXT_DRAW_ALIGN_CENTER);
+    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_InjuredInfo], TD_COLOR_WHITE);
+    PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_InjuredInfo], TEXT_DRAW_FONT_1);
+    PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_InjuredInfo], true);
+
     // Setel ulang keadaan berjalan.
     gTD_HUD[playerid] = false;
     gTD_Speedo[playerid] = false;
@@ -871,8 +933,12 @@ stock ShowPlayerHUD(playerid)
     for (new e = TD_HUD_FIRST; e <= TD_HUD_LAST; e++)
         PlayerTextDrawShow(playerid, gTD_PlayerText[playerid][e]);
 
+    for (new e = TD_ZONE_FIRST; e <= TD_ZONE_LAST; e++)
+        PlayerTextDrawShow(playerid, gTD_PlayerText[playerid][e]);
+
     gTD_HUD[playerid] = true;
     UpdatePlayerHUD(playerid);
+    UpdatePlayerZoneHUD(playerid);
     return 1;
 }
 
@@ -882,6 +948,9 @@ stock HidePlayerHUD(playerid)
     if (!gTD_HUD[playerid]) return 1;
 
     for (new e = TD_HUD_FIRST; e <= TD_HUD_LAST; e++)
+        PlayerTextDrawHide(playerid, gTD_PlayerText[playerid][e]);
+
+    for (new e = TD_ZONE_FIRST; e <= TD_ZONE_LAST; e++)
         PlayerTextDrawHide(playerid, gTD_PlayerText[playerid][e]);
 
     gTD_HUD[playerid] = false;
@@ -895,6 +964,21 @@ stock UpdatePlayerHUD(playerid)
 
     if (playerid < 0 || playerid >= MAX_PLAYERS || !gTD_Ready[playerid]) return 0;
     if (!gTD_HUD[playerid]) return 1;
+
+    // Lokalisasi label HUD
+    if (gPlayerData[playerid][pLanguage] == LANG_EN) {
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_HudCashLbl], "CASH");
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_HudBankLbl], "BANK");
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_HudHungerLbl], "HUNGER");
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_HudThirstLbl], "THIRST");
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_HudLevelLbl], "LEVEL");
+    } else {
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_HudCashLbl], "UANG");
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_HudBankLbl], "BANK");
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_HudHungerLbl], "LAPAR");
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_HudThirstLbl], "HAUS");
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_HudLevelLbl], "LEVEL");
+    }
 
     GetPlayerName(playerid, name, sizeof(name));
     format(line, sizeof(line), "%s (ID %d)", name, playerid);
@@ -982,8 +1066,21 @@ stock UpdatePlayerSpeedo(playerid)
         PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_SpdVehName], vehname);
     }
 
-    // Kecepatan (KM/J).
-    format(line, sizeof(line), "%d KM/J", floatround(TD_GetVehicleSpeedKmh(vehicleid), floatround_round));
+    // Kecepatan & Label Lokalisasi
+    new bool:isEn = (gPlayerData[playerid][pLanguage] == LANG_EN);
+    if (isEn) {
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_SpdSpeedLbl], "SPEED");
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_SpdFuelLbl], "FUEL");
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_SpdEngineLbl], "ENGINE");
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_SpdLockLbl], "DOORS");
+        format(line, sizeof(line), "%d KM/H", floatround(TD_GetVehicleSpeedKmh(vehicleid), floatround_round));
+    } else {
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_SpdSpeedLbl], "KECEPATAN");
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_SpdFuelLbl], "BAHAN BAKAR");
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_SpdEngineLbl], "MESIN");
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_SpdLockLbl], "PINTU");
+        format(line, sizeof(line), "%d KM/J", floatround(TD_GetVehicleSpeedKmh(vehicleid), floatround_round));
+    }
     PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_SpdSpeedVal], line);
 
     // Bahan bakar - kendaraan pribadi saja, selain itu jujur bilang N/A.
@@ -1004,23 +1101,23 @@ stock UpdatePlayerSpeedo(playerid)
 
     if (engine)
     {
-        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_SpdEngineVal], "MENYALA");
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_SpdEngineVal], isEn ? "RUNNING" : "MENYALA");
         PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_SpdEngineVal], TD_COLOR_ENGINE_ON);
     }
     else
     {
-        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_SpdEngineVal], "MATI");
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_SpdEngineVal], isEn ? "OFF" : "MATI");
         PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_SpdEngineVal], TD_COLOR_ENGINE_OFF);
     }
 
     if (doors)
     {
-        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_SpdLockVal], "TERKUNCI");
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_SpdLockVal], isEn ? "LOCKED" : "TERKUNCI");
         PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_SpdLockVal], TD_COLOR_LOCK_ON);
     }
     else
     {
-        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_SpdLockVal], "BEBAS");
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_SpdLockVal], isEn ? "UNLOCKED" : "BEBAS");
         PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_SpdLockVal], TD_COLOR_LOCK_OFF);
     }
     return 1;
@@ -1124,6 +1221,127 @@ forward RP_HideSubtitle(playerid);
 public RP_HideSubtitle(playerid)
 {
     return HidePlayerSubtitle(playerid);
+}
+
+// ---------------------------------------------------------------------------
+// STREET ZONE & COMPASS HUD
+// ---------------------------------------------------------------------------
+stock GetPlayerZoneName(playerid, zone[], maxlen = sizeof(zone))
+{
+    new Float:x, Float:y, Float:z;
+    GetPlayerPos(playerid, x, y, z);
+
+    if (x >= 1370.0 && x <= 1530.0 && y >= -1850.0 && y <= -1550.0) {
+        format(zone, maxlen, "Pershing Square, Los Santos");
+    } else if (x >= 1700.0 && x <= 2100.0 && y >= -1850.0 && y <= -1550.0) {
+        format(zone, maxlen, "Idlewood, Los Santos");
+    } else if (x >= 2100.0 && x <= 2500.0 && y >= -1850.0 && y <= -1550.0) {
+        format(zone, maxlen, "Ganton, Los Santos");
+    } else if (x >= 1350.0 && x <= 1700.0 && y >= -1550.0 && y <= -1250.0) {
+        format(zone, maxlen, "Commerce, Los Santos");
+    } else if (x >= 1000.0 && x <= 1350.0 && y >= -1450.0 && y <= -1200.0) {
+        format(zone, maxlen, "Market, Los Santos");
+    } else if (x >= 1100.0 && x <= 1300.0 && y >= -1400.0 && y <= -1250.0) {
+        format(zone, maxlen, "All Saints Hospital, Los Santos");
+    } else if (x >= 1800.0 && x <= 2200.0 && y >= -1450.0 && y <= -1100.0) {
+        format(zone, maxlen, "Jefferson, Los Santos");
+    } else if (x >= 1600.0 && x <= 1850.0 && y >= -1950.0 && y <= -1750.0) {
+        format(zone, maxlen, "Unity Station, Los Santos");
+    } else if (x >= 1800.0 && x <= 2200.0 && y >= -2200.0 && y <= -1900.0) {
+        format(zone, maxlen, "Willowfield, Los Santos");
+    } else if (x >= 2300.0 && x <= 2800.0 && y >= -2600.0 && y <= -2100.0) {
+        format(zone, maxlen, "Ocean Docks, Los Santos");
+    } else if (x >= 1400.0 && x <= 2200.0 && y >= -2700.0 && y <= -2200.0) {
+        format(zone, maxlen, "LS International Airport");
+    } else if (x >= 200.0 && x <= 1000.0 && y >= -2000.0 && y <= -1400.0) {
+        format(zone, maxlen, "Santa Maria Beach, Los Santos");
+    } else {
+        format(zone, maxlen, "Los Santos City Area");
+    }
+    return 1;
+}
+
+stock GetPlayerCompassDirection(playerid, dir[], maxlen = sizeof(dir))
+{
+    new Float:angle;
+    GetPlayerFacingAngle(playerid, angle);
+
+    if (angle >= 337.5 || angle < 22.5) format(dir, maxlen, "N");
+    else if (angle >= 22.5 && angle < 67.5) format(dir, maxlen, "NW");
+    else if (angle >= 67.5 && angle < 112.5) format(dir, maxlen, "W");
+    else if (angle >= 112.5 && angle < 157.5) format(dir, maxlen, "SW");
+    else if (angle >= 157.5 && angle < 202.5) format(dir, maxlen, "S");
+    else if (angle >= 202.5 && angle < 247.5) format(dir, maxlen, "SE");
+    else if (angle >= 247.5 && angle < 292.5) format(dir, maxlen, "E");
+    else format(dir, maxlen, "NE");
+    return 1;
+}
+
+stock ShowPlayerZoneHUD(playerid)
+{
+    if (playerid < 0 || playerid >= MAX_PLAYERS || !gTD_Ready[playerid]) return 0;
+    for (new e = TD_ZONE_FIRST; e <= TD_ZONE_LAST; e++) {
+        PlayerTextDrawShow(playerid, gTD_PlayerText[playerid][e]);
+    }
+    UpdatePlayerZoneHUD(playerid);
+    return 1;
+}
+
+stock HidePlayerZoneHUD(playerid)
+{
+    if (playerid < 0 || playerid >= MAX_PLAYERS) return 0;
+    for (new e = TD_ZONE_FIRST; e <= TD_ZONE_LAST; e++) {
+        PlayerTextDrawHide(playerid, gTD_PlayerText[playerid][e]);
+    }
+    return 1;
+}
+
+stock UpdatePlayerZoneHUD(playerid)
+{
+    if (playerid < 0 || playerid >= MAX_PLAYERS || !gTD_Ready[playerid]) return 0;
+    new zone[48], dir[8];
+    GetPlayerZoneName(playerid, zone, sizeof(zone));
+    GetPlayerCompassDirection(playerid, dir, sizeof(dir));
+
+    new strDir[16];
+    format(strDir, sizeof(strDir), "[ %s ]", dir);
+    PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_ZoneCompass], strDir);
+    PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_ZoneName], zone);
+    return 1;
+}
+
+// ---------------------------------------------------------------------------
+// CRITICAL TRAUMA & INJURY OVERLAY
+// ---------------------------------------------------------------------------
+stock ShowPlayerInjuredHUD(playerid, timeLeft = 90)
+{
+    if (playerid < 0 || playerid >= MAX_PLAYERS || !gTD_Ready[playerid]) return 0;
+    new timerStr[64], infoStr[128];
+    if (gPlayerData[playerid][pLanguage] == LANG_EN) {
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_InjuredHeader], "~r~~h~CRITICAL INJURY STATE");
+        format(timerStr, sizeof(timerStr), "~w~Emergency Time Remaining: ~y~%d Seconds", timeLeft);
+        format(infoStr, sizeof(infoStr), "~w~Dial ~g~/call 911 ~w~for SAMD Paramedics | Citizens can assist via ~g~/treat [id]");
+    } else {
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_InjuredHeader], "~r~~h~KONDISI KRITIS (INJURED)");
+        format(timerStr, sizeof(timerStr), "~w~Waktu Pertolongan Darurat: ~y~%d Detik", timeLeft);
+        format(infoStr, sizeof(infoStr), "~w~Gunakan ~g~/call 911 ~w~untuk memanggil Medis | Warga dapat membantu via ~g~/treat [id]");
+    }
+    PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_InjuredTimer], timerStr);
+    PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_InjuredInfo], infoStr);
+
+    for (new e = TD_INJURED_FIRST; e <= TD_INJURED_LAST; e++) {
+        PlayerTextDrawShow(playerid, gTD_PlayerText[playerid][e]);
+    }
+    return 1;
+}
+
+stock HidePlayerInjuredHUD(playerid)
+{
+    if (playerid < 0 || playerid >= MAX_PLAYERS) return 0;
+    for (new e = TD_INJURED_FIRST; e <= TD_INJURED_LAST; e++) {
+        PlayerTextDrawHide(playerid, gTD_PlayerText[playerid][e]);
+    }
+    return 1;
 }
 
 // ---------------------------------------------------------------------------

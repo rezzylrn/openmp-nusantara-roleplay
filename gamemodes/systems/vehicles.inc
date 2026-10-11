@@ -522,9 +522,14 @@ stock ShowVehicleTrunkDialog(playerid, slot)
 	if (slot < 0 || slot >= MAX_OWNED_VEHICLES || !gVehicleData[slot][vUsed]) return 0;
 	gSelectedTrunkVeh[playerid] = slot;
 
+	new bool:isEn = (gPlayerData[playerid][pLanguage] == LANG_EN);
 	new str[700];
 	new itemStr[32];
-	format(str, sizeof(str), "Item / Opsi	Jumlah\n{4CD964}[$] Saldo Uang Tunai Bagasi	$%d\n", gVehicleData[slot][vTrunk]);
+	if (isEn) {
+		format(str, sizeof(str), "Item / Option	Quantity\n{4CD964}[$] Cash in Trunk	$%d\n", gVehicleData[slot][vTrunk]);
+	} else {
+		format(str, sizeof(str), "Item / Opsi	Jumlah\n{4CD964}[$] Saldo Uang Tunai Bagasi	$%d\n", gVehicleData[slot][vTrunk]);
+	}
 
 	for (new s = 0; s < MAX_TRUNK_SLOTS; s++) {
 		new iType = gVehicleData[slot][vTrunkItemType][s];
@@ -533,18 +538,29 @@ stock ShowVehicleTrunkDialog(playerid, slot)
 			GetItemName(iType, itemStr, sizeof(itemStr));
 			format(str, sizeof(str), "%s{FFFF00}[Slot %d] %s	{FFFFFF}x%d\n", str, s + 1, itemStr, iAmt);
 		} else {
-			format(str, sizeof(str), "%s{888888}[Slot %d] (Kosong)	{888888}-\n", str, s + 1);
+			if (isEn) format(str, sizeof(str), "%s{888888}[Slot %d] (Empty)	{888888}-\n", str, s + 1);
+			else format(str, sizeof(str), "%s{888888}[Slot %d] (Kosong)	{888888}-\n", str, s + 1);
 		}
 	}
-	format(str, sizeof(str), "%s{33CCFF}[+] SIMPAN BARANG KE BAGASI	{33CCFF}[KANTUNG]", str);
+	if (isEn) {
+		format(str, sizeof(str), "%s{33CCFF}[+] STORE ITEM INTO TRUNK	{33CCFF}[INVENTORY]", str);
+	} else {
+		format(str, sizeof(str), "%s{33CCFF}[+] SIMPAN BARANG KE BAGASI	{33CCFF}[KANTUNG]", str);
+	}
 
 	new vName[32];
 	GetVehicleModelName(gVehicleData[slot][vModel], vName, sizeof(vName));
 	new title[64];
-	format(title, sizeof(title), "BAGASI - %s (%s)", vName, gVehicleData[slot][vPlate]);
+	if (isEn) format(title, sizeof(title), "TRUNK - %s (%s)", vName, gVehicleData[slot][vPlate]);
+	else format(title, sizeof(title), "BAGASI - %s (%s)", vName, gVehicleData[slot][vPlate]);
 
-	ShowPlayerDialog(playerid, DIALOG_TRUNK, DIALOG_STYLE_TABLIST_HEADERS,
-		title, str, "Pilih", "Tutup");
+	if (isEn) {
+		ShowPlayerDialog(playerid, DIALOG_TRUNK, DIALOG_STYLE_TABLIST_HEADERS,
+			title, str, "Select", "Close");
+	} else {
+		ShowPlayerDialog(playerid, DIALOG_TRUNK, DIALOG_STYLE_TABLIST_HEADERS,
+			title, str, "Pilih", "Tutup");
+	}
 	return 1;
 }
 

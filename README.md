@@ -235,6 +235,41 @@ Gamemode ini mengadopsi arsitektur anti-cheat server-side modular yang dirancang
 
 ---
 
+## Sistem Multi-Bahasa Bilingual (`core/localization.inc`)
+- **Pilihan Bahasa Fleksibel (`/language` atau `/lang`):**
+  - **Bahasa Indonesia [ID]:** Bahasa bawaan Nusantara Roleplay dengan istilah ramah dan lokal.
+  - **English [EN]:** Mode bahasa internasional untuk seluruh teks dialog, instruksi, dan antarmuka.
+- **Adaptasi Antarmuka Menyeluruh:**
+  - **Dialog Interaktif:** Menu ATM & Bank, Panel Kendaraan (`/vehpanel`), Bagasi Mobil (`/trunk`), Layanan 911 (`/call 911`), dan dialog aksi otomatis berubah bahasa sesuai preferensi karakter.
+  - **TextDraw HUD Dinamis:** Label uang (`CASH`/`UANG`), bank, status lapar (`HUNGER`/`LAPAR`), status haus (`THIRST`/`HAUS`), serta level.
+  - **Speedometer Multibahasa:** Kecepatan (`KM/H` / `KM/J`), indikator mesin (`RUNNING`/`MENYALA`, `OFF`/`MATI`), status pintu (`LOCKED`/`TERKUNCI`, `UNLOCKED`/`BEBAS`).
+  - Tersimpan permanen di database MySQL (kolom `language` pada tabel `characters`).
+
+---
+
+## TextDraw & HUD Lanjutan (`ui/textdraws.inc`)
+- **Street Zone & Compass HUD (Navigasi Wilayah):**
+  - Terletak rapi di atas radar peta (sudut kiri bawah layar).
+  - Menampilkan arah mata angin (`[ N ]`, `[ NE ]`, `[ S ]`, `[ SW ]`, dll.) dan nama distrik/wilayah secara real-time (Pershing Square, Idlewood, Ganton, Commerce, Market, ASGH Hospital, Jefferson, Unity Station, Willowfield, Ocean Docks, dll.).
+- **Overlay Kondisi Kritis (Critical Trauma State):**
+  - Muncul otomatis saat karakter sekarat/pingsan (`pInjured`):
+    - Overlay gelap kemerahan di tengah layar.
+    - Header: `[ KONDISI KRITIS (INJURED) ]` / `[ CRITICAL INJURY STATE ]`.
+    - Countdown darurat 90 detik real-time.
+    - Panduan darurat bagi korban (`/call 911`) maupun warga sekitar (`/treat [id]`).
+
+---
+
+## Mapping Dunia Modular Los Santos (`gameplay/mapping.inc`)
+- 35+ Objek detail yang diselaraskan rapi dengan ketinggian tanah (ground-aligned) dan diletakkan di trotoar/plaza tanpa memotong atau menghalangi jalan lalu lintas kendaraan (**zero collision / tidak nabrak**):
+  - **Pershing Square Civic Plaza & Bank:** Mesin ATM outdoor di dinding bank, bangku santai pedestrian, lampu jalan, tanaman hias pot, tempat sampah, dan tiang bendera pusat.
+  - **All Saints General Hospital (ASGH) Emergency Bay:** Jalur bollard drop-off ambulans, kerucut pengaman (traffic cones), brankar/stretcher darurat, peti suplai medis, dan bangku tunggu rumah sakit.
+  - **LSPD Headquarters Secure Yard:** Pos jaga gerbang belakang polisi, portal gate otomatis, menara lampu sorot pengamanan malam, dan pembatas parkir armada cruiser.
+  - **Nusantara Mechanical Workshop (Idlewood/Commerce):** Struktur hidrolik mobil, derek mesin, lemari toolkit baja, tumpukan ban balap, drum oli, dan kompresor angin.
+  - **Unity Station Public Park & Arrival Hub:** Papan peta informasi kota, mesin penjual snack & minuman otomatis, telepon umum luar ruangan, bangku peristirahatan stasiun.
+
+---
+
 ## Bengkel Tuning Mekanik (`workshop.inc`)
 - Area bengkel Idlewood dengan katalog modifikasi kendaraan (`/tune` / `/modveh`):
   - Velg mobil sport (Rimshine, Mega, Shadow, dll.).
