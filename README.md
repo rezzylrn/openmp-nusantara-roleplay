@@ -471,6 +471,35 @@ Gamemode ini mengadopsi arsitektur anti-cheat server-side modular yang dirancang
   - Waktu server berputar otomatis setiap siklus 10 menit.
   - Warga dapat mengecek prakiraan cuaca terkini via `/weather` atau `/cuaca`.
 
+### 16. Bar Klub Malam & Tes Alkohol Breathalyzer (`systems/bar_alcohol.inc`)
+- **Minuman Alkohol & Efek Mabuk:**
+  - Bar Alhambra, Ten Green Bottles Ganton, dan Pig Pen (`/bar` atau `/orderdrink`).
+  - Menu: Kaleng Bir Dingin ($8), Sloki Whiskey ($25), Shot Vodka Keras ($40).
+  - Efek mabuk: Layar goyang realistis (`pDrunkLevel`), animasi sempoyongan.
+  - Razia Polisi: Petugas SAPD dapat melakukan tes napas pengemudi mabuk via `/breathalyzer [targetid]` atau `/tesalkohol`.
+
+### 17. Gym Kebugaran & Seni Bela Diri Fight Styles (`systems/gym_fitness.inc`)
+- **Pelatihan Gaya Bertarung & Workouts:**
+  - Pusat Gym Pantai Santa Maria & Ganton (`/gym` atau `/fightstyle`).
+  - Belajar jurus bela diri ($150): Tinju Klasik Boxing, Seni Kung Fu, Kickboxing Muay Thai, Grab Kick. Tersimpan di database MySQL (`fight_style`).
+  - Latihan fisik angkat beban barbell via `/workout` atau `/angkatbesi` untuk memulihkan kebugaran & stamina.
+
+### 18. Restoran Cepat Saji Burger Shot, Cluckin' Bell & Pizza (`systems/fast_food.inc`)
+- **Kuliner Cepat Saji Ikonik:**
+  - Burger Shot Marina, Cluckin' Bell Willowfield, dan Well Stacked Pizza Idlewood (`/orderfood` atau `/pesanmakan`).
+  - Menu Kombo: Burger Double Meat ($12, Lapar +50%, HP +20), Cluckin' Fried Chicken ($15, Lapar +60%, HP +25), Pizza Slice ($14, Lapar +55%, HP +25).
+
+### 19. Aksesoris Karakter & Attachable Objects (`systems/accessories.inc`)
+- **Fashion & Perlengkapan Fisik Menempel di Tubuh:**
+  - Menu kustomisasi via `/accessories` atau `/aksesoris`.
+  - Pilihan: Topi Fedora (Kepala), Kacamata Hitam Aviator (Mata), Tas Ransel Petualang (Punggung), serta opsi lepas aksesoris.
+
+### 20. Argometer Tarif Taksi & Panggilan Taksi Warga (`systems/taxi_meter.inc`)
+- **Layanan Transportasi Taksi Resmi:**
+  - Khusus armada Taxi & Cabbie (Model 420 & 438).
+  - Pengemudi taksi menyalakan argometer tarif per kilometer via `/taximeter [tarif]` (default $5/km).
+  - Warga yang membutuhkan tumpangan dapat memesan taksi via `/calltaxi` atau `/pesantaksi` yang langsung mengirimkan titik koordinat GPS ke pengemudi aktif.
+
 ---
 
 ## Stasiun Rental Sepeda & Kendaraan Pemula (`systems/rental.inc`)

@@ -63,6 +63,7 @@ CREATE TABLE `characters` (
   `ticket_amount` INT DEFAULT 0,
   `drive_lic` INT DEFAULT 0,
   `gun_lic` INT DEFAULT 0,
+  `fight_style` INT DEFAULT 4,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   INDEX (`ucp_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

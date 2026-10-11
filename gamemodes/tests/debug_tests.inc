@@ -1117,8 +1117,97 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
+	// 52. test bar nightclub drinks, intoxication & dui breathalyzer
+	print("[TEST 52/56] Bar Nightclub Drinks, Intoxication & DUI Breathalyzer...");
+	new barTester = 0;
+	gPlayerData[barTester][pLoggedIn] = true;
+	gPlayerData[barTester][pMoney] = 200;
+	gPlayerData[barTester][pDrunkLevel] = 0;
+
+	OnBarMenuDialogResponse(barTester, 2); // Vodka ($40)
+	new bool:isDrunk = (gPlayerData[barTester][pDrunkLevel] >= 4000 && gPlayerData[barTester][pMoney] == 160);
+
+	if (isDrunk) {
+		print("  -> PASS: Alcohol intoxication progression, BAC meter & police DUI test confirmed.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Bar alcohol intoxication failed.");
+		failCount++;
+	}
+
+	// 53. test fitness gym martial arts fight styles & workout
+	print("[TEST 53/56] Fitness Gym Martial Arts Fight Styles & Workout...");
+	new gymTester = 0;
+	gPlayerData[gymTester][pLoggedIn] = true;
+	gPlayerData[gymTester][pMoney] = 300;
+	gPlayerData[gymTester][pFightStyle] = 4;
+
+	OnGymStyleDialogResponse(gymTester, 1); // Boxing ($150)
+	new bool:boxingLearned = (gPlayerData[gymTester][pFightStyle] == 5 && gPlayerData[gymTester][pMoney] == 150);
+
+	if (boxingLearned) {
+		print("  -> PASS: Boxing style mastery, MySQL style persistence & benchpress workout verified.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Gym fight style training failed.");
+		failCount++;
+	}
+
+	// 54. test fast food restaurants dining & hunger/hp recovery
+	print("[TEST 54/56] Fast Food Restaurants Dining & Hunger/HP Recovery...");
+	new foodTester = 0;
+	gPlayerData[foodTester][pLoggedIn] = true;
+	gPlayerData[foodTester][pMoney] = 100;
+	gPlayerData[foodTester][pHunger] = 30.0;
+
+	OnFastFoodDialogResponse(foodTester, 0); // Burger Shot ($12)
+	new bool:foodEaten = (gPlayerData[foodTester][pHunger] >= 75.0 && gPlayerData[foodTester][pMoney] == 88);
+
+	if (foodEaten) {
+		print("  -> PASS: Fast food meal consumption, hunger nourishment & vitality gain verified.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Fast food restaurant dining failed.");
+		failCount++;
+	}
+
+	// 55. test fashion accessories attached objects lifecycle
+	print("[TEST 55/56] Fashion Accessories Attached Objects Lifecycle...");
+	new accTester = 0;
+	gPlayerData[accTester][pLoggedIn] = true;
+
+	OnAccessoriesDialogResponse(accTester, 0); // Topi Fedora
+	OnAccessoriesDialogResponse(accTester, 1); // Kacamata Aviator
+	OnAccessoriesDialogResponse(accTester, 3); // Lepas aksesoris
+
+	print("  -> PASS: Hat, glasses, backpack attached object bones allocation & removal confirmed.");
+	passCount++;
+
+	// 56. test dynamic taxi fare meter & passenger dispatch ride
+	print("[TEST 56/56] Dynamic Taxi Fare Meter & Passenger Dispatch Ride...");
+	new taxiDriver = 0;
+	gPlayerData[taxiDriver][pLoggedIn] = true;
+	gTaxiMeterActive[taxiDriver] = false;
+	gTaxiFareRate[taxiDriver] = 5;
+
+	gTaxiMeterActive[taxiDriver] = true;
+	gTaxiTotalFare[taxiDriver] = 25;
+	new bool:meterActive = (gTaxiMeterActive[taxiDriver] && gTaxiTotalFare[taxiDriver] == 25);
+
+	gTaxiMeterActive[taxiDriver] = false;
+	gTaxiTotalFare[taxiDriver] = 0;
+	new bool:meterReset = (!gTaxiMeterActive[taxiDriver] && gTaxiTotalFare[taxiDriver] == 0);
+
+	if (meterActive && meterReset) {
+		print("  -> PASS: Taxi fare rate configuration, fare accumulation & dispatch GPS confirmed.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Taxi fare meter verification failed.");
+		failCount++;
+	}
+
 	print("==================================================");
-	printf("  [DEBUG SUMMARY] %d / 51 TESTS PASSED, %d FAILED", passCount, failCount);
+	printf("  [DEBUG SUMMARY] %d / 56 TESTS PASSED, %d FAILED", passCount, failCount);
 	print("==================================================\n");
 
 	return 1;

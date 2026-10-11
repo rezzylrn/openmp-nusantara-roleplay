@@ -43,6 +43,11 @@
 #include "systems/advertisements.inc"
 #include "systems/house_sharing.inc"
 #include "systems/weather_system.inc"
+#include "systems/bar_alcohol.inc"
+#include "systems/gym_fitness.inc"
+#include "systems/fast_food.inc"
+#include "systems/accessories.inc"
+#include "systems/taxi_meter.inc"
 
 // 5. Gameplay & Factions
 #include "gameplay/mapping.inc"
@@ -103,6 +108,11 @@ public OnGameModeInit()
 	Advertisements_Init();
 	HouseSharing_Init();
 	WeatherSystem_Init();
+	BarAlcohol_Init();
+	GymFitness_Init();
+	FastFood_Init();
+	Accessories_Init();
+	TaxiMeter_Init();
 
 	// default class spawn
 	AddPlayerClass(0, SPAWN_X, SPAWN_Y, SPAWN_Z, SPAWN_A, WEAPON_FIST, 0, WEAPON_FIST, 0, WEAPON_FIST, 0);
@@ -549,6 +559,10 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		case DIALOG_VENDING_SNACK: OnVendingDialogResponse(playerid, listitem);
 		case DIALOG_DMV_THEORY: OnDMVDialogResponse(playerid, listitem);
 		case DIALOG_AMMUNATION_BUY: OnAmmuNationDialogResponse(playerid, listitem);
+		case DIALOG_BAR_MENU: OnBarMenuDialogResponse(playerid, listitem);
+		case DIALOG_GYM_STYLES: OnGymStyleDialogResponse(playerid, listitem);
+		case DIALOG_FASTFOOD_MENU: OnFastFoodDialogResponse(playerid, listitem);
+		case DIALOG_ACCESSORIES: OnAccessoriesDialogResponse(playerid, listitem);
 	}
 	return 1;
 }

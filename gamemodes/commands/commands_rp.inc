@@ -1476,6 +1476,106 @@ CMD:cuaca(playerid, params[])
 	return cmd_weather(playerid, params);
 }
 
+CMD:bar(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ShowBarDrinksMenu(playerid);
+	return 1;
+}
+
+CMD:orderdrink(playerid, params[])
+{
+	return cmd_bar(playerid, params);
+}
+
+CMD:breathalyzer(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	new targetid;
+	if (sscanf(params, "u", targetid)) return SendSyntax(playerid, "/breathalyzer [targetid/Nama]");
+	ProcessBreathalyzerTest(playerid, targetid);
+	return 1;
+}
+
+CMD:tesalkohol(playerid, params[])
+{
+	return cmd_breathalyzer(playerid, params);
+}
+
+CMD:gym(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ShowGymStyleDialog(playerid);
+	return 1;
+}
+
+CMD:fightstyle(playerid, params[])
+{
+	return cmd_gym(playerid, params);
+}
+
+CMD:workout(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ProcessGymWorkout(playerid);
+	return 1;
+}
+
+CMD:angkatbesi(playerid, params[])
+{
+	return cmd_workout(playerid, params);
+}
+
+CMD:orderfood(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ShowFastFoodMenu(playerid);
+	return 1;
+}
+
+CMD:pesanmakan(playerid, params[])
+{
+	return cmd_orderfood(playerid, params);
+}
+
+CMD:accessories(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ShowAccessoriesMenu(playerid);
+	return 1;
+}
+
+CMD:aksesoris(playerid, params[])
+{
+	return cmd_accessories(playerid, params);
+}
+
+CMD:taximeter(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	new fare = DEFAULT_TAXI_FARE;
+	if (!isnull(params)) fare = strval(params);
+	ProcessToggleTaxiMeter(playerid, fare);
+	return 1;
+}
+
+CMD:argometer(playerid, params[])
+{
+	return cmd_taximeter(playerid, params);
+}
+
+CMD:calltaxi(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ProcessCallTaxi(playerid);
+	return 1;
+}
+
+CMD:pesantaksi(playerid, params[])
+{
+	return cmd_calltaxi(playerid, params);
+}
+
 stock ShowHelpDialog(playerid)
 {
 	new buf[800];

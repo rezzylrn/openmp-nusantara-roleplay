@@ -103,7 +103,11 @@ enum {
 	ITEM_SPRAYCAN,      // Kaleng Cat Semprot Grafiti
 	ITEM_COOKEDFISH,    // Ikan Bakar Siap Makan
 	ITEM_DICE,          // Dadu Taruhan Jalanan
-	ITEM_AMMOBOX        // Kotak Amunisi Resmi (50 Peluru)
+	ITEM_AMMOBOX,       // Kotak Amunisi Resmi (50 Peluru)
+	ITEM_BEER,          // Kaleng Bir Dingin
+	ITEM_VODKA,         // Botol Minuman Keras Vodka
+	ITEM_BURGER,        // Paket Burger Shot
+	ITEM_PIZZA          // Kotak Pizza Stack
 };
 
 enum E_ITEM_DATA {
@@ -168,6 +172,8 @@ enum E_PLAYER_DATA {
 	pTicketAmount,
 	bool:pDriveLic,
 	bool:pGunLic,
+	pFightStyle,
+	pDrunkLevel,
 	// job variables
 	pJobCooldown,
 	pTrashCount,
@@ -268,6 +274,10 @@ enum E_VEHICLE_DATA {
 #define DIALOG_CAMPFIRE_MENU      62
 #define DIALOG_AMMUNATION_BUY     63
 #define DIALOG_SHARE_KEY          64
+#define DIALOG_BAR_MENU           65
+#define DIALOG_GYM_STYLES         66
+#define DIALOG_FASTFOOD_MENU      67
+#define DIALOG_ACCESSORIES        68
 
 #define LANG_ID                   0
 #define LANG_EN                   1
@@ -512,6 +522,10 @@ stock GetItemName(itemtype, dest[], len = sizeof(dest))
 		case ITEM_COOKEDFISH:format(dest, len, "Ikan Bakar Matang");
 		case ITEM_DICE:      format(dest, len, "Dadu Kasino");
 		case ITEM_AMMOBOX:   format(dest, len, "Kotak Amunisi Resmi");
+		case ITEM_BEER:      format(dest, len, "Bir Dingin");
+		case ITEM_VODKA:     format(dest, len, "Botol Vodka");
+		case ITEM_BURGER:    format(dest, len, "Paket Burger Shot");
+		case ITEM_PIZZA:     format(dest, len, "Kotak Pizza Stack");
 		default:             format(dest, len, "Kosong");
 	}
 	return 1;
