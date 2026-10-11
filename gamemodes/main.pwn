@@ -6,6 +6,7 @@
 #include <sscanf2>
 #include <izcmd>
 #include <samp_bcrypt>
+#include <easyDialog>
 
 // 1. Core modules
 #include "core/header.inc"
@@ -16,7 +17,8 @@
 // 2. Anti-Cheat Engine (Multi-Vector Security)
 #include "anticheat/anticheat.inc"
 
-// 3. User Interface (Full Clickable TextDraws)
+// 3. User Interface (HUD, Speedo, Progress Bar, Notifications)
+#include "ui/progress_bar.inc"
 #include "ui/textdraws.inc"
 
 // 4. World Systems
@@ -62,12 +64,14 @@
 #include "gameplay/phone.inc"
 #include "gameplay/player_stats.inc"
 
-// 6. Action Hub & Unified Interaction
-#include "ui/action_hub.inc"
+// 6. Oldschool Dialog UI & Menus
+#include "ui/inventory_dialog.inc"
+#include "ui/radial_menu.inc"
 
 // 7. Commands & Admin
 #include "commands/commands_rp.inc"
 #include "commands/admin.inc"
+#include "commands/admin_panel.inc"
 
 // 7. Test Suite
 #include "tests/debug_tests.inc"
@@ -574,8 +578,6 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		case DIALOG_GYM_STYLES: OnGymStyleDialogResponse(playerid, listitem);
 		case DIALOG_FASTFOOD_MENU: OnFastFoodDialogResponse(playerid, listitem);
 		case DIALOG_ACCESSORIES: OnAccessoriesDialogResponse(playerid, listitem);
-		case DIALOG_ACTION_HUB: OnActionHubDialogResponse(playerid, listitem);
-		case DIALOG_ACTION_NEAR_PLAYER: OnActionNearPlayerResponse(playerid, listitem);
 		case DIALOG_ACTION_PLATE_INPUT: {
 			if (response && strlen(inputtext) > 0) ProcessCustomPlate(playerid, inputtext);
 		}

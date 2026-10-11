@@ -153,7 +153,7 @@ public OnEmergencyHospitalRespawn(playerid)
 	TakePlayerMoneyEx(playerid, 50, "biaya perawatan rumah sakit");
 
 	ClearAnimations(playerid);
-	SetPlayerPos(playerid, HOSPITAL_X, HOSPITAL_Y, HOSPITAL_Z);
+	AC_SetPlayerPos(playerid, HOSPITAL_X, HOSPITAL_Y, HOSPITAL_Z);
 	SetPlayerFacingAngle(playerid, HOSPITAL_A);
 	SetPlayerInterior(playerid, 0);
 	SetPlayerVirtualWorld(playerid, 0);

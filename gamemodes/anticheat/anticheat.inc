@@ -37,10 +37,23 @@ enum E_AC_DATA {
 
 new gACData[MAX_PLAYERS][E_AC_DATA];
 
+forward RP_DelayedKick(playerid);
+public RP_DelayedKick(playerid)
+{
+	if (IsPlayerConnected(playerid)) Kick(playerid);
+	return 1;
+}
+
 stock AC_AlertAdmins(playerid, const cheatName[], const details[])
 {
+	if (playerid < 0 || playerid >= MAX_PLAYERS || !IsPlayerConnected(playerid)) return 0;
+
+	new kickMsg[144];
+	format(kickMsg, sizeof(kickMsg), "[SERVER] Anda dikeluarkan dari server karena terdeteksi menggunakan program ilegal (%s).", cheatName);
+	SendClientMessage(playerid, COLOR_RED, kickMsg);
+
 	new msg[144];
-	format(msg, sizeof(msg), "[ANTICHEAT] {E74C3C}%s (ID %d) {FFFFFF}terdeteksi {F1C40F}%s {FFFFFF}(%s)!",
+	format(msg, sizeof(msg), "[ANTICHEAT] {E74C3C}%s (ID %d) {FFFFFF}dikeluarkan karena {F1C40F}%s {FFFFFF}(%s).",
 		gPlayerData[playerid][pName], playerid, cheatName, details);
 
 	for (new i = 0; i < MAX_PLAYERS; i++) {
@@ -48,7 +61,8 @@ stock AC_AlertAdmins(playerid, const cheatName[], const details[])
 			SendClientMessage(i, COLOR_RED, msg);
 		}
 	}
-	printf("[ANTICHEAT LOG] %s (ID %d) flagged for %s [%s]", gPlayerData[playerid][pName], playerid, cheatName, details);
+	printf("[ANTICHEAT KICK] %s (ID %d) kicked for %s [%s]", gPlayerData[playerid][pName], playerid, cheatName, details);
+	SetTimerEx("RP_DelayedKick", 350, false, "i", playerid);
 	return 1;
 }
 

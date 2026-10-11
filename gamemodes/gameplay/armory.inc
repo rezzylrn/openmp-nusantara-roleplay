@@ -156,9 +156,9 @@ stock OnFactionArmoryResponse(playerid, listitem)
 		switch (listitem) {
 			case 0: {
 				// Standar Patroli
-				GivePlayerWeapon(playerid, WEAPON_NITESTICK, 1);
-				GivePlayerWeapon(playerid, WEAPON_DEAGLE, 140);
-				GivePlayerWeapon(playerid, WEAPON_SHOTGUN, 60);
+				AC_GiveWeapon(playerid, WEAPON_NITESTICK, 1);
+				AC_GiveWeapon(playerid, WEAPON_DEAGLE, 140);
+				AC_GiveWeapon(playerid, WEAPON_SHOTGUN, 60);
 				SetPlayerArmour(playerid, 100.0);
 				GivePlayerItem(playerid, ITEM_RADIO, 1);
 				gPlayerData[playerid][pRadioFreq] = 911;
@@ -172,9 +172,9 @@ stock OnFactionArmoryResponse(playerid, listitem)
 					SendErr(playerid, "Perlengkapan taktis SWAT membutuhkan pangkat Sersan (Rank 2+) atau Admin.");
 					return 1;
 				}
-				GivePlayerWeapon(playerid, WEAPON_M4, 300);
-				GivePlayerWeapon(playerid, WEAPON_MP5, 200);
-				GivePlayerWeapon(playerid, WEAPON_SNIPER, 30);
+				AC_GiveWeapon(playerid, WEAPON_M4, 300);
+				AC_GiveWeapon(playerid, WEAPON_MP5, 200);
+				AC_GiveWeapon(playerid, WEAPON_SNIPER, 30);
 				SetPlayerArmour(playerid, 100.0);
 
 				PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
@@ -188,7 +188,7 @@ stock OnFactionArmoryResponse(playerid, listitem)
 			}
 			case 3: {
 				// Taser
-				GivePlayerWeapon(playerid, WEAPON_SILENCED, 60);
+				AC_GiveWeapon(playerid, WEAPON_SILENCED, 60);
 				PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
 				SendSucc(playerid, "Mengambil senjata kejut listrik non-mematikan (Taser Silenced Pistol).");
 			}

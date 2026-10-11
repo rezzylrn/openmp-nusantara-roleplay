@@ -71,21 +71,21 @@ stock Faction_ApplyWeapons(playerid)
 
 	switch (fac) {
 		case FACTION_POLICE: {
-			GivePlayerWeapon(playerid, WEAPON_NITESTICK, 1);
-			GivePlayerWeapon(playerid, WEAPON_DEAGLE, 60);
-			GivePlayerWeapon(playerid, WEAPON_SHOTGUN, 50);
-			GivePlayerWeapon(playerid, WEAPON_MP5, 120);
+			AC_GiveWeapon(playerid, WEAPON_NITESTICK, 1);
+			AC_GiveWeapon(playerid, WEAPON_DEAGLE, 60);
+			AC_GiveWeapon(playerid, WEAPON_SHOTGUN, 50);
+			AC_GiveWeapon(playerid, WEAPON_MP5, 120);
 		}
 		case FACTION_MEDIC: {
-			GivePlayerWeapon(playerid, WEAPON_CAMERA, 50);
+			AC_GiveWeapon(playerid, WEAPON_CAMERA, 50);
 		}
 		case FACTION_GOV: {
-			GivePlayerWeapon(playerid, WEAPON_DEAGLE, 30);
+			AC_GiveWeapon(playerid, WEAPON_DEAGLE, 30);
 		}
 		case FACTION_GANG: {
-			GivePlayerWeapon(playerid, WEAPON_BRASSKNUCKLE, 1);
-			GivePlayerWeapon(playerid, WEAPON_COLT45, 60);
-			GivePlayerWeapon(playerid, WEAPON_UZI, 150);
+			AC_GiveWeapon(playerid, WEAPON_BRASSKNUCKLE, 1);
+			AC_GiveWeapon(playerid, WEAPON_COLT45, 60);
+			AC_GiveWeapon(playerid, WEAPON_UZI, 150);
 		}
 	}
 	return 1;
@@ -256,7 +256,7 @@ stock ProcessArrest(playerid, targetid, timeMinutes, fineAmount)
 	if (timeMinutes > 60) timeMinutes = 60;
 
 	// Masukkan ke sel penjara LSPD
-	SetPlayerPos(targetid, POLICE_JAIL_X, POLICE_JAIL_Y, POLICE_JAIL_Z);
+	AC_SetPlayerPos(targetid, POLICE_JAIL_X, POLICE_JAIL_Y, POLICE_JAIL_Z);
 	SetPlayerInterior(targetid, POLICE_JAIL_INT);
 	SetPlayerVirtualWorld(targetid, 0);
 

@@ -138,7 +138,7 @@ stock StartLumberjackJob(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
 	gPlayerData[playerid][pJob] = JOB_LUMBERJACK;
-	GivePlayerWeapon(playerid, WEAPON_CHAINSAW, 1);
+	AC_GiveWeapon(playerid, WEAPON_CHAINSAW, 1);
 	SendSucc(playerid, "Profesi Anda sekarang: Penebang Pohon. Anda menerima gergaji mesin.");
 	SendInfo(playerid, "Pergi ke Hutan Shady Creeks (/gps) lalu tebang pohon dengan /cutwood. Jual di Sawmill (/sellwood).");
 	return 1;

@@ -228,41 +228,33 @@ Gamemode ini mengadopsi arsitektur anti-cheat server-side modular yang dirancang
 
 ---
 
-## Kepolisian SAPD: MDC & Speed Radar (`police_mdc.inc`)
-- **Mobile Data Computer (`/mdc`):** Akses arsip kriminal dan data tilang di dalam mobil patroli polisi.
-- **Cek Plat Nomor (`/checkplate [plat]`):** Mengetahui pemilik kendaraan, model mobil, dan status kepemilikan.
+## Kepolisian SAPD: MDC & Speed Radar (`gameplay/police_mdc.inc`)
+- **Mobile Data Computer (`/mdc`):** Komputer taktis polisi berbasis easyDialog untuk akses cepat pencarian database warga, cek plat nomor kendaraan, respons antrean panggilan 911 (pasang GPS otomatis), dan pantau surat tilang ETLE.
 - **Speed Radar Otomatis:** Radar di dashboard mobil patroli memantau kecepatan kendaraan di depan. Jika melaju > 100 KM/J, radar otomatis menampilkan peringatan visual nama kendaraan, kecepatan, dan plat nomor.
 
 ---
 
-## Sistem Multi-Bahasa Bilingual (`core/localization.inc`)
-- **Pilihan Bahasa Fleksibel (`/language` atau `/lang`):**
-  - **Bahasa Indonesia [ID]:** Bahasa bawaan Nusantara Roleplay dengan istilah ramah dan lokal.
-  - **English [EN]:** Mode bahasa internasional untuk seluruh teks dialog, instruksi, dan antarmuka.
-- **Adaptasi Antarmuka Menyeluruh:**
-  - **Dialog Interaktif:** Menu ATM & Bank, Panel Kendaraan (`/vehpanel`), Bagasi Mobil (`/trunk`), Layanan 911 (`/call 911`), dan dialog aksi otomatis berubah bahasa sesuai preferensi karakter.
-  - **TextDraw HUD Dinamis:** Label uang (`CASH`/`UANG`), bank, status lapar (`HUNGER`/`LAPAR`), status haus (`THIRST`/`HAUS`), serta level.
-  - **Speedometer Multibahasa:** Kecepatan (`KM/H` / `KM/J`), indikator mesin (`RUNNING`/`MENYALA`, `OFF`/`MATI`), status pintu (`LOCKED`/`TERKUNCI`, `UNLOCKED`/`BEBAS`).
-  - Tersimpan permanen di database MySQL (kolom `language` pada tabel `characters`).
-
----
-
-## TextDraw & HUD Lanjutan (`ui/textdraws.inc`)
-- **Pusat Aksi Kontekstual & Tombol Sentuh Mobile (`ui/action_hub.inc`):**
-  - **Zero-Command Roleplay Experience:** Mengeliminasi keharusan mengetik puluhan perintah slash command yang melelahkan bagi pemain Mobile (Touchscreen) dan Desktop.
-  - **Tombol Sentuh Layar `[ ⚡ AKSI / MENU ]`:** Widget TextDraw interaktif di tengah-bawah layar yang dapat langsung disentuh/diklik di layar HP atau PC untuk membuka menu aksi konteks.
-  - **Dukungan Tombol Cepat Keyboard:** Cukup tekan tombol **N**, tombol **H**, atau tombol **Y** (atau perintah `/menu` / `/action` / `/aksi`).
-  - **Deteksi Konteks Otomatis (Auto-Detect Proximity):**
-    - Saat menyetir: Langsung menampilkan kontrol mesin, kunci pintu, lampu, kap, bagasi, argometer taksi, kabel derek towtruck, sita depo, isi bensin, dan plat kustom DMV.
-    - Di dekat kendaraan luar: Langsung menampilkan buka bagasi, lockpick bobol kunci, mutilasi chop shop, tambal ban kempes, dan tuang bensin jerigen.
-    - Di dekat toko 24/7: Belanja kasir atau todong senjata rampok kasir.
-    - Di dekat ATM / Bank: Tarik, setor, transfer, cek saldo, atau bayar denda tilang ETLE.
-    - Di dekat tong sampah: Mengais rongsokan daur ulang atau buang barang.
-    - Di dekat tanaman ganja: Rawat & panen daun ganja, atau hanguskan (polisi).
-    - Di dekat pantai: Pindai detektor logam, gali pasir harta karun, atau mancing.
-    - Di dekat api unggun: Masak ikan mentah atau santap ikan bakar.
-    - Di dekat dinding grafiti: Semprot cat grafiti atau bersihkan coretan liar.
-    - Di dekat vending machine, bar, gym, fast food, ammunation, DMV, stasiun rental, pintu gedung, atau pemain lain: Langsung menampilkan seluruh opsi interaksi terkait!
+## Antarmuka Oldschool & Activity Progress Bar (JGRP Style)
+- **Migrasi ke easyDialog (`qawno/include/easyDialog.inc`):**
+  - Mengeliminasi ID collision dan bug menu tertukar.
+  - Setiap dialog dideklarasikan dengan penamaan unik (`Dialog:Name`), crash-proof dan modular.
+- **Radial Action Menu N-Key (`ui/radial_menu.inc`):**
+  - Tekan tombol **N** (atau `/menu` / `/radial`):
+    - **Di Mobil:** Kontrol mesin, kunci, lampu, kap, bagasi, storage bagasi, argometer taksi, towtruck derek, garasi `/v`, isi bensin, dan plat DMV.
+    - **Jalan Kaki:** Inventaris barang `/items`, handphone `/phone`, kendaraan `/v`, statistik `/stats`, dompet & lisensi, lowongan `/job`, darurat 911, bantuan `/help`, serta deteksi otomatis fasilitas terdekat.
+- **Activity Progress Bar TextDraw (`ui/progress_bar.inc`):**
+  - TextDraw progress bar di tengah bawah layar dengan animasi dan visual feedback persentase saat beraktivitas:
+    - Mengisi bensin, menambal ban kempes, mempreteli mobil di chop shop, membobol kunci lockpick, memanen ganja, menggali pasir pantai, memasak ikan bakar, membersihkan grafiti, dan mengais tong sampah.
+- **Inventaris Tablist Dialog (`ui/inventory_dialog.inc`):**
+  - Menggantikan TextDraw inventaris dengan dialog tablist header klasik JGRP style:
+    - Menampilkan daftar 25 slot barang, jumlah, dan opsi Gunakan (Use), Berikan (Give), atau Buang (Drop).
+- **Admin Control Panel (`commands/admin_panel.inc`):**
+  - Perintah `/admin` / `/adminpanel` untuk staf server: Teleportasi lokasi/pemain, heal, freeze, spawn kendaraan, kick, ban, serta atur cuaca dan jam server.
+- **Anti-Cheat Terintegrasi & Auto-Kick:**
+  - Auto-kick pemain yang terdeteksi menggunakan program ilegal (Weapon Spawner, Teleport/Warp, Airbreak, Silent Aim, Flyhack, Car Jacker).
+  - Integrasi penuh dengan seluruh fitur server sah untuk mencegah false positive.
+- **Clean World Mapping:**
+  - Mapping custom dinonaktifkan sepenuhnya untuk menjamin integritas geometri dan collision default GTA San Andreas.
 - **Smartphone TextDraw OS Modern (OLED Screen & Glassmorphism):**
   - Tampilan visual smartphone realistis di kanan layar:
     - Titanium bezel frame & OLED deep dark screen.

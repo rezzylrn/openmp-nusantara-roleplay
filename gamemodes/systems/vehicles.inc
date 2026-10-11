@@ -818,7 +818,7 @@ stock OnTrunkWeaponResponse(playerid, listitem)
 			gVehicleData[slot][vTrunkAmmo] = 0;
 			DB_SaveVehicle(slot);
 
-			GivePlayerWeapon(playerid, gun, ammo);
+			AC_GiveWeapon(playerid, gun, ammo);
 			new gunName[32];
 			GetWeaponName(gun, gunName, sizeof(gunName));
 			SendSucc(playerid, "Mengambil senjata dari bagasi kendaraan.");

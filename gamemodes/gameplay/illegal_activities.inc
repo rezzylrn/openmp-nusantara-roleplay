@@ -455,7 +455,7 @@ stock OnBlackMarketBuyResponse(playerid, listitem)
 		}
 		case 2: {
 			TakePlayerMoneyEx(playerid, cost, "beli senjata pasar gelap");
-			GivePlayerWeapon(playerid, WEAPON_COLT45, 50);
+			AC_GiveWeapon(playerid, WEAPON_COLT45, 50);
 			SendClientMessage(playerid, COLOR_SUCCESS, "SUKSES: Membeli 1x Pistol Rakitan Colt .45 (50 Peluru) seharga $1,200.");
 		}
 		case 3: {

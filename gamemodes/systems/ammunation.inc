@@ -77,15 +77,15 @@ stock OnAmmuNationDialogResponse(playerid, listitem)
 
 	switch (listitem) {
 		case 0: {
-			GivePlayerWeapon(playerid, WEAPON_COLT45, 50);
+			AC_GiveWeapon(playerid, WEAPON_COLT45, 50);
 			SendClientMessage(playerid, COLOR_SUCCESS, "SUKSES: Membeli 1x Pistol Colt .45 berlisensi (50 Peluru) seharga $600.");
 		}
 		case 1: {
-			GivePlayerWeapon(playerid, WEAPON_DEAGLE, 35);
+			AC_GiveWeapon(playerid, WEAPON_DEAGLE, 35);
 			SendClientMessage(playerid, COLOR_SUCCESS, "SUKSES: Membeli 1x Desert Eagle .50 berlisensi (35 Peluru) seharga $1.500.");
 		}
 		case 2: {
-			GivePlayerWeapon(playerid, WEAPON_SHOTGUN, 30);
+			AC_GiveWeapon(playerid, WEAPON_SHOTGUN, 30);
 			SendClientMessage(playerid, COLOR_SUCCESS, "SUKSES: Membeli 1x Shotgun Berburu berlisensi (30 Peluru) seharga $1.200.");
 		}
 		case 3: {

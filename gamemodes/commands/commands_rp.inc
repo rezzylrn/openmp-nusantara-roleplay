@@ -234,11 +234,7 @@ Level: {FFFF00}%d",
 CMD:inv(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
-	if (gInventoryOpen[playerid]) {
-		HidePlayerInventoryUI(playerid);
-	} else {
-		ShowPlayerInventoryUI(playerid);
-	}
+	ShowPlayerInventoryDialog(playerid);
 	return 1;
 }
 
@@ -249,8 +245,7 @@ CMD:inventory(playerid, params[])
 
 CMD:items(playerid, params[])
 {
-	ShowPlayerInventory(playerid);
-	return 1;
+	return cmd_inv(playerid, params);
 }
 
 CMD:use(playerid, params[])
@@ -324,23 +319,14 @@ CMD:language(playerid, params[])
 CMD:vehpanel(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
-	ShowPlayerVehDash(playerid);
-	return 1;
-}
-
-CMD:mdc(playerid, params[])
-{
-	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
-	ShowPoliceMDC(playerid);
+	ShowPlayerRadialMenu(playerid);
 	return 1;
 }
 
 CMD:checkplate(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
-	if (isnull(params)) return SendSyntax(playerid, "/checkplate [plat nomor]");
-	ProcessCheckPlate(playerid, params);
-	return 1;
+	return cmd_mdc(playerid, params);
 }
 
 CMD:tune(playerid, params[])

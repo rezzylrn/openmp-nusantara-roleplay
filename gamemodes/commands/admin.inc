@@ -39,7 +39,7 @@ CMD:goto(playerid, params[])
 
 	new Float:tx, Float:ty, Float:tz;
 	GetPlayerPos(targetid, tx, ty, tz);
-	SetPlayerPos(playerid, tx + 1.0, ty + 1.0, tz);
+	AC_SetPlayerPos(playerid, tx + 1.0, ty + 1.0, tz);
 	SetPlayerInterior(playerid, GetPlayerInterior(targetid));
 	SetPlayerVirtualWorld(playerid, GetPlayerVirtualWorld(targetid));
 
@@ -56,7 +56,7 @@ CMD:gethere(playerid, params[])
 
 	new Float:px, Float:py, Float:pz;
 	GetPlayerPos(playerid, px, py, pz);
-	SetPlayerPos(targetid, px + 1.0, py + 1.0, pz);
+	AC_SetPlayerPos(targetid, px + 1.0, py + 1.0, pz);
 	SetPlayerInterior(targetid, GetPlayerInterior(playerid));
 	SetPlayerVirtualWorld(targetid, GetPlayerVirtualWorld(playerid));
 

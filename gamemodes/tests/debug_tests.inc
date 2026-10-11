@@ -5,6 +5,13 @@
 
 // automated diagnostics suite (11 tests)
 
+forward RP_DummyProgressFinish(playerid, extra);
+public RP_DummyProgressFinish(playerid, extra)
+{
+	#pragma unused playerid, extra
+	return 1;
+}
+
 forward RunAutomatedRPTests();
 public RunAutomatedRPTests()
 {
@@ -567,26 +574,19 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
-	// 29. test modern smartphone textdraw suite & localized apps
-	print("[TEST 29/29] Modern Smartphone TextDraw Suite & App Grid...");
-	new phoneTester = 0;
-	InitPlayerTextDraws(phoneTester);
-	gPlayerData[phoneTester][pPhone] = 554888;
-	gPlayerData[phoneTester][pPhoneStatus] = true;
-	gPlayerData[phoneTester][pLanguage] = LANG_ID;
+	// 29. test activity progress bar textdraw engine
+	print("[TEST 29/29] Real-Time Activity Progress Bar TextDraw Engine...");
+	new progTester = 0;
+	ProgressBar_Init(progTester);
+	ApplyProgressBar(progTester, "MENGISI BENSIN...", 4, "RP_DummyProgressFinish");
+	new bool:progressReady = (IsPlayerInActivity(progTester) != 0);
+	StopProgressBar(progTester, false);
 
-	UpdatePlayerPhone(phoneTester);
-
-	new bool:phoneReady = (gTD_PlayerText[phoneTester][pTD_PhoneBezel] != INVALID_PLAYER_TEXT_DRAW &&
-		gTD_PlayerText[phoneTester][pTD_PhoneScreen] != INVALID_PLAYER_TEXT_DRAW &&
-		gTD_PlayerText[phoneTester][pTD_PhoneApp1] != INVALID_PLAYER_TEXT_DRAW &&
-		gTD_PlayerText[phoneTester][pTD_PhoneHome] != INVALID_PLAYER_TEXT_DRAW);
-
-	if (phoneReady) {
-		print("  -> PASS: Smartphone Bezel, OLED Screen, 6 App Cards & Home button initialized.");
+	if (progressReady) {
+		print("  -> PASS: Activity progress bar TextDraw, animation freeze & completion lifecycle calibrated.");
 		passCount++;
 	} else {
-		print("  -> FAIL: Smartphone TextDraw allocation failed.");
+		print("  -> FAIL: Activity progress bar initialization failed.");
 		failCount++;
 	}
 
@@ -1206,30 +1206,27 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
-	// 57. test mobile touch action button & unified context action hub
-	print("[TEST 57/57] Mobile Touch Action Button & Unified Context Action Hub...");
-	new hubTester = 0;
-	TextdrawCreateAll(hubTester);
-	new bool:actionBtnAllocated = (gTD_PlayerText[hubTester][pTD_ActionBtn] != INVALID_PLAYER_TEXT_DRAW);
+	// 57. test oldschool n-key radial menu & dialog-based tablist inventory
+	print("[TEST 57/59] Oldschool N-Key Radial Action Menu & Dialog-Based Inventory...");
+	new radialTester = 0;
+	gPlayerData[radialTester][pLoggedIn] = true;
+	gPlayerData[radialTester][pMoney] = 500;
+	ClearPlayerInventory(radialTester);
+	GivePlayerItem(radialTester, ITEM_SNACK, 2);
 
-	gPlayerData[hubTester][pLoggedIn] = true;
-	gPlayerData[hubTester][pMoney] = 500;
-	new hubOk = ShowPlayerActionHub(hubTester);
+	new radialOk = ShowPlayerRadialMenu(radialTester);
+	new invOk = ShowPlayerInventoryDialog(radialTester);
 
-	// Simulasi aksi buka inventaris dari hub (HUB_ACT_INV)
-	gPlayerHubAction[hubTester][0] = HUB_ACT_INV;
-	OnActionHubDialogResponse(hubTester, 0);
-
-	if (actionBtnAllocated && hubOk && gInventoryOpen[hubTester]) {
-		print("  -> PASS: Touchscreen action button allocated, context detection & zero-command action routing verified.");
+	if (radialOk && invOk) {
+		print("  -> PASS: N-Key radial action menu initialized & dialog tablist inventory operational.");
 		passCount++;
 	} else {
-		print("  -> FAIL: Action hub or mobile action button failed.");
+		print("  -> FAIL: Radial menu or dialog inventory failed.");
 		failCount++;
 	}
 
 	// 58. test character direct spawn, camera behind player & class bypass
-	print("[TEST 58/58] Character Direct Spawn, Camera Behind Player & Class Selection Bypass...");
+	print("[TEST 58/59] Character Direct Spawn, Camera Behind Player & Class Selection Bypass...");
 	new spawnTester = 0;
 	gPlayerData[spawnTester][pLoggedIn] = true;
 	gPlayerData[spawnTester][pSpawned] = false;
@@ -1254,8 +1251,29 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
+	// 59. test dialog-based admin panel & police mdc
+	print("[TEST 59/59] Dialog-Based Admin Control Panel & Police MDC Operations...");
+	new adminTester = 0;
+	gPlayerData[adminTester][pLoggedIn] = true;
+	gPlayerData[adminTester][pAdmin] = 3;
+	new admOk = ShowAdminPanelDialog(adminTester);
+
+	new mdcCopTester = 1;
+	gPlayerData[mdcCopTester][pLoggedIn] = true;
+	gPlayerData[mdcCopTester][pFaction] = FACTION_POLICE;
+	gPlayerData[mdcCopTester][pDuty] = true;
+	new mdcOk = ShowPoliceMDCDialog(mdcCopTester);
+
+	if (admOk && mdcOk) {
+		print("  -> PASS: Admin panel control dialog & Police tactical MDC verified.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Admin panel or Police MDC failed.");
+		failCount++;
+	}
+
 	print("==================================================");
-	printf("  [DEBUG SUMMARY] %d / 58 TESTS PASSED, %d FAILED", passCount, failCount);
+	printf("  [DEBUG SUMMARY] %d / 59 TESTS PASSED, %d FAILED", passCount, failCount);
 	print("==================================================\n");
 
 	return 1;

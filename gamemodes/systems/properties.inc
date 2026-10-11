@@ -163,7 +163,7 @@ stock ProcessHouseInteraction(playerid)
 			// Masuk ke interior rumah
 			SetPlayerInterior(playerid, gHouseData[hEnter][hInterior]);
 			SetPlayerVirtualWorld(playerid, 101 + hEnter);
-			SetPlayerPos(playerid, gHouseData[hEnter][hExitX], gHouseData[hEnter][hExitY], gHouseData[hEnter][hExitZ]);
+			AC_SetPlayerPos(playerid, gHouseData[hEnter][hExitX], gHouseData[hEnter][hExitY], gHouseData[hEnter][hExitZ]);
 			SendInfo(playerid, "Anda memasuki rumah (%s).", gHouseData[hEnter][hAddress]);
 			return 1;
 		}
@@ -174,7 +174,7 @@ stock ProcessHouseInteraction(playerid)
 		// Keluar dari rumah
 		SetPlayerInterior(playerid, 0);
 		SetPlayerVirtualWorld(playerid, 0);
-		SetPlayerPos(playerid, gHouseData[hInside][hEnterX], gHouseData[hInside][hEnterY], gHouseData[hInside][hEnterZ]);
+		AC_SetPlayerPos(playerid, gHouseData[hInside][hEnterX], gHouseData[hInside][hEnterY], gHouseData[hInside][hEnterZ]);
 		SendInfo(playerid, "Anda keluar dari rumah.");
 		return 1;
 	}

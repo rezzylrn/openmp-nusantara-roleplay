@@ -156,7 +156,7 @@ stock ProcessDigTreasure(playerid)
 		SendClientMessage(playerid, COLOR_SUCCESS, msg);
 	} else if (roll < 85) {
 		// Peluru lama (Deagle 20 Ammo)
-		GivePlayerWeapon(playerid, WEAPON_DEAGLE, 20);
+		AC_GiveWeapon(playerid, WEAPON_DEAGLE, 20);
 		SendClientMessage(playerid, COLOR_SUCCESS,
 			"[PENGGALIAN SUKSES] Menemukan kotak amunisi militer tua berisi 20 Peluru Desert Eagle!");
 	} else {
