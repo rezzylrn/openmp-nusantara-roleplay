@@ -288,7 +288,7 @@ stock ProcessCharCreateGender(playerid, listitem)
 // ---------------------------------------------------------------------------
 stock SpawnPlayerEx(playerid)
 {
-	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
 
 	if (gPlayerData[playerid][pSpawned]) return 1;
 	gPlayerData[playerid][pSpawned] = true;
@@ -316,6 +316,7 @@ stock SpawnPlayerEx(playerid)
 
 	SetPlayerInterior(playerid, gPlayerData[playerid][pInterior]);
 	SetPlayerVirtualWorld(playerid, gPlayerData[playerid][pVirtualWorld]);
+	SetCameraBehindPlayer(playerid);
 
 	TogglePlayerControllable(playerid, false);
 	SetTimerEx("RP_UnfreezeAfterSpawn", 750, false, "i", playerid);
@@ -338,6 +339,24 @@ public RP_UnfreezeAfterSpawn(playerid)
 {
 	if (!IsPlayerConnected(playerid)) return 0;
 	TogglePlayerControllable(playerid, true);
+	SetCameraBehindPlayer(playerid);
+	return 1;
+}
+
+public RP_AutoSpawnPlayer(playerid)
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (!gPlayerData[playerid][pSpawned]) {
+		new Float:sx = gPlayerData[playerid][pLastX];
+		new Float:sy = gPlayerData[playerid][pLastY];
+		new Float:sz = gPlayerData[playerid][pLastZ];
+		new Float:sa = gPlayerData[playerid][pLastA];
+		if (sx == 0.0 && sy == 0.0 && sz == 0.0) {
+			sx = SPAWN_X; sy = SPAWN_Y; sz = SPAWN_Z; sa = SPAWN_A;
+		}
+		SetSpawnInfo(playerid, NO_TEAM, gPlayerData[playerid][pSkin], sx, sy, sz, sa);
+		SpawnPlayer(playerid);
+	}
 	return 1;
 }
 

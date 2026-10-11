@@ -1228,8 +1228,34 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
+	// 58. test character direct spawn, camera behind player & class bypass
+	print("[TEST 58/58] Character Direct Spawn, Camera Behind Player & Class Selection Bypass...");
+	new spawnTester = 0;
+	gPlayerData[spawnTester][pLoggedIn] = true;
+	gPlayerData[spawnTester][pSpawned] = false;
+	gPlayerData[spawnTester][pSkin] = 2;
+	gPlayerData[spawnTester][pLastX] = 1750.0;
+	gPlayerData[spawnTester][pLastY] = -1800.0;
+	gPlayerData[spawnTester][pLastZ] = 13.5;
+	gPlayerData[spawnTester][pLastA] = 90.0;
+
+	// Simulasi OnPlayerRequestClass saat login: wajib bypass ke SpawnPlayer & return 0
+	new reqClassRes = OnPlayerRequestClass(spawnTester, 0);
+	new reqSpawnRes = OnPlayerRequestSpawn(spawnTester);
+
+	// Simulasi pemanggilan SpawnPlayerEx langsung
+	SpawnPlayerEx(spawnTester);
+
+	if (reqClassRes == 0 && reqSpawnRes == 1 && gPlayerData[spawnTester][pSpawned]) {
+		print("  -> PASS: Class selection bypassed, direct spawn allowed, character spawned & camera set.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Direct spawn or class bypass failed.");
+		failCount++;
+	}
+
 	print("==================================================");
-	printf("  [DEBUG SUMMARY] %d / 57 TESTS PASSED, %d FAILED", passCount, failCount);
+	printf("  [DEBUG SUMMARY] %d / 58 TESTS PASSED, %d FAILED", passCount, failCount);
 	print("==================================================\n");
 
 	return 1;

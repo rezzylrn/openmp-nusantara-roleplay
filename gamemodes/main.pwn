@@ -221,14 +221,25 @@ public OnPlayerDisconnect(playerid, reason)
 
 public OnPlayerRequestClass(playerid, classid)
 {
-	// block tombol spawn & class selection screen
+	if (gPlayerData[playerid][pLoggedIn]) {
+		new Float:sx = gPlayerData[playerid][pLastX];
+		new Float:sy = gPlayerData[playerid][pLastY];
+		new Float:sz = gPlayerData[playerid][pLastZ];
+		new Float:sa = gPlayerData[playerid][pLastA];
+		if (sx == 0.0 && sy == 0.0 && sz == 0.0) {
+			sx = SPAWN_X; sy = SPAWN_Y; sz = SPAWN_Z; sa = SPAWN_A;
+		}
+
+		SetSpawnInfo(playerid, NO_TEAM, gPlayerData[playerid][pSkin], sx, sy, sz, sa);
+		SpawnPlayer(playerid);
+		return 0;
+	}
 	return 0;
 }
 
 public OnPlayerRequestSpawn(playerid)
 {
-	// block tombol spawn (hanya bisa via dialog character selection)
-	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pLoggedIn]) return 1;
 	return 0;
 }
 

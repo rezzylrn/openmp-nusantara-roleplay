@@ -435,10 +435,21 @@ public OnCharacterLoaded(playerid)
 	}
 
 	gPlayerData[playerid][pLoggedIn] = true;
+	gPlayerData[playerid][pSpawned] = false;
 
-	// Matikan spectating mode dan spawn langsung (otomatis tanpa tombol spawn)
+	new Float:sx = gPlayerData[playerid][pLastX];
+	new Float:sy = gPlayerData[playerid][pLastY];
+	new Float:sz = gPlayerData[playerid][pLastZ];
+	new Float:sa = gPlayerData[playerid][pLastA];
+	if (sx == 0.0 && sy == 0.0 && sz == 0.0) {
+		sx = SPAWN_X; sy = SPAWN_Y; sz = SPAWN_Z; sa = SPAWN_A;
+	}
+
+	// Siapkan info spawn sebelum mematikan mode spectate agar client langsung spawn
+	SetSpawnInfo(playerid, NO_TEAM, gPlayerData[playerid][pSkin], sx, sy, sz, sa);
 	TogglePlayerSpectating(playerid, false);
-	SpawnPlayerEx(playerid);
+	SpawnPlayer(playerid);
+	SetTimerEx("RP_AutoSpawnPlayer", 200, false, "i", playerid);
 	return 1;
 }
 

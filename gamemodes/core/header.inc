@@ -290,6 +290,8 @@ enum E_VEHICLE_DATA {
 
 // Dynamic Systems Forward Declarations
 forward ShowPlayerActionHub(playerid);
+forward SpawnPlayerEx(playerid);
+forward RP_AutoSpawnPlayer(playerid);
 forward IsPlayerNearAnyATM(playerid, Float:range = 2.5);
 forward IsPlayerNearAnyTrash(playerid, Float:range = 2.5);
 forward ProcessDoorEnter(playerid);
