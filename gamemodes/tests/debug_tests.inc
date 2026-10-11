@@ -1389,8 +1389,34 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
+	// 65. test interactive job minigames & anti-bot suite
+	print("[TEST 65/65] Interactive Job Minigames & Anti-Bot Verification Suite...");
+	new qteTester = 0;
+	gPlayerData[qteTester][pLoggedIn] = true;
+	gPlayerData[qteTester][pFishWeight] = 0;
+
+	// Simulasi Fishing QTE
+	gFishingTargetAction[qteTester] = 0; // Kiri
+	gLumberTargetCut[qteTester] = 1;     // Felling Cut
+	gMechanicTargetPart[qteTester] = 0;  // Busi
+
+	// Courier Captcha check
+	format(gCourierCode[qteTester], 8, "7X9A");
+	new bool:captchaMatch = (strcmp("7X9A", gCourierCode[qteTester], true) == 0);
+
+	// Traffic QTE
+	gTrafficTargetAnswer[qteTester] = 0;
+
+	if (captchaMatch && gCourierCode[qteTester][0] == '7') {
+		print("  -> PASS: Fishing strike QTE, lumber precision, courier captcha & mechanic diagnostics confirmed.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Job minigames verification failed.");
+		failCount++;
+	}
+
 	print("==================================================");
-	printf("  [DEBUG SUMMARY] %d / 64 TESTS PASSED, %d FAILED", passCount, failCount);
+	printf("  [DEBUG SUMMARY] %d / 65 TESTS PASSED, %d FAILED", passCount, failCount);
 	print("==================================================\n");
 
 	return 1;

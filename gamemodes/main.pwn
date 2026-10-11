@@ -61,6 +61,7 @@
 #include "gameplay/mapping.inc"
 #include "gameplay/factions.inc"
 #include "gameplay/armory.inc"
+#include "gameplay/job_minigames.inc"
 #include "gameplay/jobs.inc"
 #include "gameplay/trash_job.inc"
 #include "gameplay/police_mdc.inc"

@@ -201,16 +201,7 @@ stock ProcessSearchTrash(playerid)
 		return 0;
 	}
 
-	ApplyAnimation(playerid, "BOMBER", "BOM_Plant", 4.1, false, false, false, false, 3500);
-	SendRP(playerid, COLOR_ME, "* %s mengaduk dan memilah sampah untuk mencari barang berharga.", gPlayerData[playerid][pName]);
-
-	new foundCash = 5 + random(20);
-	GivePlayerMoneyEx(playerid, foundCash, "uang di tong sampah");
-	GivePlayerItem(playerid, ITEM_RECYCLED, 1 + random(2));
-	GivePlayerExp(playerid, 5, "mengumpulkan sampah");
-
-	SendSucc(playerid, "Hasil memulung: Menemukan $%d uang receh dan barang rongsokan (/inv).", foundCash);
-	return 1;
+	return TriggerScavengerMinigame(playerid);
 }
 
 stock ProcessSellTrash(playerid)
@@ -243,18 +234,7 @@ stock ProcessCutWood(playerid)
 		SendErr(playerid, "Pekerjaan ini khusus untuk Penebang Pohon (/job).");
 		return 0;
 	}
-	if (!IsPlayerNearPoint(playerid, LUMBER_X, LUMBER_Y, LUMBER_Z, 25.0)) {
-		SendErr(playerid, "Anda harus berada di Hutan Shady Creeks (/gps).");
-		return 0;
-	}
-
-	ApplyAnimation(playerid, "CHAINSAW", "CSW_1", 4.1, false, false, false, false, 4000);
-	SendRP(playerid, COLOR_ME, "* %s mengoperasikan gergaji mesin dan memotong batang kayu besar.", gPlayerData[playerid][pName]);
-
-	GivePlayerItem(playerid, ITEM_WOOD, 1);
-	GivePlayerExp(playerid, 10, "menebang kayu");
-	SendSucc(playerid, "1 Balok kayu gelondongan berhasil ditebang dan masuk ke inventaris (/inv).");
-	return 1;
+	return StartLumberjackMinigameProcess(playerid);
 }
 
 stock ProcessSellWood(playerid)
@@ -283,30 +263,7 @@ stock ProcessSellWood(playerid)
 stock ProcessFish(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
-	if (!IsPlayerNearPoint(playerid, FISH_PIER_X, FISH_PIER_Y, FISH_PIER_Z, 25.0)) {
-		SendErr(playerid, "Anda harus berada di Dermaga Santa Maria Pier (/gps).");
-		return 0;
-	}
-	if (GetPlayerItemCount(playerid, ITEM_ROD) <= 0) {
-		SendErr(playerid, "Anda memerlukan Joran Pancing di inventaris.");
-		return 0;
-	}
-	if (GetPlayerItemCount(playerid, ITEM_BAIT) <= 0) {
-		SendErr(playerid, "Umpan pancing Anda habis. Beli di toko 24/7.");
-		return 0;
-	}
-
-	TakePlayerItem(playerid, ITEM_BAIT, 1);
-	ApplyAnimation(playerid, "SWAT", "swt_lkt__01", 4.1, false, false, false, false, 3500);
-	SendRP(playerid, COLOR_ME, "* %s memasang umpan dan melempar kail pancing ke laut lepas.", gPlayerData[playerid][pName]);
-
-	new kg = 2 + random(8);
-	gPlayerData[playerid][pFishWeight] += kg;
-	GivePlayerExp(playerid, 8, "berhasil memancing");
-
-	SendRP(playerid, COLOR_SUCCESS, "SUKSES: Tangkapan berhasil! Mendapatkan ikan seberat %d Kg (Total ikan: %d Kg). Jual di /sellfish.",
-		kg, gPlayerData[playerid][pFishWeight]);
-	return 1;
+	return StartFishingMinigameProcess(playerid);
 }
 
 stock ProcessSellFish(playerid)
@@ -359,6 +316,12 @@ stock OnJobCheckpoint(playerid)
 {
 	if (!gJobActive[playerid]) return 0;
 
+	// Kurir Paket: Verifikasi Resi Paket (Anti-Bot Captcha)
+	if (gJobType[playerid] == JOB_COURIER) {
+		TriggerCourierVerification(playerid);
+		return 1;
+	}
+
 	new next = gJobCheckpoint[playerid] + 1;
 	new total = 0, pay = 0;
 
@@ -378,6 +341,11 @@ stock OnJobCheckpoint(playerid)
 	gJobCash[playerid] += pay;
 	gJobCheckpoint[playerid] = next;
 	CreateJobCheckpoint(playerid, next);
+
+	// Bus & Sweeper: Peringatan Keselamatan Rambu Lalu Lintas QTE
+	if ((gJobType[playerid] == JOB_BUSDRIVER || gJobType[playerid] == JOB_SWEEPER) && (next % 2 == 0)) {
+		TriggerTrafficSafetyAlert(playerid);
+	}
 
 	SendRP(playerid, COLOR_SUCCESS, "[RUTE TUGAS] Checkpoint %d/%d dicapai (+${%d}). Lanjutkan perjalanan.", next, total, pay);
 	return 1;

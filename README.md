@@ -567,6 +567,17 @@ Gamemode ini mengadopsi arsitektur anti-cheat server-side modular yang dirancang
 
 ---
 
+## Mini-Games Interaktif Pekerjaan & Proteksi Anti-Bot Farming (`gameplay/job_minigames.inc`)
+- **Tujuan Sistem:** Menghilangkan kebosanan saat grinding pekerjaan dan membasmi script AFK bot farming otomatis secara 100%.
+- **Nelayan (Fishing Strike QTE):** Saat umpan disambar ikan, muncul minigame arah tarikan joran (Kiri, Kanan, Sentak Atas). Reaksi seimbang menangkap ikan monster 4 - 13 Kg dan bonus uang tunai.
+- **Penebang Pohon (Lumberjack Felling Cut):** Analisa kemiringan batang pohon untuk menentukan sudut potongan gergaji (Undercut 45°, Felling Cut 90°, Cross-cut). Potongan presisi menghasilkan 2x Balok Kayu Kualitas Super.
+- **Kurir Paket (Delivery Receipt Captcha):** Saat tiba di alamat rumah pemesan, kurir harus memasukkan 4-Digit Kode Resi unik yang muncul di layar untuk konfirmasi serah terima paket dan mencairkan bonus ketelitian +$35.
+- **Mekanik Bengkel (Diagnostic Puzzle):** Saat servis mesin `/service engine`, mekanik menginspeksi gejala suara mesin untuk menentukan penanganan tepat (Busi/Injektor, Radiator, Suspensi) demi memulihkan kendaraan 100% dan mendapat uang tip pelanggan.
+- **Pemulung (Scavenger Sorting):** Memilah tumpukan sampah (kardus, kantong tertutup, dasar keranjang) untuk menemukan uang tunai tercecer atau barang antik berharga.
+- **Bus Kota & Sweeper (Traffic Safety QTE):** Setiap interval halte rute kota, muncul evaluasi rambu lalu lintas untuk melatih disiplin berkendara dan memberikan bonus keselamatan jalan.
+
+---
+
 ## Kompilasi & Menjalankan Server
 
 ### 1. Import Database MySQL

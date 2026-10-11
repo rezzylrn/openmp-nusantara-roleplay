@@ -832,11 +832,10 @@ CMD:service(playerid, params[])
 
 	new tVeh = GetPlayerVehicleID(targetid);
 	if (strcmp(type, "engine", true) == 0) {
-		SetVehicleHealth(tVeh, 1000.0);
 		TakePlayerMoneyEx(targetid, price, "service mesin");
 		GivePlayerMoneyEx(playerid, price, "upah service mekanik");
-		SendSucc(playerid, "Mesin kendaraan berhasil diperbaiki. Menerima bayaran $%d.", price);
-		SendSucc(targetid, "Mesin kendaraan Anda diperbaiki oleh Mekanik %s ($%d).", gPlayerData[playerid][pName], price);
+		TriggerMechanicDiagnostic(playerid, tVeh);
+		SendSucc(targetid, "Mesin kendaraan Anda sedang diperiksa oleh Mekanik %s ($%d).", gPlayerData[playerid][pName], price);
 	} else if (strcmp(type, "body", true) == 0) {
 		RepairVehicle(tVeh);
 		TakePlayerMoneyEx(targetid, price, "service bodi");
