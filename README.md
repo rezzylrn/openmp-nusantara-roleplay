@@ -578,6 +578,27 @@ Gamemode ini mengadopsi arsitektur anti-cheat server-side modular yang dirancang
 
 ---
 
+## Arsitektur Modular Gamemode (Decoupled Design)
+Codebase telah dipecah dari file monolith menjadi arsitektur modular yang terorganisir per domain:
+- **`main.pwn` (Entry Point Ramping):** Hanya memuat konfigurasi open.mp, include master, `main()`, `OnGameModeInit()`, dan `OnGameModeExit()`.
+- **`core/gamemode_events.inc`:** Seluruh lifecycle callback SA-MP / open.mp (Connect, Disconnect, Spawn, Death, Damage, Keystate, Timers).
+- **`core/dialog_handler.inc`:** Master router response dialog sistem dan legacy dialogs.
+- **`commands/` (8 Modul Kategori Perintah):**
+  - `cmd_chat.inc`: Obrolan IC/OOC (`/me`, `/do`, `/b`, `/w`, `/s`, `/l`, `/pm`, `/report`, `/ask`, `/help`).
+  - `cmd_general.inc`: Utilitas pemain & profil (`/id`, `/stats`, `/showid`, `/inv`, `/use`, `/phone`, `/menu`, `/give`, `/gps`, `/pay`, `/bank`, `/atm`).
+  - `cmd_vehicle.inc`: Manajemen kendaraan (`/v`, `/engine`, `/lights`, `/lock`, `/park`, `/hood`, `/trunk`, `/refuel`, `/buyveh`, `/tow`, `/impound`).
+  - `cmd_jobs.inc`: Pekerjaan & mata pencaharian (`/job`, `/quitjob`, `/fish`, `/cutwood`, `/service`, `/trash`, `/taximeter`).
+  - `cmd_factions.inc`: Departemen kepolisian, medis, pemerintah (`/duty`, `/r`, `/d`, `/m`, `/cuff`, `/ticket`, `/arrest`, `/heal`, `/armory`, `/dispatches`).
+  - `cmd_property.inc`: Rumah & pintu (`/enter`, `/exit`, `/buyhouse`, `/lockhouse`, `/sharekey`, `/unsharekey`).
+  - `cmd_illegal.inc`: Kriminal & pasar gelap (`/smuggle`, `/chopveh`, `/lockpick`, `/blackmarket`, `/robstore`, `/plantweed`).
+  - `cmd_activities.inc`: Gaya hidup & rekreasi (`/detect`, `/vending`, `/tag`, `/campfire`, `/cook`, `/dice`, `/dmv`, `/bar`, `/gym`, `/orderfood`).
+- **`systems/vehicles/`:**
+  - `vehicle_core.inc`: State mesin, bahan bakar, kunci, parameter kendaraan.
+  - `vehicle_dealership.inc`: Showroom & manajemen kepemilikan kendaraan.
+  - `vehicle_trunk.inc`: Penyimpanan bagasi (uang tunai, item inventaris, senjata api).
+
+---
+
 ## Kompilasi & Menjalankan Server
 
 ### 1. Import Database MySQL

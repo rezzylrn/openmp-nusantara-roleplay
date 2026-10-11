@@ -776,3 +776,12 @@ stock IsPlayerNearPoint(playerid, Float:x, Float:y, Float:z, Float:range)
 	new Float:dist = VectorSize(gPlayerData[playerid][pLastX] - x, gPlayerData[playerid][pLastY] - y, gPlayerData[playerid][pLastZ] - z);
 	return (dist <= range);
 }
+
+stock IsPlayerNear(playerid, targetid, Float:range)
+{
+	if (!IsPlayerConnected(playerid) || !IsPlayerConnected(targetid)) return 0;
+	new Float:px, Float:py, Float:pz, Float:tx, Float:ty, Float:tz;
+	GetPlayerPos(playerid, px, py, pz);
+	GetPlayerPos(targetid, tx, ty, tz);
+	return (VectorSize(px - tx, py - ty, pz - tz) <= range);
+}
