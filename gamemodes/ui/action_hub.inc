@@ -443,6 +443,7 @@ stock ShowPlayerActionHub(playerid)
 			gPlayerHubAction[playerid][count++] = HUB_ACT_DOOR_EXIT;
 			strcat(dialogList, "{FFFFFF}⚡ [PINTU] Keluar dari Gedung\n");
 		}
+		#pragma unused hasContext
 	}
 
 	// =========================================================================
@@ -516,6 +517,8 @@ stock ShowPlayerActionHub(playerid)
 	strcat(dialogList, isEn ?
 		"{888888}[?] 📖 Complete Roleplay Guide & Shortcuts\n" :
 		"{888888}[?] 📖 Buku Panduan Bermain Lengkap Server\n");
+
+	#pragma unused count
 
 	ShowPlayerDialog(playerid, DIALOG_ACTION_HUB, DIALOG_STYLE_LIST,
 		isEn ? "NUSANTARA RP - INTERACTION & ACTION HUB" : "NUSANTARA RP - PUSAT AKSI & INTERAKSI LENGKAP",

@@ -1283,6 +1283,7 @@ public RP_HideSubtitle(playerid)
 stock GetPlayerZoneName(playerid, zone[], maxlen = sizeof(zone))
 {
     new Float:x, Float:y, Float:z;
+    #pragma unused z
     if (IsPlayerConnected(playerid)) {
         GetPlayerPos(playerid, x, y, z);
     } else {

@@ -1,3 +1,6 @@
+#define SAMP_COMPAT
+#define LEGACY_SCRIPTING_API
+
 #include <open.mp>
 #include <a_mysql>
 #include <sscanf2>
