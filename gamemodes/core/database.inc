@@ -490,6 +490,9 @@ public OnVehiclesLoaded()
 		gVehicleData[slot][vLocked] = (lockVal != 0);
 
 		cache_get_value_name_int(i, "trunk", gVehicleData[slot][vTrunk]);
+		new trunkItemStr[128];
+		cache_get_value_name(i, "trunk_items", trunkItemStr, sizeof(trunkItemStr));
+		DeserializeTrunkItems(slot, trunkItemStr);
 		gVehicleData[slot][vVehicleHandle] = -1;
 
 		if (gVehicleData[slot][vHealth] < 300.0) gVehicleData[slot][vHealth] = 1000.0;
@@ -501,21 +504,69 @@ public OnVehiclesLoaded()
 	return 1;
 }
 
+stock SerializeTrunkItems(slot, output[], maxlen = sizeof(output))
+{
+	output[0] = '\0';
+	new temp[32];
+	for (new s = 0; s < MAX_TRUNK_SLOTS; s++) {
+		if (gVehicleData[slot][vTrunkItemType][s] != ITEM_NONE && gVehicleData[slot][vTrunkItemAmount][s] > 0) {
+			format(temp, sizeof(temp), "%d:%d,", gVehicleData[slot][vTrunkItemType][s], gVehicleData[slot][vTrunkItemAmount][s]);
+			strcat(output, temp, maxlen);
+		}
+	}
+	return 1;
+}
+
+stock DeserializeTrunkItems(slot, const input[])
+{
+	for (new s = 0; s < MAX_TRUNK_SLOTS; s++) {
+		gVehicleData[slot][vTrunkItemType][s] = ITEM_NONE;
+		gVehicleData[slot][vTrunkItemAmount][s] = 0;
+	}
+	if (input[0] == '\0') return 1;
+
+	new curSlot = 0;
+	new i = 0;
+	while (input[i] != '\0' && curSlot < MAX_TRUNK_SLOTS) {
+		new type = 0, amt = 0;
+		while (input[i] >= '0' && input[i] <= '9') {
+			type = (type * 10) + (input[i] - '0');
+			i++;
+		}
+		if (input[i] == ':') i++;
+		while (input[i] >= '0' && input[i] <= '9') {
+			amt = (amt * 10) + (input[i] - '0');
+			i++;
+		}
+		if (input[i] == ',') i++;
+
+		if (type > 0 && amt > 0) {
+			gVehicleData[slot][vTrunkItemType][curSlot] = type;
+			gVehicleData[slot][vTrunkItemAmount][curSlot] = amt;
+			curSlot++;
+		}
+	}
+	return 1;
+}
+
 stock DB_SaveVehicle(slot)
 {
 	if (!gDBReady || slot < 0 || slot >= MAX_OWNED_VEHICLES || !gVehicleData[slot][vUsed]) return 0;
 
-	new query[450];
+	new trunkItemStr[128];
+	SerializeTrunkItems(slot, trunkItemStr, sizeof(trunkItemStr));
+
+	new query[512];
 	mysql_format(gDB, query, sizeof(query),
 		"UPDATE vehicles SET posx=%.2f, posy=%.2f, posz=%.2f, posa=%.2f, \
-		color1=%d, color2=%d, fuel=%.2f, health=%.2f, plate='%e', engine=%d, locked=%d, trunk=%d WHERE id=%d",
+		color1=%d, color2=%d, fuel=%.2f, health=%.2f, plate='%e', engine=%d, locked=%d, trunk=%d, trunk_items='%e' WHERE id=%d",
 		gVehicleData[slot][vPosX], gVehicleData[slot][vPosY],
 		gVehicleData[slot][vPosZ], gVehicleData[slot][vPosA],
 		gVehicleData[slot][vColor1], gVehicleData[slot][vColor2],
 		gVehicleData[slot][vFuel], gVehicleData[slot][vHealth],
 		gVehicleData[slot][vPlate], _:gVehicleData[slot][vEngine],
 		_:gVehicleData[slot][vLocked], gVehicleData[slot][vTrunk],
-		gVehicleData[slot][vDBID]);
+		trunkItemStr, gVehicleData[slot][vDBID]);
 
 	mysql_tquery(gDB, query, "", "");
 	return 1;

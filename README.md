@@ -83,7 +83,7 @@ Server ini mengadopsi antarmuka grafis interaktif berbasis kursor mouse (`Select
   - `[ Drop ]` -> Membuang barang yang sedang dipilih dari kantong.
   - `[ Close ]` -> Menutup inventaris.
 
-### 3. Dashboard Kontrol Kendaraan (Vehicle Control Panel)
+### 3. Dashboard Kontrol Kendaraan & Sistem Bagasi (Trunk Storage)
 - Muncul otomatis saat mengemudi dan menekan tombol **N** (atau perintah `/vehpanel`).
 - Tombol panel interaktif:
   - `[ 1. MESIN: HIDUP / MATI ]` -> Menyalakan atau mematikan mesin.
@@ -92,15 +92,21 @@ Server ini mengadopsi antarmuka grafis interaktif berbasis kursor mouse (`Select
   - `[ 4. KAP MESIN: BUKA / TUTUP ]` -> Membuka kap mesin depan.
   - `[ 5. BAGASI: BUKA / TUTUP ]` -> Membuka pintu bagasi belakang.
   - `[ X. TUTUP PANEL ]` -> Menutup panel kontrol kendaraan.
+- **Sistem Penyimpanan Bagasi (`/trunk` saat on-foot):**
+  - Berdiri di dekat belakang kendaraan (radius 4.0 meter) dan buka bagasi.
+  - Menampilkan menu tablist interaktif:
+    - **Saldo Kas Bagasi:** Menyimpan atau mengambil uang tunai hingga $5.000.000.
+    - **6 Slot Barang Dinamis:** Menyimpan dan mengambil item (makanan, minuman, medkit, toolkit, jerigen bensin, rokok, kayu, rongsokan, dll.).
+    - Seluruh item dan uang bagasi tersimpan permanen di database MySQL (kolom `trunk` dan `trunk_items`).
 
 ### 4. Mesin ATM & Perbankan TextDraw
 - Tekan **Y** saat berada di depan ATM atau Bank Nusantara.
 - Tampilan kartu ATM modern:
   - Informasi saldo real-time (Saldo Rekening Bank & Uang Tunai di Dompet).
   - Tombol transaksi:
-    - `[ 1. TARIK TUNAI ]`
-    - `[ 2. SETOR TUNAI ]`
-    - `[ 3. TRANSFER DANA ]`
+    - `[ 1. TARIK TUNAI ]` -> Penarikan instan $1 - $1.000.000 (ATM) / $50.000.000 (Bank).
+    - `[ 2. SETOR TUNAI ]` -> Setoran instan uang tunai.
+    - `[ 3. TRANSFER DANA ]` -> Transfer antar rekening warga dengan resolusi ID/Nama dan proteksi fee admin $10.
     - `[ X. KELUARKAN KARTU ]`
 
 ### 5. Menu Interaksi Cepat Warga (Quick Action Menu)
@@ -112,6 +118,20 @@ Server ini mengadopsi antarmuka grafis interaktif berbasis kursor mouse (`Select
   - `[ 5. STATISTIK KARAKTER ]`
   - `[ 6. PANDUAN KOTA ]`
   - `[ X. TUTUP MENU ]`
+
+---
+
+## Layanan Darurat 911 & Sistem Medis Trauma
+- **Panggilan Darurat 911 (`/call 911` via Smartphone):**
+  - Pemain dapat memilih divisi: **1. Kepolisian (SAPD)** atau **2. Medis / Ambulans (SAMD)**.
+  - Mengirimkan deskripsi kejadian darurat lengkap dengan koordinat pelapor real-time.
+  - Seluruh petugas yang bertugas dinas (`/duty`) menerima radio dispatch dengan rute GPS instan.
+  - Petugas dapat merespons panggilan via `/acceptdispatch [ID]` untuk otomatis memasang checkpoint rute GPS ke lokasi pelapor.
+  - Command `/dispatches` untuk melihat seluruh antrean panggilan darurat yang masih aktif.
+- **Sistem Medis & Pertolongan Pertama (Trauma System):**
+  - **Kondisi Kritis (Knockout / Injured):** Saat HP mencapai 0, karakter masuk mode sekarat (animasi pingsan 90 detik countdown darurat).
+  - **Pertolongan Pertama Warga (`/treat [id]`):** Menggunakan Perban (`ITEM_BANDAGE`) untuk membalut luka dan menyadarkan korban kembali dengan 35 HP.
+  - **Resusitasi Paramedis (`/revive [id]`):** Khusus tim medis SAMD on-duty atau Admin menggunakan Kotak P3K (`ITEM_MEDKIT`) untuk memulihkan kondisi vital hingga 100% HP lengkap dengan animasi CPR dan audio defibrilator.
 
 ---
 

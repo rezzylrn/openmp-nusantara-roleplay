@@ -439,6 +439,26 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		case DIALOG_DEALERSHIP:        OnDealershipResponse(playerid, listitem);
 		case DIALOG_MYVEH:             ShowVehicleActionDialog(playerid, listitem);
 		case DIALOG_MYVEH_ACTION:      OnMyVehActionResponse(playerid, listitem);
+		case DIALOG_TRUNK:             OnVehicleTrunkResponse(playerid, listitem);
+		case DIALOG_TRUNK_DEPOSIT:      OnTrunkDepositCashResponse(playerid, listitem);
+		case DIALOG_TRUNK_WITHDRAW:     OnTrunkSaveCashInput(playerid, inputtext);
+		case DIALOG_TRUNK_TAKE_CASH:    OnTrunkTakeCashInput(playerid, inputtext);
+		case DIALOG_TRUNK_DEPOSIT_ITEM: OnTrunkDepositItemResponse(playerid, listitem);
+		case DIALOG_TRUNK_WITHDRAW_ITEM:OnTrunkWithdrawItemResponse(playerid, inputtext);
+		case DIALOG_911_SERVICE: {
+			gPending911Service[playerid] = (listitem == 0) ? 1 : 2;
+			new title[48];
+			format(title, sizeof(title), "LAPORAN DARURAT %s", (listitem == 0) ? "SAPD POLISI" : "SAMD MEDIS");
+			ShowPlayerDialog(playerid, DIALOG_911_MESSAGE, DIALOG_STYLE_INPUT,
+				title, "Jelaskan situasi darurat dan kondisi Anda secara singkat:", "Kirim", "Batal");
+		}
+		case DIALOG_911_MESSAGE: {
+			if (strlen(inputtext) < 3) {
+				SendErr(playerid, "Pesan laporan terlalu singkat.");
+				return 1;
+			}
+			CreateDispatchReport(playerid, gPending911Service[playerid], inputtext);
+		}
 	}
 	return 1;
 }

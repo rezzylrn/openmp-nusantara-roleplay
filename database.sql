@@ -82,6 +82,7 @@ CREATE TABLE `vehicles` (
   `engine` INT DEFAULT 0,
   `locked` INT DEFAULT 0,
   `trunk` INT DEFAULT 0,
+  `trunk_items` VARCHAR(255) DEFAULT '',
   INDEX (`ownerid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

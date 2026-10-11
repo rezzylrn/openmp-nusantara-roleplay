@@ -48,8 +48,18 @@ stock ProcessCall(playerid, const numberStr[])
 
 	new targetNumber = strval(numberStr);
 	if (targetNumber <= 0) {
-		SendSyntax(playerid, "/call [nomor telepon]");
+		SendSyntax(playerid, "/call [nomor telepon / 911]");
 		return 0;
+	}
+
+	// Layanan Darurat 911
+	if (targetNumber == 911) {
+		ShowPlayerDialog(playerid, DIALOG_911_SERVICE, DIALOG_STYLE_LIST,
+			"LAYANAN DARURAT 911 LOS SANTOS",
+			"1. Kepolisian (SAPD) - Laporkan Tindak Kriminalitas & Situasi Darurat\n\
+2. Medis & Ambulans (SAMD) - Laporkan Korban Terluka & Kecelakaan",
+			"Pilih", "Batal");
+		return 1;
 	}
 
 	if (targetNumber == gPlayerData[playerid][pPhone]) {
@@ -256,6 +266,60 @@ stock ProcessRadio(playerid, const message[])
 	new localMsg[128];
 	format(localMsg, sizeof(localMsg), "* %s berbicara melalui radio HT.", gPlayerData[playerid][pName]);
 	SendNearbyPlayer(playerid, COLOR_RP_ME, localMsg, 8.0);
+	return 1;
+}
+
+// ---------------------------------------------------------------------------
+// Sistem Panggilan Darurat 911 (Emergency Dispatch)
+// ---------------------------------------------------------------------------
+stock CreateDispatchReport(playerid, service, const message[])
+{
+	new slot = -1;
+	for (new i = 0; i < MAX_DISPATCHES; i++) {
+		if (!gDispatches[i][dActive]) {
+			slot = i;
+			break;
+		}
+	}
+	if (slot == -1) slot = 0; // Timpa yang terlama jika penuh
+
+	new Float:px, Float:py, Float:pz;
+	GetPlayerPos(playerid, px, py, pz);
+
+	gDispatches[slot][dActive] = true;
+	gDispatches[slot][dCallerID] = playerid;
+	format(gDispatches[slot][dCallerName], MAX_PLAYER_NAME, "%s", gPlayerData[playerid][pName]);
+	gDispatches[slot][dCallerPhone] = gPlayerData[playerid][pPhone];
+	gDispatches[slot][dService] = service;
+	format(gDispatches[slot][dMessage], 128, "%s", message);
+	gDispatches[slot][dX] = px;
+	gDispatches[slot][dY] = py;
+	gDispatches[slot][dZ] = pz;
+	gDispatches[slot][dTime] = gettime();
+	gDispatches[slot][dResponderID] = -1;
+
+	SendSucc(playerid, "[911] Laporan darurat Anda berhasil dikirim ke unit terkait.");
+	SendInfo(playerid, "Harap tetap berada di lokasi atau cari perlindungan yang aman.");
+	PlayerPlaySound(playerid, 1058, 0.0, 0.0, 0.0);
+
+	new broadcastMsg[192];
+	new serviceName[16];
+	format(serviceName, sizeof(serviceName), "%s", (service == 1) ? "SAPD POLISI" : "SAMD MEDIS");
+
+	format(broadcastMsg, sizeof(broadcastMsg),
+		"[DISPATCH 911 - %s] #%d dari %s (Telp: %d): \"%s\" | Ketik /acceptdispatch %d",
+		serviceName, slot + 1, gPlayerData[playerid][pName], gPlayerData[playerid][pPhone], message, slot + 1);
+
+	for (new i = 0; i < MAX_PLAYERS; i++) {
+		if (!IsPlayerConnected(i) || !gPlayerData[i][pLoggedIn] || !gPlayerData[i][pDuty]) continue;
+		if (service == 1 && gPlayerData[i][pFaction] == FACTION_POLICE) {
+			SendClientMessage(i, COLOR_YELLOW, broadcastMsg);
+			PlayerPlaySound(i, 1057, 0.0, 0.0, 0.0);
+		} else if (service == 2 && gPlayerData[i][pFaction] == FACTION_MEDIC) {
+			SendClientMessage(i, COLOR_YELLOW, broadcastMsg);
+			PlayerPlaySound(i, 1057, 0.0, 0.0, 0.0);
+		}
+	}
 	return 1;
 }
 

@@ -177,6 +177,8 @@ enum E_VEHICLE_DATA {
 	bool:vHood,
 	bool:vTrunkOpen,
 	vTrunk,
+	vTrunkItemType[MAX_TRUNK_SLOTS],
+	vTrunkItemAmount[MAX_TRUNK_SLOTS],
 	vVehicleHandle
 };
 
@@ -221,6 +223,27 @@ enum E_VEHICLE_DATA {
 #define DIALOG_GPS_MENU           37
 #define DIALOG_GIVE_PLAYER        38
 #define DIALOG_GIVE_AMOUNT        39
+#define DIALOG_TRUNK_DEPOSIT_ITEM 41
+#define DIALOG_TRUNK_WITHDRAW_ITEM 42
+#define DIALOG_TRUNK_TAKE_CASH    45
+#define DIALOG_911_SERVICE        43
+#define DIALOG_911_MESSAGE        44
+
+#define MAX_DISPATCHES            20
+
+enum E_DISPATCH_DATA {
+	bool:dActive,
+	dCallerID,
+	dCallerName[MAX_PLAYER_NAME],
+	dCallerPhone,
+	dService, // 1 = POLICE, 2 = MEDIC
+	dMessage[128],
+	Float:dX,
+	Float:dY,
+	Float:dZ,
+	dTime,
+	dResponderID
+};
 
 // server limits & config
 #define MAX_DEALER_STOCK         8
@@ -548,6 +571,12 @@ new gLastValidClickTick[MAX_PLAYERS];
 new gPendingCharName[MAX_PLAYERS][24];
 new gPendingCharDOB[MAX_PLAYERS][16];
 new gUserCharIDs[MAX_PLAYERS][3];
+
+// trunk & dispatch states
+new gDispatches[MAX_DISPATCHES][E_DISPATCH_DATA];
+new gSelectedTrunkVeh[MAX_PLAYERS] = {-1, ...};
+new gSelectedTrunkSlot[MAX_PLAYERS] = {-1, ...};
+new gPending911Service[MAX_PLAYERS];
 
 stock IsValidRoleplayName(const name[])
 {

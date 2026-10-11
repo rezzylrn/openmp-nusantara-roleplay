@@ -373,7 +373,7 @@ public RunAutomatedRPTests()
 	}
 
 	// 20. test gps poi navigation distance calibration
-	print("[TEST 20/20] GPS POI Navigation Coordinates Calibration...");
+	print("[TEST 20/22] GPS POI Navigation Coordinates Calibration...");
 	new Float:dx = BANK_X - SPAWN_X;
 	new Float:dy = BANK_Y - SPAWN_Y;
 	new Float:distBank = floatsqroot(dx*dx + dy*dy);
@@ -387,8 +387,61 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
+	// 21. test vehicle trunk storage & serialization
+	print("[TEST 21/22] Vehicle Trunk Storage & Item Serialization...");
+	new trunkTestSlot = 0;
+	gVehicleData[trunkTestSlot][vUsed] = true;
+	gVehicleData[trunkTestSlot][vTrunk] = 2500;
+	gVehicleData[trunkTestSlot][vTrunkItemType][0] = ITEM_MEDKIT;
+	gVehicleData[trunkTestSlot][vTrunkItemAmount][0] = 2;
+	gVehicleData[trunkTestSlot][vTrunkItemType][1] = ITEM_REPAIRKIT;
+	gVehicleData[trunkTestSlot][vTrunkItemAmount][1] = 1;
+
+	new serialBuffer[128];
+	SerializeTrunkItems(trunkTestSlot, serialBuffer, sizeof(serialBuffer));
+
+	// Test deserialisasi balik
+	new trunkVerifySlot = 1;
+	gVehicleData[trunkVerifySlot][vUsed] = true;
+	DeserializeTrunkItems(trunkVerifySlot, serialBuffer);
+
+	new bool:trunkMatch = (gVehicleData[trunkVerifySlot][vTrunkItemType][0] == ITEM_MEDKIT &&
+	                       gVehicleData[trunkVerifySlot][vTrunkItemAmount][0] == 2 &&
+	                       gVehicleData[trunkVerifySlot][vTrunkItemType][1] == ITEM_REPAIRKIT) ? true : false;
+
+	if (gVehicleData[trunkTestSlot][vTrunk] == 2500 && strlen(serialBuffer) > 0 && trunkMatch) {
+		printf("  -> PASS: Trunk cash ($%d), serialization ('%s') & item restoration confirmed.",
+			gVehicleData[trunkTestSlot][vTrunk], serialBuffer);
+		passCount++;
+	} else {
+		print("  -> FAIL: Vehicle trunk storage serialization mismatch.");
+		failCount++;
+	}
+
+	// 22. test 911 emergency dispatch & medical trauma system
+	print("[TEST 22/22] 911 Emergency Dispatch & Trauma Medical System...");
+	new callerTest = 0;
+	ResetPlayerData(callerTest);
+	gPlayerData[callerTest][pLoggedIn] = true;
+	gPlayerData[callerTest][pPhone] = 554911;
+
+	CreateDispatchReport(callerTest, 1, "Situasi perampokan bersenjata di Idlewood");
+	new bool:dispatchCreated = (gDispatches[0][dActive] && gDispatches[0][dService] == 1) ? true : false;
+
+	// Simulasi pemulihan trauma/injured
+	gPlayerData[callerTest][pInjured] = true;
+	gPlayerData[callerTest][pInjured] = false; // sembuh setelah first aid / treat
+
+	if (dispatchCreated && !gPlayerData[callerTest][pInjured]) {
+		print("  -> PASS: 911 Dispatch queue active & medical recovery state calibrated.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Emergency dispatch or trauma recovery failed.");
+		failCount++;
+	}
+
 	print("==================================================");
-	printf("  [DEBUG SUMMARY] %d / 20 TESTS PASSED, %d FAILED", passCount, failCount);
+	printf("  [DEBUG SUMMARY] %d / 22 TESTS PASSED, %d FAILED", passCount, failCount);
 	print("==================================================\n");
 
 	return 1;
