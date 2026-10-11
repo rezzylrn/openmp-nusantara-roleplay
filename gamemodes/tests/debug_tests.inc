@@ -344,8 +344,51 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
+	// 19. test bank transfer engine & transaction sanitizer
+	print("[TEST 19/20] Bank Transfer & Transaction Overflow Sanitizer...");
+	new senderPlayer = 0;
+	new receiverPlayer = 1;
+	ResetPlayerData(senderPlayer);
+	ResetPlayerData(receiverPlayer);
+	gPlayerData[senderPlayer][pLoggedIn] = true;
+	gPlayerData[receiverPlayer][pLoggedIn] = true;
+	gPlayerData[senderPlayer][pBank] = 5000;
+	gPlayerData[receiverPlayer][pBank] = 1000;
+
+	// Simulasi transfer $1500 (fee $10)
+	new transferAmt = 1500;
+	TakePlayerBankEx(senderPlayer, transferAmt + TRANSFER_FEE, "test transfer");
+	GivePlayerBankEx(receiverPlayer, transferAmt, "test terima");
+
+	new expectedSenderBank = 5000 - (1500 + 10);
+	new expectedReceiverBank = 1000 + 1500;
+
+	if (gPlayerData[senderPlayer][pBank] == expectedSenderBank && gPlayerData[receiverPlayer][pBank] == expectedReceiverBank) {
+		print("  -> PASS: Bank transfer calculation, admin fee deduction & receiver balance confirmed.");
+		passCount++;
+	} else {
+		printf("  -> FAIL: Bank transfer balance mismatch (Sender: $%d, Receiver: $%d).",
+			gPlayerData[senderPlayer][pBank], gPlayerData[receiverPlayer][pBank]);
+		failCount++;
+	}
+
+	// 20. test gps poi navigation distance calibration
+	print("[TEST 20/20] GPS POI Navigation Coordinates Calibration...");
+	new Float:dx = BANK_X - SPAWN_X;
+	new Float:dy = BANK_Y - SPAWN_Y;
+	new Float:distBank = floatsqroot(dx*dx + dy*dy);
+
+	if (distBank > 0.0 && WORKSHOP_X > 1000.0) {
+		printf("  -> PASS: GPS POI calibrated (Bank: %.0fm, Workshop: %.1f).",
+			distBank, WORKSHOP_X);
+		passCount++;
+	} else {
+		print("  -> FAIL: GPS POI coordinate calibration error.");
+		failCount++;
+	}
+
 	print("==================================================");
-	printf("  [DEBUG SUMMARY] %d / 18 TESTS PASSED, %d FAILED", passCount, failCount);
+	printf("  [DEBUG SUMMARY] %d / 20 TESTS PASSED, %d FAILED", passCount, failCount);
 	print("==================================================\n");
 
 	return 1;

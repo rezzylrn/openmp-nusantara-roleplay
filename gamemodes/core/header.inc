@@ -286,8 +286,11 @@ enum E_VEHICLE_DATA {
 #define DEALER_Z                 13.5
 
 #define STORE_IDLEWOOD_X         1315.0
-#define STORE_IDLEWOOD_Y         -898.0
-#define STORE_IDLEWOOD_Z         39.5
+#define STORE_IDLEWOOD_Y         -1748.0
+#define STORE_IDLEWOOD_Z         13.5
+#define WORKSHOP_X              1995.0
+#define WORKSHOP_Y              -2060.0
+#define WORKSHOP_Z              13.5
 
 #define POLICE_X                 1554.0
 #define POLICE_Y                 -1675.0

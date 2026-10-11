@@ -209,69 +209,70 @@ stock OnBankDialogResponse(playerid, listitem)
 stock OnBankDepositResponse(playerid, const inputtext[])
 {
 	new amount = strval(inputtext);
-	if (amount < 1) { SendErr(playerid, "Jumlah tidak valid."); return 0; }
-	if (gPlayerData[playerid][pMoney] < amount) { SendErr(playerid, "Cash tidak cukup."); return 0; }
+	if (amount < 1 || amount > 50000000) { SendErr(playerid, "Jumlah setoran tidak valid ($1 - $50.000.000)."); return 0; }
+	if (gPlayerData[playerid][pMoney] < amount) { SendErr(playerid, "Uang tunai tidak mencukupi."); return 0; }
 	TakePlayerMoneyEx(playerid, amount, "setoran bank");
 	GivePlayerBankEx(playerid, amount, "setoran bank");
 	new depmsg[64]; format(depmsg, sizeof(depmsg), "Menyimpan $%d ke bank.", amount);
 	ShowPlayerAlert(playerid, depmsg);
+	PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
 	return 1;
 }
 
 stock OnBankWithdrawResponse(playerid, const inputtext[])
 {
 	new amount = strval(inputtext);
-	if (amount < 1) { SendErr(playerid, "Jumlah tidak valid."); return 0; }
-	if (gPlayerData[playerid][pBank] < amount) { SendErr(playerid, "Saldo bank tidak cukup."); return 0; }
+	if (amount < 1 || amount > 50000000) { SendErr(playerid, "Jumlah penarikan tidak valid ($1 - $50.000.000)."); return 0; }
+	if (gPlayerData[playerid][pBank] < amount) { SendErr(playerid, "Saldo bank tidak mencukupi."); return 0; }
 	TakePlayerBankEx(playerid, amount, "penarikan bank");
 	GivePlayerMoneyEx(playerid, amount, "penarikan bank");
 	new wmsg[64]; format(wmsg, sizeof(wmsg), "Menarik $%d dari bank.", amount);
 	ShowPlayerAlert(playerid, wmsg);
+	PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
 	return 1;
 }
 
 stock OnBankTransferResponse(playerid, const inputtext[])
 {
-	new targetname[MAX_PLAYER_NAME], amount_str[32];
-	new i = 0, j = 0;
-	while (inputtext[i] == ' ') i++;
-	while (inputtext[i] != '\0' && inputtext[i] != ' ' && j < MAX_PLAYER_NAME - 1) {
-		targetname[j++] = inputtext[i++];
-	}
-	targetname[j] = '\0';
-	while (inputtext[i] == ' ') i++;
-	j = 0;
-	while (inputtext[i] != '\0' && j < sizeof(amount_str) - 1) {
-		amount_str[j++] = inputtext[i++];
-	}
-	amount_str[j] = '\0';
-	new amount = strval(amount_str);
-
-	if (targetname[0] == '\0' || amount < 1) {
-		SendErr(playerid, "Format salah. Gunakan: [Nama] [Jumlah]");
+	new targetid, amount;
+	if (sscanf(inputtext, "ud", targetid, amount)) {
+		SendSyntax(playerid, "[ID / Nama Pemain] [Jumlah Uang]");
+		ShowPlayerDialog(playerid, DIALOG_BANK_TRANSFER, DIALOG_STYLE_INPUT,
+			"TRANSFER DANA", "Format: [ID Pemain / Nama] [Jumlah Uang]\nContoh: 0 5000", "Kirim", "Batal");
 		return 0;
 	}
 
-	new targetid = FindPlayerByName(targetname);
-	if (targetid == -1) {
-		SendErr(playerid, "Penerima tidak ditemukan: %s", targetname);
+	if (amount < 1 || amount > 10000000) {
+		SendErr(playerid, "Nominal transfer minimal $1 dan maksimal $10.000.000.");
 		return 0;
 	}
+
+	if (targetid == INVALID_PLAYER_ID || !IsPlayerConnected(targetid) || !gPlayerData[targetid][pLoggedIn]) {
+		SendErr(playerid, "Pemain penerima tidak aktif atau belum login.");
+		return 0;
+	}
+
 	if (targetid == playerid) {
-		SendErr(playerid, "Tidak bisa transfer ke rekening sendiri.");
-		return 0;
-	}
-	if (gPlayerData[playerid][pBank] < amount + TRANSFER_FEE) {
-		SendErr(playerid, "Saldo bank tidak cukup (dibutuhkan $%d termasuk biaya $%d).", amount + TRANSFER_FEE, TRANSFER_FEE);
+		SendErr(playerid, "Tidak bisa mentransfer dana ke rekening sendiri.");
 		return 0;
 	}
 
-	TakePlayerBankEx(playerid, amount + TRANSFER_FEE, "transfer + fee");
+	if (gPlayerData[playerid][pBank] < amount + TRANSFER_FEE) {
+		SendErr(playerid, "Saldo bank tidak cukup (dibutuhkan $%d termasuk biaya admin $%d).", amount + TRANSFER_FEE, TRANSFER_FEE);
+		return 0;
+	}
+
+	TakePlayerBankEx(playerid, amount + TRANSFER_FEE, "transfer bank");
 	GivePlayerBankEx(targetid, amount, "terima transfer");
-	SendRP(targetid, COLOR_SUCCESS, "Anda menerima transfer bank $%d dari %s.", amount, gPlayerData[playerid][pName]);
-	SendRP(playerid, COLOR_SUCCESS, "Transfer $%d ke %s berhasil (Biaya: $%d).", amount, targetname, TRANSFER_FEE);
+
+	SendRP(targetid, COLOR_SUCCESS, "[BANK] Anda menerima transfer dana $%d dari %s.", amount, gPlayerData[playerid][pName]);
+	SendRP(playerid, COLOR_SUCCESS, "[BANK] Transfer $%d ke %s berhasil (Biaya admin: $%d).", amount, gPlayerData[targetid][pName], TRANSFER_FEE);
+
 	new tfmsg[64]; format(tfmsg, sizeof(tfmsg), "Transfer $%d berhasil.", amount);
 	ShowPlayerAlert(playerid, tfmsg);
+
+	PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
+	PlayerPlaySound(targetid, 1052, 0.0, 0.0, 0.0);
 	return 1;
 }
 
@@ -280,13 +281,13 @@ stock OnATMMenuResponse(playerid, listitem)
 {
 	if (listitem == 0) {
 		ShowPlayerDialog(playerid, DIALOG_ATM_WITHDRAW, DIALOG_STYLE_INPUT,
-			"ATM - TARIK TUNAI", "Masukkan jumlah penarikan tunai ATM:",
+			"ATM - TARIK TUNAI", "Masukkan jumlah penarikan tunai ATM ($1 - $1.000.000):",
 			"Tarik", "Batal");
 		return 1;
 	}
 	if (listitem == 1) {
 		ShowPlayerDialog(playerid, DIALOG_ATM_DEPOSIT, DIALOG_STYLE_INPUT,
-			"ATM - SIMPAN TUNAI", "Masukkan jumlah setor tunai ATM:",
+			"ATM - SIMPAN TUNAI", "Masukkan jumlah setor tunai ATM ($1 - $1.000.000):",
 			"Setor", "Batal");
 		return 1;
 	}
@@ -300,24 +301,26 @@ stock OnATMMenuResponse(playerid, listitem)
 stock OnATMWithdrawResponse(playerid, const inputtext[])
 {
 	new amount = strval(inputtext);
-	if (amount < 1) { SendErr(playerid, "Jumlah tidak valid."); return 0; }
+	if (amount < 1 || amount > 1000000) { SendErr(playerid, "Nominal penarikan $1 - $1.000.000."); return 0; }
 	if (gPlayerData[playerid][pBank] < amount) { SendErr(playerid, "Saldo bank tidak cukup."); return 0; }
 	TakePlayerBankEx(playerid, amount, "tarik ATM");
 	GivePlayerMoneyEx(playerid, amount, "tarik tunai ATM");
 	new awmsg[64]; format(awmsg, sizeof(awmsg), "ATM: $%d ditarik tunai.", amount);
 	ShowPlayerAlert(playerid, awmsg);
+	PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
 	return 1;
 }
 
 stock OnATMDepositResponse(playerid, const inputtext[])
 {
 	new amount = strval(inputtext);
-	if (amount < 1) { SendErr(playerid, "Jumlah tidak valid."); return 0; }
+	if (amount < 1 || amount > 1000000) { SendErr(playerid, "Nominal setoran $1 - $1.000.000."); return 0; }
 	if (gPlayerData[playerid][pMoney] < amount) { SendErr(playerid, "Cash tidak cukup."); return 0; }
 	TakePlayerMoneyEx(playerid, amount, "setor ATM");
 	GivePlayerBankEx(playerid, amount, "setor tunai ATM");
 	new admsg[64]; format(admsg, sizeof(admsg), "ATM: $%d disimpan ke bank.", amount);
 	ShowPlayerAlert(playerid, admsg);
+	PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
 	return 1;
 }
 

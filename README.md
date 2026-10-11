@@ -66,7 +66,7 @@ Server ini mengadopsi antarmuka grafis interaktif berbasis kursor mouse (`Select
   - **Aplikasi Dapat Diklik Langsung:**
     1. `[ 1. Panggilan ]` -> Membuka dialog input nomor tujuan.
     2. `[ 2. Pesan SMS ]` -> Membuka dialog format SMS.
-    3. `[ 3. GPS Peta ]` -> Membuka menu navigasi lokasi.
+    3. `[ 3. GPS Peta ]` -> Membuka navigasi 16 titik penting Los Santos (Fasilitas Publik, 8 Sidejobs, Bisnis) lengkap dengan kalkulasi jarak dinamis real-time (`DIALOG_STYLE_TABLIST_HEADERS`).
     4. `[ 4. Cek Pulsa ]` -> Menampilkan alert status pulsa & kuota.
     5. `[ 5. Mode Suara ]` -> Mengubah mode dering / hening secara instan.
     6. `[ 6. Tutup Ponsel ]` -> Menutup tampilan ponsel.

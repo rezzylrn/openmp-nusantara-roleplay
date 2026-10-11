@@ -408,18 +408,25 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		}
 		case DIALOG_GPS_MENU: {
 			switch (listitem) {
-				case 0: { SetPlayerCheckpoint(playerid, BANK_X, BANK_Y, BANK_Z, 6.0); SendSucc(playerid, "GPS: Bank Nusantara."); }
-				case 1: { SetPlayerCheckpoint(playerid, GOV_X, GOV_Y, GOV_Z, 6.0); SendSucc(playerid, "GPS: Balai Kota (SAGOV)."); }
-				case 2: { SetPlayerCheckpoint(playerid, MEDIC_X, MEDIC_Y, MEDIC_Z, 6.0); SendSucc(playerid, "GPS: RS All Saints (SAMD)."); }
-				case 3: { SetPlayerCheckpoint(playerid, POLICE_X, POLICE_Y, POLICE_Z, 6.0); SendSucc(playerid, "GPS: Kantor Polisi LSPD."); }
-				case 4: { SetPlayerCheckpoint(playerid, COURIER_X, COURIER_Y, COURIER_Z, 6.0); SendSucc(playerid, "GPS: Pusat Pekerjaan Umum."); }
-				case 5: { SetPlayerCheckpoint(playerid, FUEL_STATION_X, FUEL_STATION_Y, FUEL_STATION_Z, 6.0); SendSucc(playerid, "GPS: SPBU."); }
-				case 6: { SetPlayerCheckpoint(playerid, STORE_IDLEWOOD_X, STORE_IDLEWOOD_Y, STORE_IDLEWOOD_Z, 6.0); SendSucc(playerid, "GPS: Toko 24/7 Idlewood."); }
-				case 7: { SetPlayerCheckpoint(playerid, DEALER_X, DEALER_Y, DEALER_Z, 6.0); SendSucc(playerid, "GPS: Dealership Los Santos."); }
-				case 8: { SetPlayerCheckpoint(playerid, FISH_PIER_X, FISH_PIER_Y, FISH_PIER_Z, 6.0); SendSucc(playerid, "GPS: Dermaga Santa Maria (Mancing)."); }
-				case 9: { SetPlayerCheckpoint(playerid, LUMBER_X, LUMBER_Y, LUMBER_Z, 6.0); SendSucc(playerid, "GPS: Hutan Shady Creeks (Tebang Kayu)."); }
-				case 10: { DisablePlayerCheckpoint(playerid); SendInfo(playerid, "Tanda navigasi dimatikan."); }
+				case 0:  { SetPlayerCheckpoint(playerid, BANK_X, BANK_Y, BANK_Z, 6.0); SendSucc(playerid, "GPS: Rute disetel ke Bank Nusantara (%.0fm).", GetPlayerDistanceFromPoint(playerid, BANK_X, BANK_Y, BANK_Z)); }
+				case 1:  { SetPlayerCheckpoint(playerid, POLICE_X, POLICE_Y, POLICE_Z, 6.0); SendSucc(playerid, "GPS: Rute disetel ke Kantor Polisi LSPD (%.0fm).", GetPlayerDistanceFromPoint(playerid, POLICE_X, POLICE_Y, POLICE_Z)); }
+				case 2:  { SetPlayerCheckpoint(playerid, MEDIC_X, MEDIC_Y, MEDIC_Z, 6.0); SendSucc(playerid, "GPS: Rute disetel ke RS All Saints ASGH (%.0fm).", GetPlayerDistanceFromPoint(playerid, MEDIC_X, MEDIC_Y, MEDIC_Z)); }
+				case 3:  { SetPlayerCheckpoint(playerid, GOV_X, GOV_Y, GOV_Z, 6.0); SendSucc(playerid, "GPS: Rute disetel ke Balai Kota SAGOV (%.0fm).", GetPlayerDistanceFromPoint(playerid, GOV_X, GOV_Y, GOV_Z)); }
+				case 4:  { SetPlayerCheckpoint(playerid, FUEL_STATION_X, FUEL_STATION_Y, FUEL_STATION_Z, 6.0); SendSucc(playerid, "GPS: Rute disetel ke SPBU Bahan Bakar Idlewood (%.0fm).", GetPlayerDistanceFromPoint(playerid, FUEL_STATION_X, FUEL_STATION_Y, FUEL_STATION_Z)); }
+				case 5:  { SetPlayerCheckpoint(playerid, STORE_IDLEWOOD_X, STORE_IDLEWOOD_Y, STORE_IDLEWOOD_Z, 6.0); SendSucc(playerid, "GPS: Rute disetel ke Toko 24/7 Idlewood (%.0fm).", GetPlayerDistanceFromPoint(playerid, STORE_IDLEWOOD_X, STORE_IDLEWOOD_Y, STORE_IDLEWOOD_Z)); }
+				case 6:  { SetPlayerCheckpoint(playerid, WORKSHOP_X, WORKSHOP_Y, WORKSHOP_Z, 6.0); SendSucc(playerid, "GPS: Rute disetel ke Bengkel Modifikasi Mekanik (%.0fm).", GetPlayerDistanceFromPoint(playerid, WORKSHOP_X, WORKSHOP_Y, WORKSHOP_Z)); }
+				case 7:  { SetPlayerCheckpoint(playerid, DEALER_X, DEALER_Y, DEALER_Z, 6.0); SendSucc(playerid, "GPS: Rute disetel ke Showroom Dealership (%.0fm).", GetPlayerDistanceFromPoint(playerid, DEALER_X, DEALER_Y, DEALER_Z)); }
+				case 8:  { SetPlayerCheckpoint(playerid, COURIER_X, COURIER_Y, COURIER_Z, 6.0); SendSucc(playerid, "GPS: Rute disetel ke Job Kurir Paket (%.0fm).", GetPlayerDistanceFromPoint(playerid, COURIER_X, COURIER_Y, COURIER_Z)); }
+				case 9:  { SetPlayerCheckpoint(playerid, SWEEPER_X, SWEEPER_Y, SWEEPER_Z, 6.0); SendSucc(playerid, "GPS: Rute disetel ke Job Pembersih Jalan Sweeper (%.0fm).", GetPlayerDistanceFromPoint(playerid, SWEEPER_X, SWEEPER_Y, SWEEPER_Z)); }
+				case 10: { SetPlayerCheckpoint(playerid, TRUCKER_X, TRUCKER_Y, TRUCKER_Z, 6.0); SendSucc(playerid, "GPS: Rute disetel ke Job Truk Hauler (%.0fm).", GetPlayerDistanceFromPoint(playerid, TRUCKER_X, TRUCKER_Y, TRUCKER_Z)); }
+				case 11: { SetPlayerCheckpoint(playerid, BUS_DEPOT_X, BUS_DEPOT_Y, BUS_DEPOT_Z, 6.0); SendSucc(playerid, "GPS: Rute disetel ke Job Terminal Bus Umum (%.0fm).", GetPlayerDistanceFromPoint(playerid, BUS_DEPOT_X, BUS_DEPOT_Y, BUS_DEPOT_Z)); }
+				case 12: { SetPlayerCheckpoint(playerid, FISH_PIER_X, FISH_PIER_Y, FISH_PIER_Z, 6.0); SendSucc(playerid, "GPS: Rute disetel ke Dermaga Mancing Santa Maria (%.0fm).", GetPlayerDistanceFromPoint(playerid, FISH_PIER_X, FISH_PIER_Y, FISH_PIER_Z)); }
+				case 13: { SetPlayerCheckpoint(playerid, LUMBER_X, LUMBER_Y, LUMBER_Z, 6.0); SendSucc(playerid, "GPS: Rute disetel ke Hutan Penebangan Kayu (%.0fm).", GetPlayerDistanceFromPoint(playerid, LUMBER_X, LUMBER_Y, LUMBER_Z)); }
+				case 14: { SetPlayerCheckpoint(playerid, SAWMILL_X, SAWMILL_Y, SAWMILL_Z, 6.0); SendSucc(playerid, "GPS: Rute disetel ke Pabrik Pengolahan Kayu Sawmill (%.0fm).", GetPlayerDistanceFromPoint(playerid, SAWMILL_X, SAWMILL_Y, SAWMILL_Z)); }
+				case 15: { SetPlayerCheckpoint(playerid, TRASH_BUYER_X, TRASH_BUYER_Y, TRASH_BUYER_Z, 6.0); SendSucc(playerid, "GPS: Rute disetel ke Daur Ulang Sampah (%.0fm).", GetPlayerDistanceFromPoint(playerid, TRASH_BUYER_X, TRASH_BUYER_Y, TRASH_BUYER_Z)); }
+				case 16: { DisablePlayerCheckpoint(playerid); SendInfo(playerid, "GPS: Tanda navigasi telah dimatikan."); }
 			}
+			PlayerPlaySound(playerid, 1083, 0.0, 0.0, 0.0);
 		}
 		case DIALOG_BANK_MENU:         OnBankDialogResponse(playerid, listitem);
 		case DIALOG_BANK_DEPOSIT:      OnBankDepositResponse(playerid, inputtext);
@@ -439,7 +446,14 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 // checkpoint enter
 public OnPlayerEnterCheckpoint(playerid)
 {
-	if (gJobActive[playerid]) OnJobCheckpoint(playerid);
+	if (gJobActive[playerid]) {
+		OnJobCheckpoint(playerid);
+		return 1;
+	}
+	// Sampai di tujuan GPS navigasi
+	DisablePlayerCheckpoint(playerid);
+	SendSucc(playerid, "GPS: Anda telah sampai di lokasi tujuan navigasi.");
+	PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
 	return 1;
 }
 

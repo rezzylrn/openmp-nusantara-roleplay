@@ -264,18 +264,47 @@ stock ProcessRadio(playerid, const message[])
 // ---------------------------------------------------------------------------
 stock ShowGPSMenu(playerid)
 {
-	if (!gPlayerData[playerid][pLoggedIn]) return 0;
-	ShowPlayerDialog(playerid, DIALOG_GPS_MENU, DIALOG_STYLE_LIST,
-		"SISTEM GPS NAVIGASI",
-		"1. Bank Nusantara (Pusat Keuangan)\n\
-2. Kantor Balai Kota (Pemerintah)\n\
-3. Rumah Sakit All Saints (SAMD)\n\
-4. Kantor Kepolisian (SAPD LSPD)\n\
-5. Pusat Pekerjaan Umum (Job Center)\n\
-6. SPBU Bahan Bakar Utama\n\
-7. Toko Serba Ada 24/7 (Idlewood)\n\
-8. Dealer Kendaraan Los Santos\n\
-9. Matikan Tanda Navigasi",
-		"Tandai", "Batal");
+	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
+
+	new dialogContent[1150];
+	format(dialogContent, sizeof(dialogContent),
+		"Lokasi Tujuan	Jarak Dari Posisi\n\
+{FFFF00}1. Bank Nusantara (Pusat Finansial)	{4CD964}%.0f meter\n\
+{FFFF00}2. Kantor Kepolisian (SAPD LSPD)	{4CD964}%.0f meter\n\
+{FFFF00}3. RS All Saints General (SAMD ASGH)	{4CD964}%.0f meter\n\
+{FFFF00}4. Balai Kota Los Santos (SAGOV)	{4CD964}%.0f meter\n\
+{FFFF00}5. SPBU Bahan Bakar Idlewood	{4CD964}%.0f meter\n\
+{FFFF00}6. Toko Serba Ada 24/7 Idlewood	{4CD964}%.0f meter\n\
+{FFFF00}7. Bengkel Modifikasi Mekanik (Workshop)	{4CD964}%.0f meter\n\
+{FFFF00}8. Showroom Dealership Kendaraan	{4CD964}%.0f meter\n\
+{33CCFF}9. Job: Logistik Pengiriman Kurir Paket	{4CD964}%.0f meter\n\
+{33CCFF}10. Job: Depot Pembersih Jalan Sweeper	{4CD964}%.0f meter\n\
+{33CCFF}11. Job: Depot Truk Angkutan Hauler	{4CD964}%.0f meter\n\
+{33CCFF}12. Job: Terminal Bus Umum Los Santos	{4CD964}%.0f meter\n\
+{33CCFF}13. Job: Dermaga Mancing Santa Maria Pier	{4CD964}%.0f meter\n\
+{33CCFF}14. Job: Hutan Penebangan Shady Creeks	{4CD964}%.0f meter\n\
+{33CCFF}15. Job: Tempat Pengolahan Kayu (Sawmill)	{4CD964}%.0f meter\n\
+{33CCFF}16. Job: Tempat Daur Ulang Pemulung	{4CD964}%.0f meter\n\
+{FF6666}X. [ MATIKAN TANDA NAVIGASI / GPS ]	{FF6666}-",
+		GetPlayerDistanceFromPoint(playerid, BANK_X, BANK_Y, BANK_Z),
+		GetPlayerDistanceFromPoint(playerid, POLICE_X, POLICE_Y, POLICE_Z),
+		GetPlayerDistanceFromPoint(playerid, MEDIC_X, MEDIC_Y, MEDIC_Z),
+		GetPlayerDistanceFromPoint(playerid, GOV_X, GOV_Y, GOV_Z),
+		GetPlayerDistanceFromPoint(playerid, FUEL_STATION_X, FUEL_STATION_Y, FUEL_STATION_Z),
+		GetPlayerDistanceFromPoint(playerid, STORE_IDLEWOOD_X, STORE_IDLEWOOD_Y, STORE_IDLEWOOD_Z),
+		GetPlayerDistanceFromPoint(playerid, WORKSHOP_X, WORKSHOP_Y, WORKSHOP_Z),
+		GetPlayerDistanceFromPoint(playerid, DEALER_X, DEALER_Y, DEALER_Z),
+		GetPlayerDistanceFromPoint(playerid, COURIER_X, COURIER_Y, COURIER_Z),
+		GetPlayerDistanceFromPoint(playerid, SWEEPER_X, SWEEPER_Y, SWEEPER_Z),
+		GetPlayerDistanceFromPoint(playerid, TRUCKER_X, TRUCKER_Y, TRUCKER_Z),
+		GetPlayerDistanceFromPoint(playerid, BUS_DEPOT_X, BUS_DEPOT_Y, BUS_DEPOT_Z),
+		GetPlayerDistanceFromPoint(playerid, FISH_PIER_X, FISH_PIER_Y, FISH_PIER_Z),
+		GetPlayerDistanceFromPoint(playerid, LUMBER_X, LUMBER_Y, LUMBER_Z),
+		GetPlayerDistanceFromPoint(playerid, SAWMILL_X, SAWMILL_Y, SAWMILL_Z),
+		GetPlayerDistanceFromPoint(playerid, TRASH_BUYER_X, TRASH_BUYER_Y, TRASH_BUYER_Z)
+	);
+
+	ShowPlayerDialog(playerid, DIALOG_GPS_MENU, DIALOG_STYLE_TABLIST_HEADERS,
+		"SISTEM GPS NAVIGASI SMARTPHONE", dialogContent, "Tandai", "Batal");
 	return 1;
 }
