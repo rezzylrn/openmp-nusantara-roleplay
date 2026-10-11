@@ -92,6 +92,7 @@ stock ResetPlayerData(playerid)
 	gPlayerData[playerid][pLanguage] = LANG_ID;
 	gPlayerData[playerid][pTickets] = 0;
 	gPlayerData[playerid][pTicketAmount] = 0;
+	gPlayerData[playerid][pDriveLic] = false;
 
 	gPhoneOpen[playerid] = false;
 	gInventoryOpen[playerid] = false;

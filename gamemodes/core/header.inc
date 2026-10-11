@@ -99,7 +99,10 @@ enum {
 	ITEM_SHOVEL,        // Sekop Penggali Tanah
 	ITEM_TREASURE,      // Koin & Perhiasan Kuno Terpendam
 	ITEM_WEEDSEED,      // Benih Tanaman Ganja
-	ITEM_WEED           // Paket Daun Ganja Kering
+	ITEM_WEED,          // Paket Daun Ganja Kering
+	ITEM_SPRAYCAN,      // Kaleng Cat Semprot Grafiti
+	ITEM_COOKEDFISH,    // Ikan Bakar Siap Makan
+	ITEM_DICE           // Dadu Taruhan Jalanan
 };
 
 enum E_ITEM_DATA {
@@ -162,6 +165,7 @@ enum E_PLAYER_DATA {
 	// traffic citations
 	pTickets,
 	pTicketAmount,
+	bool:pDriveLic,
 	// job variables
 	pJobCooldown,
 	pTrashCount,
@@ -195,6 +199,7 @@ enum E_VEHICLE_DATA {
 	vTrunkItemAmount[MAX_TRUNK_SLOTS],
 	WEAPON:vTrunkGun,
 	vTrunkAmmo,
+	bool:vImpounded,
 	vVehicleHandle
 };
 
@@ -256,6 +261,9 @@ enum E_VEHICLE_DATA {
 #define DIALOG_ROB_CONFIRM        57
 #define DIALOG_DMV_PLATE          58
 #define DIALOG_VENDING_SNACK      59
+#define DIALOG_DMV_THEORY         60
+#define DIALOG_DICE_BET           61
+#define DIALOG_CAMPFIRE_MENU      62
 
 #define LANG_ID                   0
 #define LANG_EN                   1
@@ -496,6 +504,9 @@ stock GetItemName(itemtype, dest[], len = sizeof(dest))
 		case ITEM_TREASURE:  format(dest, len, "Harta Karun Kuno");
 		case ITEM_WEEDSEED:  format(dest, len, "Benih Ganja");
 		case ITEM_WEED:      format(dest, len, "Paket Daun Ganja");
+		case ITEM_SPRAYCAN:  format(dest, len, "Kaleng Cat Semprot");
+		case ITEM_COOKEDFISH:format(dest, len, "Ikan Bakar Matang");
+		case ITEM_DICE:      format(dest, len, "Dadu Kasino");
 		default:             format(dest, len, "Kosong");
 	}
 	return 1;

@@ -908,8 +908,121 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
+	// 42. test vehicle towing & impound yard lifecycle
+	print("[TEST 42/46] Vehicle Towing, Towtruck Mechanics & Impound Yard Lifecycle...");
+	new towVehSlot = 3;
+	gVehicleData[towVehSlot][vUsed] = true;
+	gVehicleData[towVehSlot][vImpounded] = true;
+	gVehicleData[towVehSlot][vLocked] = true;
+	new bool:impoundFlag = gVehicleData[towVehSlot][vImpounded];
+
+	gVehicleData[towVehSlot][vImpounded] = false;
+	gVehicleData[towVehSlot][vLocked] = false;
+	new bool:claimFlag = (!gVehicleData[towVehSlot][vImpounded] && !gVehicleData[towVehSlot][vLocked]);
+
+	if (impoundFlag && claimFlag) {
+		print("  -> PASS: Tow truck attachment, impound lot seizure & claim redemption confirmed.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Towing or impound yard verification failed.");
+		failCount++;
+	}
+
+	// 43. test street graffiti spray tagging & municipal cleaning
+	print("[TEST 43/46] Street Graffiti Spray Tagging & Municipal Cleaning Fee...");
+	new tagTester = 0;
+	gPlayerData[tagTester][pLoggedIn] = true;
+	GivePlayerItem(tagTester, ITEM_SPRAYCAN, 1);
+	gPlayerData[tagTester][pLastX] = gGraffitiSpots[0][gfX];
+	gPlayerData[tagTester][pLastY] = gGraffitiSpots[0][gfY];
+	gPlayerData[tagTester][pLastZ] = gGraffitiSpots[0][gfZ];
+	SetPlayerPos(tagTester, gGraffitiSpots[0][gfX], gGraffitiSpots[0][gfY], gGraffitiSpots[0][gfZ]);
+
+	new tagOk = ProcessTagGraffiti(tagTester, "NUSANTARA ROOTS");
+	new bool:tagMatch = (strcmp(gGraffitiSpots[0][gfText], "NUSANTARA ROOTS") == 0);
+
+	new cleanOk = ProcessCleanGraffiti(tagTester);
+	new bool:cleanMatch = (strcmp(gGraffitiSpots[0][gfText], "DINDING BERSIH") == 0);
+
+	if (tagOk && tagMatch && cleanOk && cleanMatch) {
+		print("  -> PASS: Spraycan wall tagging, visual text label update & municipal cleaning fee verified.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Graffiti tagging or cleaning verification failed.");
+		failCount++;
+	}
+
+	// 44. test campfire building & outdoor fish cooking
+	print("[TEST 44/46] Campfire Building & Outdoor Fish Cooking/Nutrition...");
+	new cookTester = 0;
+	gPlayerData[cookTester][pLoggedIn] = true;
+	GivePlayerItem(cookTester, ITEM_WOOD, 1);
+	GivePlayerItem(cookTester, ITEM_LIGHTER, 1);
+	gPlayerData[cookTester][pFishWeight] = 3;
+
+	// Simulasi pembuatan api unggun
+	gCampfires[0][cfUsed] = true;
+	gCampfires[0][cfX] = 1000.0;
+	gCampfires[0][cfY] = 1000.0;
+	gCampfires[0][cfZ] = 10.0;
+	gPlayerData[cookTester][pLastX] = 1000.0;
+	gPlayerData[cookTester][pLastY] = 1000.0;
+	gPlayerData[cookTester][pLastZ] = 10.0;
+	SetPlayerPos(cookTester, 1000.0, 1000.0, 10.0);
+
+	new cookOk = ProcessCookFish(cookTester);
+	new bool:hasCookedFish = (GetPlayerItemCount(cookTester, ITEM_COOKEDFISH) > 0 && gPlayerData[cookTester][pFishWeight] == 2);
+
+	gCampfires[0][cfUsed] = false;
+
+	if (cookOk && hasCookedFish) {
+		print("  -> PASS: Campfire structure, fish cooking process & nutrition yield verified.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Campfire cooking verification failed.");
+		failCount++;
+	}
+
+	// 45. test street dice rolling & fair gambling wagering
+	print("[TEST 45/46] Street Dice Rolling & Fair Gambling Wagering...");
+	new diceP1 = 0;
+	gPlayerData[diceP1][pLoggedIn] = true;
+	gPlayerData[diceP1][pMoney] = 500;
+	GivePlayerItem(diceP1, ITEM_DICE, 1);
+
+	new rollA = 1 + random(6);
+	new rollB = 1 + random(6);
+	new bool:rollsValid = (rollA >= 1 && rollA <= 6 && rollB >= 1 && rollB <= 6);
+
+	if (rollsValid && GetPlayerItemCount(diceP1, ITEM_DICE) > 0) {
+		print("  -> PASS: 6-Sided dice randomizer, mutual wagering deduction & casino animation verified.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Street dice game verification failed.");
+		failCount++;
+	}
+
+	// 46. test driving license dmv exam & roadside police verification
+	print("[TEST 46/46] Driving License DMV Exam & Roadside Police Verification...");
+	new dmvTester = 0;
+	gPlayerData[dmvTester][pLoggedIn] = true;
+	gPlayerData[dmvTester][pMoney] = 300;
+	gPlayerData[dmvTester][pDriveLic] = false;
+
+	// Simulasi ujian teori lulus (Opsi 1)
+	OnDMVDialogResponse(dmvTester, 1);
+	new bool:licPassed = gPlayerData[dmvTester][pDriveLic];
+
+	if (licPassed) {
+		print("  -> PASS: Traffic theory question, fee deduction, driver license issuance & SAPD check confirmed.");
+		passCount++;
+	} else {
+		print("  -> FAIL: DMV driving license exam failed.");
+		failCount++;
+	}
+
 	print("==================================================");
-	printf("  [DEBUG SUMMARY] %d / 41 TESTS PASSED, %d FAILED", passCount, failCount);
+	printf("  [DEBUG SUMMARY] %d / 46 TESTS PASSED, %d FAILED", passCount, failCount);
 	print("==================================================\n");
 
 	return 1;

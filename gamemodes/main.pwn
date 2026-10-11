@@ -33,6 +33,11 @@
 #include "systems/metal_detector.inc"
 #include "systems/dmv_plates.inc"
 #include "systems/vending_machines.inc"
+#include "systems/impound.inc"
+#include "systems/graffiti.inc"
+#include "systems/cooking.inc"
+#include "systems/dice_game.inc"
+#include "systems/dmv_exam.inc"
 
 // 5. Gameplay & Factions
 #include "gameplay/mapping.inc"
@@ -83,6 +88,11 @@ public OnGameModeInit()
 	WeedFarm_Init();
 	MetalDetector_Init();
 	VendingMachines_Init();
+	Impound_Init();
+	Graffiti_Init();
+	Cooking_Init();
+	Dice_Init();
+	DMV_Init();
 
 	// default class spawn
 	AddPlayerClass(0, SPAWN_X, SPAWN_Y, SPAWN_Z, SPAWN_A, WEAPON_FIST, 0, WEAPON_FIST, 0, WEAPON_FIST, 0);
@@ -527,6 +537,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		case DIALOG_BLACKMARKET_BUY: OnBlackMarketBuyResponse(playerid, listitem);
 		case DIALOG_BLACKMARKET_SELL: OnBlackMarketSellResponse(playerid, listitem);
 		case DIALOG_VENDING_SNACK: OnVendingDialogResponse(playerid, listitem);
+		case DIALOG_DMV_THEORY: OnDMVDialogResponse(playerid, listitem);
 	}
 	return 1;
 }

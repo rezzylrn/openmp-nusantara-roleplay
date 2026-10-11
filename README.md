@@ -410,6 +410,39 @@ Gamemode ini mengadopsi arsitektur anti-cheat server-side modular yang dirancang
     - Minuman Kaleng Sprunk ($3): Memulihkan dahaga Haus +40%, animasi minum kaleng.
     - Makanan Ringan Cokelat Energi ($4): Memulihkan Lapar +35%, animasi makan.
 
+### 6. Truk Derek Towtruck & Depo Sitaan Kendaraan (`systems/impound.inc`)
+- **Derek & Penertiban Kendaraan Terlantar:**
+  - Truk derek Towtruck (`525`) untuk Mekanik atau Polisi SAPD on-duty.
+  - Mengaitkan kabel derek ke mobil di belakangnya via `/tow` atau `/derek`, dan melepas kaitan via `/untow`.
+  - Membawa mobil pelanggar ke Depo Sitaan LSPD dan menyita via `/impound` (petugas mendapat $100 upah jasa derek).
+  - Pemilik kendaraan dapat menebus mobil sitaan di loket LSPD via `/claimveh` atau `/tebus` ($200 denda sita).
+
+### 7. Dinding Grafiti & Pembersihan Dinas Kota (`systems/graffiti.inc`)
+- **Tagging Wilayah & Grafiti Jalanan:**
+  - Beli Kaleng Cat Semprot (`ITEM_SPRAYCAN`) di toko 24/7.
+  - Menggambar grafiti wilayah di 6 dinding kota (Ganton, Idlewood, East LS, Glen Park, Verona, El Corona) via `/tag [teks]`.
+  - Teks grafiti dan nama penyemprot terpampang live di dinding (3D Label).
+  - Warga atau pembersih jalan (Sweeper) dapat membersihkan coretan via `/cleantag` dan mendapat upah kebersihan kota $75.
+
+### 8. Api Unggun & Masak Ikan Luar Ruangan (`systems/cooking.inc`)
+- **Perapian Santai & Kuliner Ikan:**
+  - Nyalakan api unggun via `/campfire` atau `/apiunggun` (butuh Balok Kayu `ITEM_WOOD` dan Korek `ITEM_LIGHTER`).
+  - Api unggun bertahan selama 10 menit di alam terbuka/pantai.
+  - Bakar ikan mentah hasil pancingan via `/cook` atau `/bakar` (menghasilkan `ITEM_COOKEDFISH`).
+  - Santap ikan bakar via `/makanikan` (memulihkan Lapar +60% dan HP +25%).
+
+### 9. Permainan Dadu Kasino Jalanan (`systems/dice_game.inc`)
+- **Judi Taruhan Dadu Adil:**
+  - Beli Dadu Kasino (`ITEM_DICE`) di toko 24/7.
+  - Tantang lawan taruhan via `/dice [targetid] [nominal_taruhan]` (taruhan $5–$5,000).
+  - Kedua pemain melempar dadu 1-6 dengan animasi kasino. Pemenang otomatis menerima uang taruhan dari yang kalah secara aman tanpa rawan penipuan.
+
+### 10. Ujian Surat Izin Mengemudi (SIM) & Razia SAPD (`systems/dmv_exam.inc`)
+- **Lisensi Berkendara Resmi Kota:**
+  - Ikuti ujian teori keselamatan berkendara di Balai Kota SAGOV via `/dmv` atau `/examsim` ($150 biaya ujian).
+  - Jika lulus, karakter resmi memperoleh Surat Izin Mengemudi (SIM) aktif tersimpan di MySQL (`drive_lic`).
+  - Petugas kepolisian SAPD on-duty dapat merazia kelayakan berkendara via `/checklic [targetid]`.
+
 ---
 
 ## Stasiun Rental Sepeda & Kendaraan Pemula (`systems/rental.inc`)

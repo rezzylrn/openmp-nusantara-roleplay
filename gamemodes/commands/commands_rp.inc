@@ -1245,6 +1245,140 @@ CMD:vending(playerid, params[])
 	return 1;
 }
 
+CMD:tow(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ProcessTowVehicle(playerid);
+	return 1;
+}
+
+CMD:derek(playerid, params[])
+{
+	return cmd_tow(playerid, params);
+}
+
+CMD:untow(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ProcessUntowVehicle(playerid);
+	return 1;
+}
+
+CMD:lepasderek(playerid, params[])
+{
+	return cmd_untow(playerid, params);
+}
+
+CMD:impound(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ProcessImpoundVehicle(playerid);
+	return 1;
+}
+
+CMD:sitakendaraan(playerid, params[])
+{
+	return cmd_impound(playerid, params);
+}
+
+CMD:claimveh(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ProcessClaimImpoundedVehicle(playerid);
+	return 1;
+}
+
+CMD:tebus(playerid, params[])
+{
+	return cmd_claimveh(playerid, params);
+}
+
+CMD:tag(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (isnull(params)) return SendSyntax(playerid, "/tag [teks_grafiti]");
+	ProcessTagGraffiti(playerid, params);
+	return 1;
+}
+
+CMD:cleantag(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ProcessCleanGraffiti(playerid);
+	return 1;
+}
+
+CMD:campfire(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ProcessCreateCampfire(playerid);
+	return 1;
+}
+
+CMD:apiunggun(playerid, params[])
+{
+	return cmd_campfire(playerid, params);
+}
+
+CMD:cook(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ProcessCookFish(playerid);
+	return 1;
+}
+
+CMD:bakar(playerid, params[])
+{
+	return cmd_cook(playerid, params);
+}
+
+CMD:makanikan(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ProcessEatCookedFish(playerid);
+	return 1;
+}
+
+CMD:dice(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	new targetid, bet;
+	if (sscanf(params, "ud", targetid, bet)) return SendSyntax(playerid, "/dice [targetid/Nama] [nominal_taruhan]");
+	ProcessPlayDice(playerid, targetid, bet);
+	return 1;
+}
+
+CMD:dadu(playerid, params[])
+{
+	return cmd_dice(playerid, params);
+}
+
+CMD:dmv(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ShowDMVExamDialog(playerid);
+	return 1;
+}
+
+CMD:examsim(playerid, params[])
+{
+	return cmd_dmv(playerid, params);
+}
+
+CMD:checklic(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	new targetid;
+	if (sscanf(params, "u", targetid)) return SendSyntax(playerid, "/checklic [targetid/Nama]");
+	ProcessCheckDriverLicense(playerid, targetid);
+	return 1;
+}
+
+CMD:periksasim(playerid, params[])
+{
+	return cmd_checklic(playerid, params);
+}
+
 stock ShowHelpDialog(playerid)
 {
 	new buf[800];

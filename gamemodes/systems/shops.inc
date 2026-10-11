@@ -39,7 +39,9 @@ Ponsel Pintar\t$150\tAlat komunikasi (/call & /sms)\n\
 Handy Talkie (HT)\t$100\tRadio komunikasi dua arah (/r)\n\
 GPS Navigator\t$50\tPeta panduan fasilitas kota (/gps)\n\
 Detektor Logam Pantai\t$120\tMencari koin & perhiasan terpendam (/detect)\n\
-Sekop Penggali Tanah\t$45\tMenggali temuan detektor logam (/dig)");
+Sekop Penggali Tanah\t$45\tMenggali temuan detektor logam (/dig)\n\
+Kaleng Cat Semprot\t$25\tMenggambar grafiti di dinding (/tag)\n\
+Dadu Kasino Jalanan\t$15\tBermain dadu taruhan peran (/dice)");
 
 	ShowPlayerDialog(playerid, DIALOG_STORE_BUY, DIALOG_STYLE_TABLIST_HEADERS,
 		"TOKO 24/7 - KATALOG PEMBELIAN", list, "Beli", "Batal");
@@ -68,6 +70,8 @@ stock ProcessStorePurchase(playerid, listitem)
 		case 10: { itemType = ITEM_GPS;      price = 50;  }
 		case 11: { itemType = ITEM_DETECTOR; price = 120; }
 		case 12: { itemType = ITEM_SHOVEL;   price = 45;  }
+		case 13: { itemType = ITEM_SPRAYCAN; price = 25;  }
+		case 14: { itemType = ITEM_DICE;     price = 15;  }
 		default: return 0;
 	}
 
