@@ -26,10 +26,13 @@
 #include "systems/doors.inc"
 #include "systems/atms.inc"
 #include "systems/trash.inc"
+#include "systems/traffic_camera.inc"
+#include "systems/rental.inc"
 
 // 5. Gameplay & Factions
 #include "gameplay/mapping.inc"
 #include "gameplay/factions.inc"
+#include "gameplay/armory.inc"
 #include "gameplay/jobs.inc"
 #include "gameplay/police_mdc.inc"
 #include "gameplay/phone.inc"
@@ -66,6 +69,9 @@ public OnGameModeInit()
 	Doors_Init();
 	ATMs_Init();
 	Trash_Init();
+	TrafficCamera_Init();
+	Rental_Init();
+	Armory_Init();
 
 	// default class spawn
 	AddPlayerClass(0, SPAWN_X, SPAWN_Y, SPAWN_Z, SPAWN_A, WEAPON_FIST, 0, WEAPON_FIST, 0, WEAPON_FIST, 0);
@@ -162,6 +168,7 @@ public OnPlayerDisconnect(playerid, reason)
 {
 	if (gPlayerData[playerid][pLoggedIn]) {
 		if (gJobActive[playerid]) ProcessJobQuit(playerid);
+		ProcessRentalDisconnect(playerid);
 		SavePlayerOnDisconnect(playerid);
 	}
 	TextdrawDestroyAll(playerid);
@@ -499,6 +506,9 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
 			return 1;
 		}
+		case DIALOG_ARMORY_MENU: OnFactionArmoryResponse(playerid, listitem);
+		case DIALOG_RENTAL_MENU: OnRentalDialogResponse(playerid, listitem);
+		case DIALOG_TRUNK_WEAPON: OnTrunkWeaponResponse(playerid, listitem);
 	}
 	return 1;
 }
@@ -526,6 +536,7 @@ public RP_Tick()
 		TickPaycheck(i);
 		AC_Tick(i);
 		ProcessPoliceRadarTick(i);
+		ProcessTrafficCameraTick(i);
 		UpdatePlayerZoneHUD(i);
 	}
 	UpdateVehicleFuelLoop();

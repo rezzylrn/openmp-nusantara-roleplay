@@ -316,6 +316,57 @@ Gamemode ini mengadopsi arsitektur anti-cheat server-side modular yang dirancang
 
 ---
 
+## Sistem Tilang Elektronik ETLE & Speed Trap (`systems/traffic_camera.inc`)
+- **3 Titik Kamera Tilang Otomatis di Jalan Protokol:**
+  - Pershing Square Central (Batas: 100 KM/J).
+  - Mulholland / Commerce Express Freeway (Batas: 120 KM/J).
+  - Idlewood Main Boulevard (Batas: 90 KM/J).
+- **Mekanisme Pelanggaran:**
+  - Efek audio jepretan kamera tilang (Sound 1133) & toast alert di layar.
+  - Denda tilang $150 langsung masuk ke catatan tunggakan karakter (`pTickets`, `pTicketAmount`).
+  - Broadcast otomatis ke radio frekuensi polisi jika melaju ekstrem (> 140 KM/J).
+  - Pengecualian otomatis untuk armada darurat (Polisi SAPD & Ambulans SAMD on-duty).
+  - Perintah Warga: `/tickets` untuk mengecek tagihan dan `/payticket` / `/bayartilang` untuk melunasi denda via rekening bank/cash.
+
+---
+
+## Stasiun Rental Sepeda & Kendaraan Pemula (`systems/rental.inc`)
+- **3 Stasiun Rental Terbuka:**
+  - Unity Station (Pintu kedatangan stasiun).
+  - Pershing Square Civic Center.
+  - Santa Maria Beach Promenade.
+- **Katalog Sewa:**
+  - Sepeda BMX ($15).
+  - Sepeda Gunung MTB ($20).
+  - Motor Bebek Faggio ($50).
+  - Mobil Pemula Previon ($150).
+- Plat nomor dinas `SEWA`, proteksi otomatis 1 kendaraan sewa per warga, dan pembersihan otomatis saat player offline atau via `/unrentveh`.
+
+---
+
+## Loker Dinas Taktis & Persenjataan Faksi (`gameplay/armory.inc`)
+- **Loker Kepolisian (SAPD):**
+  - Titik loker di dalam markas LSPD HQ (Interior 6) dan halaman luar.
+  - Pilihan perlengkapan dinas:
+    - 1. Perlengkapan Patroli: Nightstick, Deagle (140 peluru), Shotgun (60 peluru), Rompi Kevlar 100%, Handy Talkie HT.
+    - 2. Perlengkapan Berat SWAT: Senapan M4 (300 peluru), MP5 (200 peluru), Sniper Rifle (30 peluru), Rompi Kevlar 100% (Khusus Rank 2+ / Admin).
+    - 3. Isi ulang rompi anti-peluru Kevlar 100%.
+    - 4. Senjata kejut listrik non-mematikan (Taser Silenced Pistol).
+    - 5. Pengembalian & penyimpanan seluruh persenjataan dinas ke loker.
+- **Loker Medis (SAMD):**
+  - Titik loker di dalam Rumah Sakit ASGH (Interior 5) dan IGD luar.
+  - Pilihan pasokan: 5x Perban, 3x Kotak P3K Medkit, Handy Talkie radio darurat (911 MHz), serta pemulihan kondisi fisik & stamina darah ke 100%.
+
+---
+
+## Bagasi Senjata Api Kendaraan (Vehicle Trunk Firearms)
+- Integrasi penyimpanan senjata api berpeluru di bagasi mobil (`/trunk`):
+  - Simpan senjata yang sedang dipegang ke dalam bagasi mobil (`vTrunkGun` & `vTrunkAmmo`).
+  - Ambil senjata dari bagasi mobil ke tangan secara aman.
+  - Serialisasi permanen ke tabel MySQL `vehicles` kolom `trunk_gun` dan `trunk_ammo`.
+
+---
+
 ## Kompilasi & Menjalankan Server
 
 ### 1. Import Database MySQL

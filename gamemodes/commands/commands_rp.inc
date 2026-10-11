@@ -1013,6 +1013,77 @@ stock ProcessAsk(playerid, const text[])
 	return 1;
 }
 
+CMD:armory(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ShowFactionArmoryDialog(playerid);
+	return 1;
+}
+
+CMD:locker(playerid, params[])
+{
+	return cmd_armory(playerid, params);
+}
+
+CMD:loker(playerid, params[])
+{
+	return cmd_armory(playerid, params);
+}
+
+CMD:rentveh(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ShowRentalMenuDialog(playerid);
+	return 1;
+}
+
+CMD:sewa(playerid, params[])
+{
+	return cmd_rentveh(playerid, params);
+}
+
+CMD:unrentveh(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (gPlayerRentalVeh[playerid] != INVALID_VEHICLE_ID) {
+		DestroyVehicle(gPlayerRentalVeh[playerid]);
+		gPlayerRentalVeh[playerid] = INVALID_VEHICLE_ID;
+		if (gPlayerData[playerid][pLanguage] == LANG_EN) SendClientMessage(playerid, COLOR_SUCCESS, "SUKSES: Rented vehicle returned successfully.");
+		else SendClientMessage(playerid, COLOR_SUCCESS, "SUKSES: Kendaraan sewa berhasil dikembalikan.");
+	} else {
+		if (gPlayerData[playerid][pLanguage] == LANG_EN) SendClientMessage(playerid, COLOR_ERROR, "ERROR: You do not have any active rented vehicle.");
+		else SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda tidak sedang menyewa kendaraan.");
+	}
+	return 1;
+}
+
+CMD:tickets(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	new str[144];
+	if (gPlayerData[playerid][pLanguage] == LANG_EN) {
+		format(str, sizeof(str), "[ETLE CITATIONS] Pending Violations: %d | Total Fines: $%d | Pay via /payticket",
+			gPlayerData[playerid][pTickets], gPlayerData[playerid][pTicketAmount]);
+	} else {
+		format(str, sizeof(str), "[TILANG ETLE] Surat Pelanggaran: %d | Total Denda: $%d | Bayar via /payticket",
+			gPlayerData[playerid][pTickets], gPlayerData[playerid][pTicketAmount]);
+	}
+	SendClientMessage(playerid, COLOR_YELLOW, str);
+	return 1;
+}
+
+CMD:payticket(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ProcessPayTrafficTickets(playerid);
+	return 1;
+}
+
+CMD:bayartilang(playerid, params[])
+{
+	return cmd_payticket(playerid, params);
+}
+
 stock ShowHelpDialog(playerid)
 {
 	new buf[800];

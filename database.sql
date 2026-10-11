@@ -59,6 +59,8 @@ CREATE TABLE `characters` (
   `radiostatus` INT DEFAULT 0,
   `injured` INT DEFAULT 0,
   `language` INT DEFAULT 0,
+  `tickets` INT DEFAULT 0,
+  `ticket_amount` INT DEFAULT 0,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   INDEX (`ucp_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -84,6 +86,8 @@ CREATE TABLE `vehicles` (
   `locked` INT DEFAULT 0,
   `trunk` INT DEFAULT 0,
   `trunk_items` VARCHAR(255) DEFAULT '',
+  `trunk_gun` INT DEFAULT 0,
+  `trunk_ammo` INT DEFAULT 0,
   INDEX (`ownerid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

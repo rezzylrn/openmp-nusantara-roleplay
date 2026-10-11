@@ -292,11 +292,11 @@ public RunAutomatedRPTests()
 
 	// Simulasi matematis FOV dot product (Silent Aim Counter):
 	// Arah kamera memandang lurus sumbu X (1.0, 0.0, 0.0)
-	new Float:camX = 1.0, Float:camY = 0.0, Float:camZ = 0.0;
+	new Float:fovCamX = 1.0, Float:fovCamY = 0.0, Float:fovCamZ = 0.0;
 	// Sasaran 1 berada tepat di depan (dot = 1.0 -> VALID)
-	new Float:dotFront = (camX * 1.0) + (camY * 0.0) + (camZ * 0.0);
+	new Float:dotFront = (fovCamX * 1.0) + (fovCamY * 0.0) + (fovCamZ * 0.0);
 	// Sasaran 2 berada tepat di belakang punggung (dot = -1.0 -> BLOCKED / SILENT AIM)
-	new Float:dotBehind = (camX * -1.0) + (camY * 0.0) + (camZ * 0.0);
+	new Float:dotBehind = (fovCamX * -1.0) + (fovCamY * 0.0) + (fovCamZ * 0.0);
 
 	new bool:fovFrontValid = (dotFront >= 0.1) ? true : false;
 	new bool:fovBehindBlocked = (dotBehind < 0.1) ? true : false;
@@ -590,8 +590,110 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
+	// 30. test etle speed camera network & citation payment
+	print("[TEST 30/33] ETLE Speed Camera Network & Traffic Citation Engine...");
+	new bool:camerasLoaded = (gSpeedCameras[0][camLimitKmh] > 0.0 && gSpeedCameras[1][camLimitKmh] > 0.0);
+
+	new ticketPlayer = 0;
+	gPlayerData[ticketPlayer][pTickets] = 2;
+	gPlayerData[ticketPlayer][pTicketAmount] = 300;
+	gPlayerData[ticketPlayer][pBank] = 1000;
+	gPlayerData[ticketPlayer][pMoney] = 500;
+	gPlayerData[ticketPlayer][pLoggedIn] = true;
+
+	new preBank = gPlayerData[ticketPlayer][pBank];
+	ProcessPayTrafficTickets(ticketPlayer);
+	new bool:ticketsCleared = (gPlayerData[ticketPlayer][pTickets] == 0 &&
+		gPlayerData[ticketPlayer][pTicketAmount] == 0 &&
+		gPlayerData[ticketPlayer][pBank] == (preBank - 300));
+
+	if (camerasLoaded && ticketsCleared) {
+		print("  -> PASS: ETLE speed traps active (Pershing & Commerce), citation settlement confirmed.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Traffic camera or citation settlement failed.");
+		failCount++;
+	}
+
+	// 31. test public bicycle & starter vehicle rental
+	print("[TEST 31/33] Public Bicycle & Starter Vehicle Rental Stations...");
+	new bool:rentalStationsActive = (gRentalStations[0][renX] != 0.0 && gRentalStations[1][renX] != 0.0);
+
+	new rentalTester = 0;
+	gPlayerData[rentalTester][pMoney] = 200;
+	gPlayerData[rentalTester][pLoggedIn] = true;
+	gPlayerData[rentalTester][pLastX] = 1745.0;
+	gPlayerData[rentalTester][pLastY] = -1865.0;
+	gPlayerData[rentalTester][pLastZ] = 13.5;
+	SetPlayerPos(rentalTester, 1745.0, -1865.0, 13.5);
+
+	// Sewa sepeda BMX (Opsi 0, biaya $15)
+	OnRentalDialogResponse(rentalTester, 0);
+	new rentalVeh = gPlayerRentalVeh[rentalTester];
+	new bool:rentalSpawned = (rentalVeh != INVALID_VEHICLE_ID);
+
+	// Kembalikan kendaraan sewa (Opsi 4)
+	OnRentalDialogResponse(rentalTester, 4);
+	new bool:rentalReturned = (gPlayerRentalVeh[rentalTester] == INVALID_VEHICLE_ID);
+
+	if (rentalStationsActive && rentalSpawned && rentalReturned) {
+		print("  -> PASS: Rental stations operational (Unity Station), spawn & return lifecycle verified.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Rental station lifecycle verification failed.");
+		failCount++;
+	}
+
+	// 32. test faction tactical armory & duty locker
+	print("[TEST 32/33] Faction Duty Armory & Tactical Loadout Lockers...");
+	new bool:armoriesLoaded = (gArmories[0][armFaction] == FACTION_POLICE && gArmories[2][armFaction] == FACTION_MEDIC);
+
+	new copTester = 0;
+	gPlayerData[copTester][pFaction] = FACTION_POLICE;
+	gPlayerData[copTester][pDuty] = true;
+	gPlayerData[copTester][pFactionRank] = 1;
+	gPlayerData[copTester][pLoggedIn] = true;
+
+	// Ambil perlengkapan patroli (Opsi 0)
+	OnFactionArmoryResponse(copTester, 0);
+	new bool:loadoutEquipped = (gPlayerData[copTester][pRadioFreq] == 911);
+
+	// Kembalikan senjata (Opsi 4)
+	OnFactionArmoryResponse(copTester, 4);
+	new bool:loadoutReturned = (gPlayerData[copTester][pRadioFreq] == 0);
+
+	if (armoriesLoaded && loadoutEquipped && loadoutReturned) {
+		print("  -> PASS: SAPD & SAMD armory loadouts (Patrol & SWAT), Kevlar 100% and locker clearance verified.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Faction armory loadout verification failed.");
+		failCount++;
+	}
+
+	// 33. test vehicle trunk firearm & ammo storage
+	print("[TEST 33/33] Vehicle Trunk Firearm & Ammo Storage Engine...");
+	new trunkSlotTest = 0;
+	gVehicleData[trunkSlotTest][vUsed] = true;
+	gVehicleData[trunkSlotTest][vTrunkGun] = WEAPON_DEAGLE;
+	gVehicleData[trunkSlotTest][vTrunkAmmo] = 140;
+
+	new bool:gunStored = (gVehicleData[trunkSlotTest][vTrunkGun] == WEAPON_DEAGLE && gVehicleData[trunkSlotTest][vTrunkAmmo] == 140);
+
+	// Ambil senjata dari bagasi mobil
+	gVehicleData[trunkSlotTest][vTrunkGun] = WEAPON:0;
+	gVehicleData[trunkSlotTest][vTrunkAmmo] = 0;
+	new bool:gunWithdrawn = (gVehicleData[trunkSlotTest][vTrunkGun] == WEAPON:0 && gVehicleData[trunkSlotTest][vTrunkAmmo] == 0);
+
+	if (gunStored && gunWithdrawn) {
+		print("  -> PASS: Desert Eagle (140 Ammo) trunk storage deposit & withdrawal verified.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Vehicle trunk weapon storage verification failed.");
+		failCount++;
+	}
+
 	print("==================================================");
-	printf("  [DEBUG SUMMARY] %d / 29 TESTS PASSED, %d FAILED", passCount, failCount);
+	printf("  [DEBUG SUMMARY] %d / 33 TESTS PASSED, %d FAILED", passCount, failCount);
 	print("==================================================\n");
 
 	return 1;

@@ -531,6 +531,15 @@ stock ShowVehicleTrunkDialog(playerid, slot)
 		format(str, sizeof(str), "Item / Opsi	Jumlah\n{4CD964}[$] Saldo Uang Tunai Bagasi	$%d\n", gVehicleData[slot][vTrunk]);
 	}
 
+	// Slot Senjata Api
+	new gunName[32];
+	if (gVehicleData[slot][vTrunkGun] != WEAPON:0 && gVehicleData[slot][vTrunkAmmo] > 0) {
+		GetWeaponName(gVehicleData[slot][vTrunkGun], gunName, sizeof(gunName));
+		format(str, sizeof(str), "%s{FF3B30}[SENJATA] %s	{FFCC00}%d Peluru\n", str, gunName, gVehicleData[slot][vTrunkAmmo]);
+	} else {
+		format(str, sizeof(str), isEn ? "%s{888888}[WEAPON SLOT] (Empty)	{888888}-\n" : "%s{888888}[SLOT SENJATA] (Kosong)	{888888}-\n", str);
+	}
+
 	for (new s = 0; s < MAX_TRUNK_SLOTS; s++) {
 		new iType = gVehicleData[slot][vTrunkItemType][s];
 		new iAmt  = gVehicleData[slot][vTrunkItemAmount][s];
@@ -578,9 +587,24 @@ stock OnVehicleTrunkResponse(playerid, listitem)
 		return 1;
 	}
 
-	// Opsi 1..6: Slot Item Bagasi (Ambil Barang)
-	if (listitem >= 1 && listitem <= MAX_TRUNK_SLOTS) {
-		new s = listitem - 1;
+	// Opsi 1: Slot Senjata Api
+	if (listitem == 1) {
+		new gunPrompt[256];
+		new gunName[32];
+		if (gVehicleData[slot][vTrunkGun] != WEAPON:0 && gVehicleData[slot][vTrunkAmmo] > 0) {
+			GetWeaponName(gVehicleData[slot][vTrunkGun], gunName, sizeof(gunName));
+			format(gunPrompt, sizeof(gunPrompt), "1. Ambil Senjata (%s - %d Peluru)\n2. Ganti / Simpan Senjata Yang Sedang Dipegang",
+				gunName, gVehicleData[slot][vTrunkAmmo]);
+		} else {
+			format(gunPrompt, sizeof(gunPrompt), "1. Simpan Senjata Yang Sedang Dipegang ke Bagasi\n2. (Bagasi senjata sedang kosong)");
+		}
+		ShowPlayerDialog(playerid, DIALOG_TRUNK_WEAPON, DIALOG_STYLE_LIST, "KELOLA SENJATA BAGASI", gunPrompt, "Pilih", "Kembali");
+		return 1;
+	}
+
+	// Opsi 2..7: Slot Item Bagasi (Ambil Barang)
+	if (listitem >= 2 && listitem <= (MAX_TRUNK_SLOTS + 1)) {
+		new s = listitem - 2;
 		if (gVehicleData[slot][vTrunkItemType][s] == ITEM_NONE || gVehicleData[slot][vTrunkItemAmount][s] <= 0) {
 			SendErr(playerid, "Slot bagasi ini kosong.");
 			ShowVehicleTrunkDialog(playerid, slot);
@@ -596,8 +620,8 @@ stock OnVehicleTrunkResponse(playerid, listitem)
 		return 1;
 	}
 
-	// Opsi 7: [+] Simpan Barang ke Bagasi
-	if (listitem == (MAX_TRUNK_SLOTS + 1)) {
+	// Opsi Terakhir: [+] Simpan Barang ke Bagasi
+	if (listitem == (MAX_TRUNK_SLOTS + 2)) {
 		new dialogList[800];
 		new itemName[32];
 		dialogList[0] = '\0';
@@ -776,6 +800,63 @@ stock OnTrunkWithdrawItemResponse(playerid, const inputtext[])
 	GetItemName(iType, itemName, sizeof(itemName));
 	SendSucc(playerid, "Mengambil %dx %s dari bagasi kendaraan ke dalam kantung.", takeAmt, itemName);
 	PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
+	ShowVehicleTrunkDialog(playerid, slot);
+	return 1;
+}
+
+stock OnTrunkWeaponResponse(playerid, listitem)
+{
+	new slot = gSelectedTrunkVeh[playerid];
+	if (slot < 0 || slot >= MAX_OWNED_VEHICLES || !gVehicleData[slot][vUsed]) return 0;
+
+	if (listitem == 0) {
+		// Ambil Senjata dari Bagasi
+		if (gVehicleData[slot][vTrunkGun] != WEAPON:0 && gVehicleData[slot][vTrunkAmmo] > 0) {
+			new WEAPON:gun = gVehicleData[slot][vTrunkGun];
+			new ammo = gVehicleData[slot][vTrunkAmmo];
+			gVehicleData[slot][vTrunkGun] = WEAPON:0;
+			gVehicleData[slot][vTrunkAmmo] = 0;
+			DB_SaveVehicle(slot);
+
+			GivePlayerWeapon(playerid, gun, ammo);
+			new gunName[32];
+			GetWeaponName(gun, gunName, sizeof(gunName));
+			SendSucc(playerid, "Mengambil senjata dari bagasi kendaraan.");
+			PlayerPlaySound(playerid, 1057, 0.0, 0.0, 0.0);
+		} else {
+			// Simpan Senjata yang sedang dipegang
+			new WEAPON:curGun = GetPlayerWeapon(playerid);
+			new curAmmo = GetPlayerAmmo(playerid);
+			if (curGun == WEAPON_FIST || curAmmo <= 0) {
+				SendErr(playerid, "Anda tidak sedang memegang senjata api berpeluru.");
+				ShowVehicleTrunkDialog(playerid, slot);
+				return 1;
+			}
+			gVehicleData[slot][vTrunkGun] = curGun;
+			gVehicleData[slot][vTrunkAmmo] = curAmmo;
+			DB_SaveVehicle(slot);
+
+			ResetPlayerWeapons(playerid);
+			SendSucc(playerid, "Menyimpan senjata ke dalam bagasi mobil.");
+			PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
+		}
+	} else if (listitem == 1) {
+		// Simpan Senjata yang sedang dipegang
+		new WEAPON:curGun = GetPlayerWeapon(playerid);
+		new curAmmo = GetPlayerAmmo(playerid);
+		if (curGun == WEAPON_FIST || curAmmo <= 0) {
+			SendErr(playerid, "Anda tidak sedang memegang senjata api berpeluru.");
+			ShowVehicleTrunkDialog(playerid, slot);
+			return 1;
+		}
+		gVehicleData[slot][vTrunkGun] = curGun;
+		gVehicleData[slot][vTrunkAmmo] = curAmmo;
+		DB_SaveVehicle(slot);
+
+		ResetPlayerWeapons(playerid);
+		SendSucc(playerid, "Menyimpan senjata ke dalam bagasi mobil.");
+		PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
+	}
 	ShowVehicleTrunkDialog(playerid, slot);
 	return 1;
 }

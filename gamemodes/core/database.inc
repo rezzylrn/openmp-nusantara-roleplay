@@ -402,6 +402,9 @@ public OnCharacterLoaded(playerid)
 	cache_get_value_name_int(0, "language", gPlayerData[playerid][pLanguage]);
 	if (gPlayerData[playerid][pLanguage] != LANG_EN) gPlayerData[playerid][pLanguage] = LANG_ID;
 
+	cache_get_value_name_int(0, "tickets", gPlayerData[playerid][pTickets]);
+	cache_get_value_name_int(0, "ticket_amount", gPlayerData[playerid][pTicketAmount]);
+
 	if (gPlayerData[playerid][pLevel] < 1) gPlayerData[playerid][pLevel] = 1;
 	if (gPlayerData[playerid][pHunger] < 0.0) gPlayerData[playerid][pHunger] = 100.0;
 	if (gPlayerData[playerid][pThirst] < 0.0) gPlayerData[playerid][pThirst] = 100.0;
@@ -442,7 +445,8 @@ stock DB_SavePlayerData(playerid)
 		faction=%d, factionrank=%d, duty=%d, job=%d, hunger=%.2f, thirst=%.2f, \
 		skin=%d, lastx=%.2f, lasty=%.2f, lastz=%.2f, lasta=%.2f, interior=%d, \
 		vworld=%d, cuffed=%d, warnings=%d, kills=%d, deaths=%d, playhours=%d, muted=%d, \
-		phone=%d, phonestatus=%d, radiofreq=%d, radiostatus=%d, injured=%d, language=%d \
+		phone=%d, phonestatus=%d, radiofreq=%d, radiostatus=%d, injured=%d, language=%d, \
+		tickets=%d, ticket_amount=%d \
 		WHERE id=%d",
 		gPlayerData[playerid][pMoney], gPlayerData[playerid][pBank],
 		gPlayerData[playerid][pLevel], gPlayerData[playerid][pExp],
@@ -456,7 +460,8 @@ stock DB_SavePlayerData(playerid)
 		gPlayerData[playerid][pPlayHours], _:gPlayerData[playerid][pMuted],
 		gPlayerData[playerid][pPhone], _:gPlayerData[playerid][pPhoneStatus],
 		gPlayerData[playerid][pRadioFreq], _:gPlayerData[playerid][pRadioStatus],
-		_:gPlayerData[playerid][pInjured], gPlayerData[playerid][pLanguage], gPlayerData[playerid][pID]);
+		_:gPlayerData[playerid][pInjured], gPlayerData[playerid][pLanguage],
+		gPlayerData[playerid][pTickets], gPlayerData[playerid][pTicketAmount], gPlayerData[playerid][pID]);
 
 	mysql_tquery(gDB, query, "", "");
 	return 1;
@@ -493,6 +498,8 @@ public OnVehiclesLoaded()
 		gVehicleData[slot][vLocked] = (lockVal != 0);
 
 		cache_get_value_name_int(i, "trunk", gVehicleData[slot][vTrunk]);
+		cache_get_value_name_int(i, "trunk_gun", _:gVehicleData[slot][vTrunkGun]);
+		cache_get_value_name_int(i, "trunk_ammo", gVehicleData[slot][vTrunkAmmo]);
 		new trunkItemStr[128];
 		cache_get_value_name(i, "trunk_items", trunkItemStr, sizeof(trunkItemStr));
 		DeserializeTrunkItems(slot, trunkItemStr);
@@ -562,14 +569,15 @@ stock DB_SaveVehicle(slot)
 	new query[512];
 	mysql_format(gDB, query, sizeof(query),
 		"UPDATE vehicles SET posx=%.2f, posy=%.2f, posz=%.2f, posa=%.2f, \
-		color1=%d, color2=%d, fuel=%.2f, health=%.2f, plate='%e', engine=%d, locked=%d, trunk=%d, trunk_items='%e' WHERE id=%d",
+		color1=%d, color2=%d, fuel=%.2f, health=%.2f, plate='%e', engine=%d, locked=%d, trunk=%d, trunk_items='%e', \
+		trunk_gun=%d, trunk_ammo=%d WHERE id=%d",
 		gVehicleData[slot][vPosX], gVehicleData[slot][vPosY],
 		gVehicleData[slot][vPosZ], gVehicleData[slot][vPosA],
 		gVehicleData[slot][vColor1], gVehicleData[slot][vColor2],
 		gVehicleData[slot][vFuel], gVehicleData[slot][vHealth],
 		gVehicleData[slot][vPlate], _:gVehicleData[slot][vEngine],
 		_:gVehicleData[slot][vLocked], gVehicleData[slot][vTrunk],
-		trunkItemStr, gVehicleData[slot][vDBID]);
+		trunkItemStr, gVehicleData[slot][vTrunkGun], gVehicleData[slot][vTrunkAmmo], gVehicleData[slot][vDBID]);
 
 	mysql_tquery(gDB, query, "", "");
 	return 1;

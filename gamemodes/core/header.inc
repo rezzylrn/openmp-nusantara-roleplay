@@ -150,6 +150,9 @@ enum E_PLAYER_DATA {
 	pGender,
 	// language & localization
 	pLanguage,
+	// traffic citations
+	pTickets,
+	pTicketAmount,
 	// job variables
 	pJobCooldown,
 	pTrashCount,
@@ -181,6 +184,8 @@ enum E_VEHICLE_DATA {
 	vTrunk,
 	vTrunkItemType[MAX_TRUNK_SLOTS],
 	vTrunkItemAmount[MAX_TRUNK_SLOTS],
+	WEAPON:vTrunkGun,
+	vTrunkAmmo,
 	vVehicleHandle
 };
 
@@ -227,10 +232,14 @@ enum E_VEHICLE_DATA {
 #define DIALOG_GIVE_AMOUNT        39
 #define DIALOG_TRUNK_DEPOSIT_ITEM 41
 #define DIALOG_TRUNK_WITHDRAW_ITEM 42
-#define DIALOG_TRUNK_TAKE_CASH    45
 #define DIALOG_911_SERVICE        43
 #define DIALOG_911_MESSAGE        44
+#define DIALOG_TRUNK_TAKE_CASH    45
 #define DIALOG_LANGUAGE_SELECT    46
+#define DIALOG_ARMORY_MENU        47
+#define DIALOG_RENTAL_MENU        48
+#define DIALOG_TRUNK_WEAPON       49
+#define DIALOG_PAY_TICKETS        50
 
 #define LANG_ID                   0
 #define LANG_EN                   1
@@ -685,6 +694,9 @@ stock FindPlayerByName(const name[])
 
 stock IsPlayerNearPoint(playerid, Float:x, Float:y, Float:z, Float:range)
 {
-	if (!IsPlayerConnected(playerid)) return 0;
-	return IsPlayerInRangeOfPoint(playerid, range, x, y, z);
+	if (IsPlayerConnected(playerid)) {
+		return IsPlayerInRangeOfPoint(playerid, range, x, y, z);
+	}
+	new Float:dist = VectorSize(gPlayerData[playerid][pLastX] - x, gPlayerData[playerid][pLastY] - y, gPlayerData[playerid][pLastZ] - z);
+	return (dist <= range);
 }
