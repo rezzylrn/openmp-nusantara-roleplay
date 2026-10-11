@@ -546,6 +546,27 @@ Gamemode ini mengadopsi arsitektur anti-cheat server-side modular yang dirancang
 
 ---
 
+## Fitur Gameplay Baru: Tani, Kebersihan, Bobol ATM, Boombox & Forensik
+- **Sistem Pertanian Flint County (`systems/farming.inc`):**
+  - Toko Tani: Beli bibit gandum, bibit jagung, dan gembor air (`/buyseed`).
+  - Menanam di ladang tanah subur (`/plantcrop`), menyiram air (`/watercrop` mempercepat tumbuh 50%), dan memanen (`/harvestcrop`) dengan progress bar.
+  - Jual hasil bumi di Lumbung Padi Flint (`/sellcrops`) untuk memperoleh uang tunai bersih ($45 - $60 per karung).
+- **Dinas Kebersihan Kota Trashmaster (`gameplay/trash_job.inc`):**
+  - Mengemudikan truk sampah Trashmaster (Model 408) dari Depot TPA (`/starttrash`).
+  - Mengambil kantong sampah dari perumahan warga (`/pickuptrash`), memasukkan ke mesin belakang truk (`/throwtrash`) dengan progress bar.
+  - Setor muatan penuh ke TPA Los Santos (`/unloaddump`) untuk upah $450 tunai.
+- **Pembobolan Mesin ATM / Drill Skimming (`systems/atm_robbery.inc`):**
+  - Membutuhkan Bor Listrik (`ITEM_DRILL`) atau Lockpick dari Pasar Gelap.
+  - Bobol brankas ATM jalanan (`/drillatm`), memicu alarm sensor ke radio kepolisian SAPD, jarahan $700 - $1.450 tunai (cooldown 20 menit).
+- **Portable Live Audio Boombox (`systems/boombox.inc`):**
+  - Pasang speaker radio di tanah (`/boombox`), putar stasiun radio online atau URL audio stream MP3 real-time ke warga dalam radius 35 meter.
+  - Ambil kembali speaker boombox ke inventaris kapan saja (`/pickupboombox`).
+- **Forensik Balistik & Selongsong Peluru SAPD (`gameplay/forensics.inc`):**
+  - Setiap tembakan senjata api otomatis mencatat selongsong peluru di TKP.
+  - Detektif kepolisian SAPD dapat memeriksa TKP (`/casings` / `/forensik`) untuk melacak kaliber peluru, waktu tembakan, dan mengamankan barang bukti (`/collectcasing`).
+
+---
+
 ## Kompilasi & Menjalankan Server
 
 ### 1. Import Database MySQL

@@ -72,7 +72,13 @@ enum {
 	RADIAL_ACT_CLAIM_VEH,
 	RADIAL_ACT_RENTAL,
 	RADIAL_ACT_DOOR_ENTER,
-	RADIAL_ACT_DOOR_EXIT
+	RADIAL_ACT_DOOR_EXIT,
+	RADIAL_ACT_DRILL_ATM,
+	RADIAL_ACT_FARM_PLANT,
+	RADIAL_ACT_FARM_WATER,
+	RADIAL_ACT_FARM_HARVEST,
+	RADIAL_ACT_FARM_SELL,
+	RADIAL_ACT_TRASH_JOB
 };
 
 forward RP_OnFinishRefuelAction(playerid, veh);
@@ -234,6 +240,30 @@ stock ShowPlayerRadialMenu(playerid)
 		strcat(menuList, "{2ECC71}⚡ Mesin ATM Tunai\n");
 		gRadialAction[playerid][count++] = RADIAL_ACT_PAY_TICKET;
 		strcat(menuList, "{FFFF00}⚡ Lunasi Surat Tilang ETLE\n");
+		gRadialAction[playerid][count++] = RADIAL_ACT_DRILL_ATM;
+		strcat(menuList, "{E74C3C}⚡ Bobol Brankas ATM (Bor/Lockpick)\n");
+	}
+
+	if (IsPlayerInFlintFarm(playerid)) {
+		if (!hasContext) { strcat(menuList, "{2ECC71}=== LADANG PERTANIAN FLINT ===\n"); hasContext = true; }
+		gRadialAction[playerid][count++] = RADIAL_ACT_FARM_PLANT;
+		strcat(menuList, "{2ECC71}⚡ Tanam Bibit Gandum/Jagung (/plantcrop)\n");
+		gRadialAction[playerid][count++] = RADIAL_ACT_FARM_WATER;
+		strcat(menuList, "{3498DB}⚡ Siram Tanaman Air Segar (/watercrop)\n");
+		gRadialAction[playerid][count++] = RADIAL_ACT_FARM_HARVEST;
+		strcat(menuList, "{FFFF00}⚡ Panen Hasil Tani Siap Panen (/harvestcrop)\n");
+	}
+
+	if (IsPlayerNearPoint(playerid, FARM_SILO_X, FARM_SILO_Y, FARM_SILO_Z, 6.0)) {
+		if (!hasContext) { strcat(menuList, "{2ECC71}=== LUMBUNG FLINT ===\n"); hasContext = true; }
+		gRadialAction[playerid][count++] = RADIAL_ACT_FARM_SELL;
+		strcat(menuList, "{2ECC71}⚡ Jual Hasil Panen Gandum & Jagung (/sellcrops)\n");
+	}
+
+	if (IsPlayerNearPoint(playerid, TRASH_DEPOT_X, TRASH_DEPOT_Y, TRASH_DEPOT_Z, 8.0)) {
+		if (!hasContext) { strcat(menuList, "{2ECC71}=== DINAS KEBERSIHAN ===\n"); hasContext = true; }
+		gRadialAction[playerid][count++] = RADIAL_ACT_TRASH_JOB;
+		strcat(menuList, "{3498DB}⚡ Mulai Rute Truk Sampah Trashmaster (/starttrash)\n");
 	}
 
 	if (IsPlayerNearAnyTrash(playerid, 3.0)) {
@@ -383,6 +413,12 @@ Dialog:DialogRadialMenu(playerid, response, listitem, inputtext[])
 		case RADIAL_ACT_TRASH_SCAVENGE:  ProcessPlayerScavenge(playerid);
 		case RADIAL_ACT_DOOR_ENTER:      ProcessDoorEnter(playerid);
 		case RADIAL_ACT_DOOR_EXIT:       ProcessDoorExit(playerid);
+		case RADIAL_ACT_DRILL_ATM:       ProcessDrillATM(playerid);
+		case RADIAL_ACT_FARM_PLANT:      ProcessPlantCrop(playerid);
+		case RADIAL_ACT_FARM_WATER:      ProcessWaterCrop(playerid);
+		case RADIAL_ACT_FARM_HARVEST:    ProcessHarvestCrop(playerid);
+		case RADIAL_ACT_FARM_SELL:       ProcessSellCrops(playerid);
+		case RADIAL_ACT_TRASH_JOB:       ProcessStartTrash(playerid);
 	}
 	return 1;
 }

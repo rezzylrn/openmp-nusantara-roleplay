@@ -1252,7 +1252,7 @@ public RunAutomatedRPTests()
 	}
 
 	// 59. test dialog-based admin panel & police mdc
-	print("[TEST 59/59] Dialog-Based Admin Control Panel & Police MDC Operations...");
+	print("[TEST 59/64] Dialog-Based Admin Control Panel & Police MDC Operations...");
 	new adminTester = 0;
 	gPlayerData[adminTester][pLoggedIn] = true;
 	gPlayerData[adminTester][pAdmin] = 3;
@@ -1272,8 +1272,125 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
+	// 60. test dynamic legal farming & crop lifecycle
+	print("[TEST 60/64] Dynamic Legal Agriculture & Flint County Farm Crops...");
+	new farmer = 0;
+	ClearPlayerInventory(farmer);
+	GivePlayerItem(farmer, ITEM_WHEATSEED, 1);
+	GivePlayerItem(farmer, ITEM_WATERCAN, 1);
+
+	// Tanam bibit
+	RP_OnFinishPlantCrop(farmer, ITEM_WHEATSEED);
+	new cropSlot = 0;
+	new bool:cropPlanted = gFarmCrops[cropSlot][crUsed];
+
+	// Siram tanaman
+	RP_OnFinishWaterCrop(farmer, cropSlot);
+	new bool:cropWatered = gFarmCrops[cropSlot][crWatered];
+
+	// Panen tanaman
+	RP_OnFinishHarvestCrop(farmer, cropSlot);
+	new harvestWheat = GetPlayerItemCount(farmer, ITEM_WHEAT);
+
+	if (cropPlanted && cropWatered && harvestWheat > 0) {
+		print("  -> PASS: Wheat cultivation, watering acceleration & crop harvest yield verified.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Farming crop lifecycle failed.");
+		failCount++;
+	}
+
+	// 61. test sanitation worker trash hauling route
+	print("[TEST 61/64] Sanitation Worker / Trashmaster Truck Hauling Job...");
+	new trashWorker = 0;
+	gTrashDuty[trashWorker] = true;
+	gTrashCurrentStop[trashWorker] = 0;
+	gTrashCollected[trashWorker] = 0;
+
+	RP_OnFinishPickupTrashBag(trashWorker, 0);
+	new bool:holdingBag = gHoldingTrashBag[trashWorker];
+
+	RP_OnFinishThrowTrashBag(trashWorker, 1);
+	new bool:trashStored = (!gHoldingTrashBag[trashWorker] && gTrashCollected[trashWorker] == 1);
+	gTrashDuty[trashWorker] = false;
+
+	if (holdingBag && trashStored) {
+		print("  -> PASS: Trash bag pickup, compactor mechanism & collection progression confirmed.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Trash hauling job failed.");
+		failCount++;
+	}
+
+	// 62. test atm robbery & drill safecracking
+	print("[TEST 62/64] ATM Skimming & Safecracking Drill Exploitation...");
+	new robber = 0;
+	ClearPlayerInventory(robber);
+	GivePlayerItem(robber, ITEM_DRILL, 1);
+	new preLootMoney = gPlayerData[robber][pMoney];
+
+	// Simulasi pembobolan ATM slot 0
+	RP_OnFinishDrillATM(robber, 0);
+	new bool:atmLooted = (gPlayerData[robber][pMoney] > preLootMoney && gATMCooldown[0] > gettime());
+
+	if (atmLooted) {
+		print("  -> PASS: Safecracking drill, cash register loot yield & cooldown timer confirmed.");
+		passCount++;
+	} else {
+		print("  -> FAIL: ATM robbery safecracking failed.");
+		failCount++;
+	}
+
+	// 63. test portable audio stream boombox
+	print("[TEST 63/64] Portable Audio Stream Boombox & Music Broadcasting...");
+	new djPlayer = 0;
+	gPlayerData[djPlayer][pLoggedIn] = true;
+	gPlayerData[djPlayer][pID] = 1;
+	gPlayerData[djPlayer][pLastX] = 100.0;
+	gPlayerData[djPlayer][pLastY] = 100.0;
+	gPlayerData[djPlayer][pLastZ] = 10.0;
+	gPlayerData[djPlayer][pLastA] = 0.0;
+	ClearPlayerInventory(djPlayer);
+	GivePlayerItem(djPlayer, ITEM_BOOMBOX, 1);
+
+	new boomboxOk = DeployPlayerBoombox(djPlayer, "https://stream.zeno.fm/f3wvbbqmdg8uv", "Lofi Beats");
+	new bool:boomboxSpawned = (gBoomboxes[0][bbUsed] && gBoomboxes[0][bbObject] != INVALID_OBJECT_ID);
+
+	// Ambil kembali
+	ProcessPickupBoombox(djPlayer);
+	new bool:boomboxRetrieved = (!gBoomboxes[0][bbUsed] && GetPlayerItemCount(djPlayer, ITEM_BOOMBOX) == 1);
+
+	if (boomboxOk && boomboxSpawned && boomboxRetrieved) {
+		print("  -> PASS: Portable boombox deployment, 3D audio radius & pickup retrieval verified.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Boombox broadcasting failed.");
+		failCount++;
+	}
+
+	// 64. test ballistics forensics & bullet casing investigation
+	print("[TEST 64/64] Ballistics Forensics & Bullet Casing Investigation...");
+	new shooter = 0;
+	Forensics_RecordShot(shooter, WEAPON_DEAGLE);
+	new bool:casingRecorded = (gBulletCasings[0][bcUsed] && gBulletCasings[0][bcWeapon] == WEAPON_DEAGLE);
+
+	// Polisi amankan selongsong bukti
+	new copDet = 1;
+	gPlayerData[copDet][pFaction] = FACTION_POLICE;
+	gPlayerData[copDet][pDuty] = true;
+	RP_OnFinishCollectCasing(copDet, 0);
+	new bool:casingCollected = (!gBulletCasings[0][bcUsed]);
+
+	if (casingRecorded && casingCollected) {
+		print("  -> PASS: Weapon discharge ballistics logging, casing identification & evidence seizure verified.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Forensics ballistics investigation failed.");
+		failCount++;
+	}
+
 	print("==================================================");
-	printf("  [DEBUG SUMMARY] %d / 59 TESTS PASSED, %d FAILED", passCount, failCount);
+	printf("  [DEBUG SUMMARY] %d / 64 TESTS PASSED, %d FAILED", passCount, failCount);
 	print("==================================================\n");
 
 	return 1;

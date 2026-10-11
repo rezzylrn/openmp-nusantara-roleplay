@@ -107,7 +107,14 @@ enum {
 	ITEM_BEER,          // Kaleng Bir Dingin
 	ITEM_VODKA,         // Botol Minuman Keras Vodka
 	ITEM_BURGER,        // Paket Burger Shot
-	ITEM_PIZZA          // Kotak Pizza Stack
+	ITEM_PIZZA,         // Kotak Pizza Stack
+	ITEM_WHEATSEED,     // Bibit Gandum Pertanian
+	ITEM_CORNSEED,      // Bibit Jagung Pertanian
+	ITEM_WHEAT,         // Karung Gandum Hasil Panen
+	ITEM_CORN,          // Karung Jagung Hasil Panen
+	ITEM_WATERCAN,      // Gembor Penyiram Air
+	ITEM_DRILL,         // Bor Listrik Pembobol ATM
+	ITEM_BOOMBOX        // Portable Audio Boombox
 };
 
 enum E_ITEM_DATA {
@@ -535,6 +542,13 @@ stock GetItemName(itemtype, dest[], len = sizeof(dest))
 		case ITEM_VODKA:     format(dest, len, "Botol Vodka");
 		case ITEM_BURGER:    format(dest, len, "Paket Burger Shot");
 		case ITEM_PIZZA:     format(dest, len, "Kotak Pizza Stack");
+		case ITEM_WHEATSEED: format(dest, len, "Bibit Gandum");
+		case ITEM_CORNSEED:  format(dest, len, "Bibit Jagung");
+		case ITEM_WHEAT:     format(dest, len, "Karung Gandum");
+		case ITEM_CORN:      format(dest, len, "Karung Jagung");
+		case ITEM_WATERCAN:  format(dest, len, "Gembor Penyiram Air");
+		case ITEM_DRILL:     format(dest, len, "Bor Listrik (Drill)");
+		case ITEM_BOOMBOX:   format(dest, len, "Speaker Boombox");
 		default:             format(dest, len, "Kosong");
 	}
 	return 1;

@@ -53,13 +53,18 @@
 #include "systems/fast_food.inc"
 #include "systems/accessories.inc"
 #include "systems/taxi_meter.inc"
+#include "systems/farming.inc"
+#include "systems/atm_robbery.inc"
+#include "systems/boombox.inc"
 
 // 5. Gameplay & Factions
 #include "gameplay/mapping.inc"
 #include "gameplay/factions.inc"
 #include "gameplay/armory.inc"
 #include "gameplay/jobs.inc"
+#include "gameplay/trash_job.inc"
 #include "gameplay/police_mdc.inc"
+#include "gameplay/forensics.inc"
 #include "gameplay/illegal_activities.inc"
 #include "gameplay/phone.inc"
 #include "gameplay/player_stats.inc"
@@ -154,10 +159,16 @@ public OnGameModeInit()
 	// Load modular world mapping
 	LoadNusantaraMapping();
 
-	// timers
+	// Timers
 	gTimerTick = SetTimer("RP_Tick", 1000, true);
 	gTimerSpeedo = SetTimer("RP_SpeedoTick", 150, true);
 	gTimerSave = SetTimer("RP_SaveTick", 60000, true);
+
+	// Inisialisasi Sistem Pertanian, Kebersihan, Boombox, dan Forensik
+	Farming_Init();
+	TrashJob_Init();
+	Boombox_Init();
+	Forensics_Init();
 
 	// run automated tests
 	SetTimer("RunAutomatedRPTests", 1500, false);
@@ -355,6 +366,7 @@ public OnPlayerWeaponShot(playerid, WEAPON:weaponid, BULLET_HIT_TYPE:hittype, hi
 	if (hittype == BULLET_HIT_TYPE_PLAYER) {
 		if (!AC_ValidateBulletHit(playerid, weaponid, hitid, fX, fY, fZ)) return 0;
 	}
+	Forensics_RecordShot(playerid, weaponid);
 	return 1;
 }
 

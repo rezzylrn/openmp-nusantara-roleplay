@@ -222,6 +222,18 @@ stock ProcessUseInventoryItem(playerid, slot)
 		case ITEM_SPRAYCAN: {
 			SendClientMessage(playerid, COLOR_INFO, "[USAGE] Gunakan /tag [teks] di depan dinding grafiti kota.");
 		}
+		case ITEM_BOOMBOX: {
+			ProcessBoombox(playerid);
+		}
+		case ITEM_WHEATSEED, ITEM_CORNSEED: {
+			ProcessPlantCrop(playerid);
+		}
+		case ITEM_WATERCAN: {
+			ProcessWaterCrop(playerid);
+		}
+		case ITEM_DRILL: {
+			ProcessDrillATM(playerid);
+		}
 		default: {
 			SendClientMessage(playerid, COLOR_INFO, "[INFO] Barang ini digunakan secara otomatis saat berinteraksi dengan lingkungan.");
 		}
