@@ -174,8 +174,9 @@ stock ShowATMDialog(playerid)
 		SendErr(playerid, "Anda belum login.");
 		return 0;
 	}
-	if (!IsPlayerNearPoint(playerid, ATM_X, ATM_Y, ATM_Z, RANGE_ATM)) {
-		SendErr(playerid, "Anda harus berada di dekat ATM.");
+	if (!IsPlayerNearPoint(playerid, ATM_X, ATM_Y, ATM_Z, RANGE_ATM) && !IsPlayerNearAnyATM(playerid)) {
+		if (gPlayerData[playerid][pLanguage] == LANG_EN) SendErr(playerid, "You must be near an ATM.");
+		else SendErr(playerid, "Anda harus berada di dekat ATM.");
 		return 0;
 	}
 	if (gPlayerData[playerid][pLanguage] == LANG_EN) {

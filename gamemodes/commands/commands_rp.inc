@@ -116,6 +116,73 @@ CMD:help(playerid, params[])
 	return 1;
 }
 
+CMD:enter(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (!ProcessDoorEnter(playerid)) {
+		if (gPlayerData[playerid][pLanguage] == LANG_EN) SendErr(playerid, "You are not near any entrance door.");
+		else SendErr(playerid, "Anda tidak berada di dekat pintu masuk.");
+	}
+	return 1;
+}
+
+CMD:masuk(playerid, params[])
+{
+	return cmd_enter(playerid, params);
+}
+
+CMD:exit(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (!ProcessDoorExit(playerid)) {
+		if (gPlayerData[playerid][pLanguage] == LANG_EN) SendErr(playerid, "You are not near any exit door.");
+		else SendErr(playerid, "Anda tidak berada di dekat pintu keluar.");
+	}
+	return 1;
+}
+
+CMD:keluar(playerid, params[])
+{
+	return cmd_exit(playerid, params);
+}
+
+CMD:scavenge(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ProcessPlayerScavenge(playerid);
+	return 1;
+}
+
+CMD:rongsok(playerid, params[])
+{
+	return cmd_scavenge(playerid, params);
+}
+
+CMD:ngais(playerid, params[])
+{
+	return cmd_scavenge(playerid, params);
+}
+
+CMD:trash(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (!IsPlayerNearAnyTrash(playerid)) {
+		if (gPlayerData[playerid][pLanguage] == LANG_EN) return SendErr(playerid, "You are not near a trash bin.");
+		else return SendErr(playerid, "Anda tidak berada di dekat tong sampah.");
+	}
+	if (gPlayerData[playerid][pLanguage] == LANG_EN) {
+		SendInfo(playerid, "You are at a trash bin. To discard an item, open /inv, select the item, and choose Drop.");
+	} else {
+		SendInfo(playerid, "Anda berada di dekat tong sampah. Untuk membuang barang, buka /inv, pilih barang, lalu pilih Drop/Buang.");
+	}
+	return 1;
+}
+
+CMD:buang(playerid, params[])
+{
+	return cmd_trash(playerid, params);
+}
+
 // player stats & items
 CMD:stats(playerid, params[])
 {

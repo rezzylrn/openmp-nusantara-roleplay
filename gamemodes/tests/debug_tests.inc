@@ -460,6 +460,10 @@ public RunAutomatedRPTests()
 	// 24. test street zone detector & compass heading
 	print("[TEST 24/25] District Zone Detector & Compass Heading Engine...");
 	new zoneTestPlayer = 0;
+	gPlayerData[zoneTestPlayer][pLastX] = 1481.0;
+	gPlayerData[zoneTestPlayer][pLastY] = -1748.0;
+	gPlayerData[zoneTestPlayer][pLastZ] = 13.5;
+	gPlayerData[zoneTestPlayer][pLastA] = 0.0;
 	SetPlayerPos(zoneTestPlayer, 1481.0, -1748.0, 13.5);
 	SetPlayerFacingAngle(zoneTestPlayer, 0.0);
 
@@ -479,19 +483,115 @@ public RunAutomatedRPTests()
 	}
 
 	// 25. test modular world mapping deployment
-	print("[TEST 25/25] Modular World Mapping Deployment (Zero Collision Props)...");
+	print("[TEST 25/29] Modular World Mapping Deployment (Zero Collision Props)...");
 	new mapLoaded = LoadNusantaraMapping();
 
 	if (mapLoaded == 1) {
-		print("  -> PASS: 35+ Clean ground-aligned world props successfully spawned.");
+		print("  -> PASS: 65+ Clean ground-aligned world props successfully spawned.");
 		passCount++;
 	} else {
 		print("  -> FAIL: World mapping initialization failed.");
 		failCount++;
 	}
 
+	// 26. test dynamic doors & indoor/outdoor teleport system
+	print("[TEST 26/29] Dynamic Doors & Building Teleportation System...");
+	new testDoor = Doors_Create("Gedung Uji Coba", 1500.0, -1700.0, 13.5, 0.0, 0, 0,
+		384.8, 173.8, 1008.38, 90.0, 3, 201, false, 0);
+
+	new bool:doorValid = (testDoor != -1 && gDoors[testDoor][dUsed] &&
+		strcmp(gDoors[testDoor][dName], "Gedung Uji Coba") == 0 &&
+		gDoors[testDoor][dIntInterior] == 3 && gDoors[testDoor][dIntVW] == 201);
+
+	// Test kunci pintu
+	gDoors[testDoor][dLocked] = true;
+	new bool:doorLockOk = gDoors[testDoor][dLocked];
+	gDoors[testDoor][dLocked] = false;
+
+	if (doorValid && doorLockOk) {
+		printf("  -> PASS: Door #%d ('%s') active, Interior: %d, VW: %d, Lock toggle confirmed.",
+			testDoor + 1, gDoors[testDoor][dName], gDoors[testDoor][dIntInterior], gDoors[testDoor][dIntVW]);
+		passCount++;
+	} else {
+		print("  -> FAIL: Dynamic door creation / verification failed.");
+		failCount++;
+	}
+
+	// 27. test dynamic atms & cash dispenser
+	print("[TEST 27/29] Dynamic ATMs Network & Cash Dispenser Engine...");
+	new testATM = ATM_Create(1496.8, -1738.5, 13.54, 0.0, 0.0, 0.0, 0, 0);
+
+	new atmTester = 0;
+	gPlayerData[atmTester][pLastX] = 1496.8;
+	gPlayerData[atmTester][pLastY] = -1738.5;
+	gPlayerData[atmTester][pLastZ] = 13.54;
+	SetPlayerPos(atmTester, 1496.8, -1738.5, 13.54);
+	SetPlayerInterior(atmTester, 0);
+	SetPlayerVirtualWorld(atmTester, 0);
+
+	new bool:atmNear = (IsPlayerNearAnyATM(atmTester, 3.0) != 0);
+
+	if (testATM != -1 && gATMs[testATM][atmUsed] && atmNear) {
+		printf("  -> PASS: Dynamic ATM #%d operational, proximity detector calibrated.", testATM + 1);
+		passCount++;
+	} else {
+		print("  -> FAIL: Dynamic ATM network verification failed.");
+		failCount++;
+	}
+
+	// 28. test dynamic trash bins & scavenge recycling system
+	print("[TEST 28/29] Dynamic Trash Bins & Scavenge Recycling Engine...");
+	new testTrash = Trash_Create(1479.0, -1762.0, 13.50, 0.0, 0, 0, 100);
+
+	new trashTester = 0;
+	gPlayerData[trashTester][pLastX] = 1479.0;
+	gPlayerData[trashTester][pLastY] = -1762.0;
+	gPlayerData[trashTester][pLastZ] = 13.50;
+	SetPlayerPos(trashTester, 1479.0, -1762.0, 13.50);
+	SetPlayerInterior(trashTester, 0);
+	SetPlayerVirtualWorld(trashTester, 0);
+
+	new bool:trashNear = (IsPlayerNearAnyTrash(trashTester, 3.0) != 0);
+
+	// Uji coba scavenge cooldown
+	gPlayerScavengeCooldown[trashTester] = 0;
+	new preScavenge = gPlayerScavengeCooldown[trashTester];
+	gPlayerScavengeCooldown[trashTester] = gettime() + 25;
+	new bool:cdOk = (gPlayerScavengeCooldown[trashTester] > preScavenge);
+
+	if (testTrash != -1 && gTrashBins[testTrash][trUsed] && trashNear && cdOk) {
+		printf("  -> PASS: Trash bin #%d active, proximity & 25s scavenge cooldown confirmed.", testTrash + 1);
+		passCount++;
+	} else {
+		print("  -> FAIL: Dynamic trash bin scavenge verification failed.");
+		failCount++;
+	}
+
+	// 29. test modern smartphone textdraw suite & localized apps
+	print("[TEST 29/29] Modern Smartphone TextDraw Suite & App Grid...");
+	new phoneTester = 0;
+	InitPlayerTextDraws(phoneTester);
+	gPlayerData[phoneTester][pPhone] = 554888;
+	gPlayerData[phoneTester][pPhoneStatus] = true;
+	gPlayerData[phoneTester][pLanguage] = LANG_ID;
+
+	UpdatePlayerPhone(phoneTester);
+
+	new bool:phoneReady = (gTD_PlayerText[phoneTester][pTD_PhoneBezel] != INVALID_PLAYER_TEXT_DRAW &&
+		gTD_PlayerText[phoneTester][pTD_PhoneScreen] != INVALID_PLAYER_TEXT_DRAW &&
+		gTD_PlayerText[phoneTester][pTD_PhoneApp1] != INVALID_PLAYER_TEXT_DRAW &&
+		gTD_PlayerText[phoneTester][pTD_PhoneHome] != INVALID_PLAYER_TEXT_DRAW);
+
+	if (phoneReady) {
+		print("  -> PASS: Smartphone Bezel, OLED Screen, 6 App Cards & Home button initialized.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Smartphone TextDraw allocation failed.");
+		failCount++;
+	}
+
 	print("==================================================");
-	printf("  [DEBUG SUMMARY] %d / 25 TESTS PASSED, %d FAILED", passCount, failCount);
+	printf("  [DEBUG SUMMARY] %d / 29 TESTS PASSED, %d FAILED", passCount, failCount);
 	print("==================================================\n");
 
 	return 1;

@@ -134,62 +134,65 @@
 #define pTD_SubPanel        25
 #define pTD_SubText         26
 // --- Phone TextDraws (Smartphone UI) ---
-#define pTD_PhoneBody       27
-#define pTD_PhoneHeader     28
-#define pTD_PhoneTitle      29
-#define pTD_PhoneInfo       30
-#define pTD_PhoneApp1       31
-#define pTD_PhoneApp2       32
-#define pTD_PhoneApp3       33
-#define pTD_PhoneApp4       34
-#define pTD_PhoneApp5       35
-#define pTD_PhoneApp6       36
+#define pTD_PhoneBezel      27  // Bezel casing luar
+#define pTD_PhoneScreen     28  // Layar kaca OLED
+#define pTD_PhoneNotch      29  // Dynamic Island / Notch
+#define pTD_PhoneHeader     30  // Status bar (Time, 5G, Battery)
+#define pTD_PhoneTitle      31  // "NUSANTARA PHONE"
+#define pTD_PhoneInfo       32  // "No: 554-123"
+#define pTD_PhoneApp1       33  // [ 1. Panggilan / Call ]
+#define pTD_PhoneApp2       34  // [ 2. Pesan / SMS ]
+#define pTD_PhoneApp3       35  // [ 3. GPS Peta ]
+#define pTD_PhoneApp4       36  // [ 4. Bank Nusantara ]
+#define pTD_PhoneApp5       37  // [ 5. Darurat 911 ]
+#define pTD_PhoneApp6       38  // [ 6. Mode & Bahasa ]
+#define pTD_PhoneHome       39  // [ --- HOME / KELUAR --- ]
 // --- Vehicle Control Dashboard ---
-#define pTD_VehDashBg       37
-#define pTD_VehDashTitle    38
-#define pTD_VehDashEngine   39
-#define pTD_VehDashLock     40
-#define pTD_VehDashLights   41
-#define pTD_VehDashHood     42
-#define pTD_VehDashTrunk    43
-#define pTD_VehDashClose    44
+#define pTD_VehDashBg       40
+#define pTD_VehDashTitle    41
+#define pTD_VehDashEngine   42
+#define pTD_VehDashLock     43
+#define pTD_VehDashLights   44
+#define pTD_VehDashHood     45
+#define pTD_VehDashTrunk    46
+#define pTD_VehDashClose    47
 // --- ATM / Banking UI ---
-#define pTD_BankBg          45
-#define pTD_BankTitle       46
-#define pTD_BankBalance     47
-#define pTD_BankBtnWithdraw 48
-#define pTD_BankBtnDeposit  49
-#define pTD_BankBtnTransfer 50
-#define pTD_BankBtnClose    51
+#define pTD_BankBg          48
+#define pTD_BankTitle       49
+#define pTD_BankBalance     50
+#define pTD_BankBtnWithdraw 51
+#define pTD_BankBtnDeposit  52
+#define pTD_BankBtnTransfer 53
+#define pTD_BankBtnClose    54
 // --- Quick Action Menu ---
-#define pTD_ActBg           52
-#define pTD_ActTitle        53
-#define pTD_ActBtnInv       54
-#define pTD_ActBtnPhone     55
-#define pTD_ActBtnID        56
-#define pTD_ActBtnVeh       57
-#define pTD_ActBtnStats     58
-#define pTD_ActBtnHelp      59
-#define pTD_ActBtnClose     60
+#define pTD_ActBg           55
+#define pTD_ActTitle        56
+#define pTD_ActBtnInv       57
+#define pTD_ActBtnPhone     58
+#define pTD_ActBtnID        59
+#define pTD_ActBtnVeh       60
+#define pTD_ActBtnStats     61
+#define pTD_ActBtnHelp      62
+#define pTD_ActBtnClose     63
 // --- Street Zone & Compass HUD ---
-#define pTD_ZoneBox         61
-#define pTD_ZoneCompass     62
-#define pTD_ZoneName        63
+#define pTD_ZoneBox         64
+#define pTD_ZoneCompass     65
+#define pTD_ZoneName        66
 // --- Critical Trauma & Injury Overlay ---
-#define pTD_InjuredBg       64
-#define pTD_InjuredHeader   65
-#define pTD_InjuredTimer    66
-#define pTD_InjuredInfo     67
+#define pTD_InjuredBg       67
+#define pTD_InjuredHeader   68
+#define pTD_InjuredTimer    69
+#define pTD_InjuredInfo     70
 // --- penanda batas (harus terakhir) ---
-#define pTD_COUNT           68
+#define pTD_COUNT           71
 
 // Index pertama/terakhir tiap panel, untuk loop show/hide.
 #define TD_HUD_FIRST       pTD_HudPanel
 #define TD_HUD_LAST        pTD_HudLevelVal
 #define TD_SPD_FIRST       pTD_SpdPanel
 #define TD_SPD_LAST        pTD_SpdLockVal
-#define TD_PHONE_FIRST     pTD_PhoneBody
-#define TD_PHONE_LAST      pTD_PhoneApp6
+#define TD_PHONE_FIRST     pTD_PhoneBezel
+#define TD_PHONE_LAST      pTD_PhoneHome
 #define TD_VEHDASH_FIRST   pTD_VehDashBg
 #define TD_VEHDASH_LAST    pTD_VehDashClose
 #define TD_BANK_FIRST      pTD_BankBg
@@ -535,90 +538,122 @@ stock InitPlayerTextDraws(playerid)
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_SubText], true);
 
     // ================== SMARTPHONE UI (kanan layar) ==================
-    // Standar LEFT-aligned box: x=497 (kiri), TextSize=623 (kanan, lebar 126).
-    gTD_PlayerText[playerid][pTD_PhoneBody] = CreatePlayerTextDraw(playerid, 497.0, 180.0, "_");
-    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneBody], 0.0, 16.5);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneBody], 623.0, 0.0);
-    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_PhoneBody], TEXT_DRAW_ALIGN_LEFT);
-    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneBody], TD_COLOR_WHITE);
-    PlayerTextDrawUseBox(playerid, gTD_PlayerText[playerid][pTD_PhoneBody], true);
-    PlayerTextDrawBoxColour(playerid, gTD_PlayerText[playerid][pTD_PhoneBody], TD_COLOR_PHONE_BG);
-    PlayerTextDrawSetShadow(playerid, gTD_PlayerText[playerid][pTD_PhoneBody], 0);
+    // 1. Bezel Luar Casing Smartphone (Dark Titanium)
+    gTD_PlayerText[playerid][pTD_PhoneBezel] = CreatePlayerTextDraw(playerid, 494.0, 168.0, "_");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneBezel], 0.0, 18.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneBezel], 626.0, 0.0);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_PhoneBezel], TEXT_DRAW_ALIGN_LEFT);
+    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneBezel], TD_COLOR_WHITE);
+    PlayerTextDrawUseBox(playerid, gTD_PlayerText[playerid][pTD_PhoneBezel], true);
+    PlayerTextDrawBoxColour(playerid, gTD_PlayerText[playerid][pTD_PhoneBezel], 0x080B12F8);
+    PlayerTextDrawSetShadow(playerid, gTD_PlayerText[playerid][pTD_PhoneBezel], 0);
 
-    gTD_PlayerText[playerid][pTD_PhoneHeader] = CreatePlayerTextDraw(playerid, 560.0, 184.0, "~w~12:45   ~g~5G   ~w~[||||]");
-    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneHeader], 0.20, 0.85);
+    // 2. Layar Dalam Kaca OLED
+    gTD_PlayerText[playerid][pTD_PhoneScreen] = CreatePlayerTextDraw(playerid, 497.0, 172.0, "_");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneScreen], 0.0, 17.2);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneScreen], 623.0, 0.0);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_PhoneScreen], TEXT_DRAW_ALIGN_LEFT);
+    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneScreen], TD_COLOR_WHITE);
+    PlayerTextDrawUseBox(playerid, gTD_PlayerText[playerid][pTD_PhoneScreen], true);
+    PlayerTextDrawBoxColour(playerid, gTD_PlayerText[playerid][pTD_PhoneScreen], 0x111726EE);
+    PlayerTextDrawSetShadow(playerid, gTD_PlayerText[playerid][pTD_PhoneScreen], 0);
+
+    // 3. Dynamic Island / Notch
+    gTD_PlayerText[playerid][pTD_PhoneNotch] = CreatePlayerTextDraw(playerid, 560.0, 173.0, "---");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneNotch], 0.22, 0.60);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_PhoneNotch], TEXT_DRAW_ALIGN_CENTER);
+    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneNotch], 0x000000FF);
+    PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_PhoneNotch], TEXT_DRAW_FONT_2);
+    PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_PhoneNotch], true);
+
+    // 4. Status Bar
+    gTD_PlayerText[playerid][pTD_PhoneHeader] = CreatePlayerTextDraw(playerid, 560.0, 181.0, "~w~12:45   ~g~5G   ~w~100%");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneHeader], 0.18, 0.78);
     PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_PhoneHeader], TEXT_DRAW_ALIGN_CENTER);
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneHeader], TD_COLOR_WHITE);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_PhoneHeader], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_PhoneHeader], true);
 
-    gTD_PlayerText[playerid][pTD_PhoneTitle] = CreatePlayerTextDraw(playerid, 560.0, 198.0, "~b~~h~SMARTPHONE OS");
-    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneTitle], 0.24, 1.0);
+    // 5. Header OS Title
+    gTD_PlayerText[playerid][pTD_PhoneTitle] = CreatePlayerTextDraw(playerid, 560.0, 193.0, "~b~~h~NUSANTARA PHONE");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneTitle], 0.22, 0.95);
     PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_PhoneTitle], TEXT_DRAW_ALIGN_CENTER);
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneTitle], TD_COLOR_WHITE);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_PhoneTitle], TEXT_DRAW_FONT_2);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_PhoneTitle], true);
 
-    gTD_PlayerText[playerid][pTD_PhoneInfo] = CreatePlayerTextDraw(playerid, 560.0, 212.0, "~w~No: ~y~554-123");
-    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneInfo], 0.20, 0.85);
+    // 6. Nomor Telepon
+    gTD_PlayerText[playerid][pTD_PhoneInfo] = CreatePlayerTextDraw(playerid, 560.0, 206.0, "~w~No: ~y~554-123");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneInfo], 0.18, 0.80);
     PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_PhoneInfo], TEXT_DRAW_ALIGN_CENTER);
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneInfo], TD_COLOR_WHITE);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_PhoneInfo], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_PhoneInfo], true);
 
-    gTD_PlayerText[playerid][pTD_PhoneApp1] = CreatePlayerTextDraw(playerid, 502.0, 230.0, "~w~1. Panggilan (/call)");
-    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp1], 0.18, 0.80);
+    // 7. Grid Aplikasi Clickable
+    gTD_PlayerText[playerid][pTD_PhoneApp1] = CreatePlayerTextDraw(playerid, 502.0, 220.0, "~g~[1]~w~ Panggilan (/call)");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp1], 0.175, 0.80);
     PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_PhoneApp1], TEXT_DRAW_ALIGN_LEFT);
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneApp1], TD_COLOR_WHITE);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_PhoneApp1], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_PhoneApp1], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp1], 615.0, 242.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp1], 618.0, 232.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_PhoneApp1], true);
 
-    gTD_PlayerText[playerid][pTD_PhoneApp2] = CreatePlayerTextDraw(playerid, 502.0, 244.0, "~w~2. Pesan SMS (/sms)");
-    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp2], 0.18, 0.80);
+    gTD_PlayerText[playerid][pTD_PhoneApp2] = CreatePlayerTextDraw(playerid, 502.0, 234.0, "~y~[2]~w~ Pesan SMS (/sms)");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp2], 0.175, 0.80);
     PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_PhoneApp2], TEXT_DRAW_ALIGN_LEFT);
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneApp2], TD_COLOR_WHITE);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_PhoneApp2], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_PhoneApp2], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp2], 615.0, 256.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp2], 618.0, 246.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_PhoneApp2], true);
 
-    gTD_PlayerText[playerid][pTD_PhoneApp3] = CreatePlayerTextDraw(playerid, 502.0, 258.0, "~w~3. GPS Peta (/gps)");
-    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp3], 0.18, 0.80);
+    gTD_PlayerText[playerid][pTD_PhoneApp3] = CreatePlayerTextDraw(playerid, 502.0, 248.0, "~b~[3]~w~ Peta GPS (/gps)");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp3], 0.175, 0.80);
     PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_PhoneApp3], TEXT_DRAW_ALIGN_LEFT);
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneApp3], TD_COLOR_WHITE);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_PhoneApp3], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_PhoneApp3], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp3], 615.0, 270.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp3], 618.0, 260.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_PhoneApp3], true);
 
-    gTD_PlayerText[playerid][pTD_PhoneApp4] = CreatePlayerTextDraw(playerid, 502.0, 272.0, "~w~4. Info Pulsa & Saldo");
-    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp4], 0.18, 0.80);
+    gTD_PlayerText[playerid][pTD_PhoneApp4] = CreatePlayerTextDraw(playerid, 502.0, 262.0, "~g~[4]~w~ Bank Nusantara");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp4], 0.175, 0.80);
     PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_PhoneApp4], TEXT_DRAW_ALIGN_LEFT);
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneApp4], TD_COLOR_WHITE);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_PhoneApp4], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_PhoneApp4], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp4], 615.0, 284.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp4], 618.0, 274.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_PhoneApp4], true);
 
-    gTD_PlayerText[playerid][pTD_PhoneApp5] = CreatePlayerTextDraw(playerid, 502.0, 286.0, "~w~5. Mode: ~g~Dering");
-    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp5], 0.18, 0.80);
+    gTD_PlayerText[playerid][pTD_PhoneApp5] = CreatePlayerTextDraw(playerid, 502.0, 276.0, "~r~[5]~w~ Darurat 911");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp5], 0.175, 0.80);
     PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_PhoneApp5], TEXT_DRAW_ALIGN_LEFT);
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneApp5], TD_COLOR_WHITE);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_PhoneApp5], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_PhoneApp5], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp5], 615.0, 298.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp5], 618.0, 288.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_PhoneApp5], true);
 
-    gTD_PlayerText[playerid][pTD_PhoneApp6] = CreatePlayerTextDraw(playerid, 502.0, 304.0, "~r~6. Tutup Ponsel (/p)");
-    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp6], 0.18, 0.80);
+    gTD_PlayerText[playerid][pTD_PhoneApp6] = CreatePlayerTextDraw(playerid, 502.0, 290.0, "~p~[6]~w~ Mode & Bahasa");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp6], 0.175, 0.80);
     PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_PhoneApp6], TEXT_DRAW_ALIGN_LEFT);
     PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneApp6], TD_COLOR_WHITE);
     PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_PhoneApp6], TEXT_DRAW_FONT_1);
     PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_PhoneApp6], true);
-    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp6], 615.0, 316.0);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneApp6], 618.0, 302.0);
     PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_PhoneApp6], true);
+
+    // 8. Bottom Home Button
+    gTD_PlayerText[playerid][pTD_PhoneHome] = CreatePlayerTextDraw(playerid, 502.0, 310.0, "~r~[  --- HOME / TUTUP ---  ]");
+    PlayerTextDrawLetterSize(playerid, gTD_PlayerText[playerid][pTD_PhoneHome], 0.18, 0.85);
+    PlayerTextDrawAlignment(playerid, gTD_PlayerText[playerid][pTD_PhoneHome], TEXT_DRAW_ALIGN_LEFT);
+    PlayerTextDrawColour(playerid, gTD_PlayerText[playerid][pTD_PhoneHome], TD_COLOR_WHITE);
+    PlayerTextDrawFont(playerid, gTD_PlayerText[playerid][pTD_PhoneHome], TEXT_DRAW_FONT_1);
+    PlayerTextDrawSetProportional(playerid, gTD_PlayerText[playerid][pTD_PhoneHome], true);
+    PlayerTextDrawTextSize(playerid, gTD_PlayerText[playerid][pTD_PhoneHome], 618.0, 322.0);
+    PlayerTextDrawSetSelectable(playerid, gTD_PlayerText[playerid][pTD_PhoneHome], true);
 
     // Inisialisasi TextDraw Inventaris Modern 25 Slot
     InvTextDraw_Init(playerid);
@@ -1229,7 +1264,13 @@ public RP_HideSubtitle(playerid)
 stock GetPlayerZoneName(playerid, zone[], maxlen = sizeof(zone))
 {
     new Float:x, Float:y, Float:z;
-    GetPlayerPos(playerid, x, y, z);
+    if (IsPlayerConnected(playerid)) {
+        GetPlayerPos(playerid, x, y, z);
+    } else {
+        x = gPlayerData[playerid][pLastX];
+        y = gPlayerData[playerid][pLastY];
+        z = gPlayerData[playerid][pLastZ];
+    }
 
     if (x >= 1370.0 && x <= 1530.0 && y >= -1850.0 && y <= -1550.0) {
         format(zone, maxlen, "Pershing Square, Los Santos");
@@ -1264,7 +1305,11 @@ stock GetPlayerZoneName(playerid, zone[], maxlen = sizeof(zone))
 stock GetPlayerCompassDirection(playerid, dir[], maxlen = sizeof(dir))
 {
     new Float:angle;
-    GetPlayerFacingAngle(playerid, angle);
+    if (IsPlayerConnected(playerid)) {
+        GetPlayerFacingAngle(playerid, angle);
+    } else {
+        angle = gPlayerData[playerid][pLastA];
+    }
 
     if (angle >= 337.5 || angle < 22.5) format(dir, maxlen, "N");
     else if (angle >= 22.5 && angle < 67.5) format(dir, maxlen, "NW");
@@ -1391,13 +1436,33 @@ stock HidePlayerPhone(playerid)
 stock UpdatePlayerPhone(playerid)
 {
     if (playerid < 0 || playerid >= MAX_PLAYERS) return 0;
+    new bool:isEn = (gPlayerData[playerid][pLanguage] == LANG_EN);
+
+    new timeBuf[48];
+    format(timeBuf, sizeof(timeBuf), "~w~12:45   ~g~5G   ~w~%s", gPlayerData[playerid][pPhoneStatus] ? "~g~100%" : "~y~SILENT");
+    PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_PhoneHeader], timeBuf);
+
     new infoBuf[64];
     format(infoBuf, sizeof(infoBuf), "~w~No: ~y~%d", gPlayerData[playerid][pPhone]);
     PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_PhoneInfo], infoBuf);
 
-    new modeBuf[48];
-    format(modeBuf, sizeof(modeBuf), "~w~5. Mode: %s", gPlayerData[playerid][pPhoneStatus] ? "~g~Dering" : "~r~Hening");
-    PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_PhoneApp5], modeBuf);
+    if (isEn) {
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_PhoneApp1], "~g~[1]~w~ Voice Call (/call)");
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_PhoneApp2], "~y~[2]~w~ Text SMS (/sms)");
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_PhoneApp3], "~b~[3]~w~ GPS Navigation (/gps)");
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_PhoneApp4], "~g~[4]~w~ Mobile Banking");
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_PhoneApp5], "~r~[5]~w~ 911 Emergency");
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_PhoneApp6], "~p~[6]~w~ Sound & Language");
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_PhoneHome], "~r~[  --- HOME / CLOSE ---  ]");
+    } else {
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_PhoneApp1], "~g~[1]~w~ Panggilan (/call)");
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_PhoneApp2], "~y~[2]~w~ Pesan SMS (/sms)");
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_PhoneApp3], "~b~[3]~w~ Peta GPS (/gps)");
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_PhoneApp4], "~g~[4]~w~ Bank Nusantara");
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_PhoneApp5], "~r~[5]~w~ Darurat 911");
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_PhoneApp6], "~p~[6]~w~ Mode & Bahasa");
+        PlayerTextDrawSetString(playerid, gTD_PlayerText[playerid][pTD_PhoneHome], "~r~[  --- HOME / TUTUP ---  ]");
+    }
     return 1;
 }
 
@@ -1554,13 +1619,13 @@ stock ProcessPlayerClickTD(playerid, PlayerText:playertextid)
         if (playertextid == gTD_PlayerText[playerid][pTD_PhoneApp1]) {
             HidePlayerPhone(playerid);
             ShowPlayerDialog(playerid, DIALOG_PHONE_CALL, DIALOG_STYLE_INPUT,
-                "PANGGILAN SUARA", "Masukkan nomor telepon tujuan:", "Panggil", "Batal");
+                "PANGGILAN SUARA / VOICE CALL", "Masukkan nomor telepon tujuan / Enter recipient phone number:", "Panggil", "Batal");
             return 1;
         }
         if (playertextid == gTD_PlayerText[playerid][pTD_PhoneApp2]) {
             HidePlayerPhone(playerid);
             ShowPlayerDialog(playerid, DIALOG_PHONE_SMS, DIALOG_STYLE_INPUT,
-                "KIRIM PESAN SMS", "Format: [Nomor] [Pesan]", "Kirim", "Batal");
+                "KIRIM PESAN SMS / SEND SMS", "Format: [Nomor] [Pesan]", "Kirim", "Batal");
             return 1;
         }
         if (playertextid == gTD_PlayerText[playerid][pTD_PhoneApp3]) {
@@ -1569,16 +1634,26 @@ stock ProcessPlayerClickTD(playerid, PlayerText:playertextid)
             return 1;
         }
         if (playertextid == gTD_PlayerText[playerid][pTD_PhoneApp4]) {
-            ShowPlayerAlertEx(playerid, "Pulsa Ponsel: Aktif & Tidak Terbatas", 4000);
+            HidePlayerPhone(playerid);
+            ShowPlayerDialog(playerid, DIALOG_BANK_TRANSFER, DIALOG_STYLE_INPUT,
+                "M-BANKING NUSANTARA", "Masukkan Target dan Jumlah Transfer (Format: [Nama/ID] [Nominal]):", "Transfer", "Batal");
             return 1;
         }
         if (playertextid == gTD_PlayerText[playerid][pTD_PhoneApp5]) {
-            gPlayerData[playerid][pPhoneStatus] = !gPlayerData[playerid][pPhoneStatus];
-            UpdatePlayerPhone(playerid);
-            ShowPlayerAlertEx(playerid, gPlayerData[playerid][pPhoneStatus] ? "Mode Dering Aktif" : "Mode Hening Aktif", 2500);
+            HidePlayerPhone(playerid);
+            ShowPlayerDialog(playerid, DIALOG_911_SERVICE, DIALOG_STYLE_LIST,
+                "LAYANAN DARURAT 911 LOS SANTOS",
+                "1. Kepolisian (SAPD) - Laporkan Kriminalitas & Situasi Darurat\n2. Medis & Ambulans (SAMD) - Laporkan Korban Terluka & Kecelakaan",
+                "Pilih", "Batal");
             return 1;
         }
         if (playertextid == gTD_PlayerText[playerid][pTD_PhoneApp6]) {
+            gPlayerData[playerid][pPhoneStatus] = !gPlayerData[playerid][pPhoneStatus];
+            UpdatePlayerPhone(playerid);
+            ShowLanguageSelectionDialog(playerid);
+            return 1;
+        }
+        if (playertextid == gTD_PlayerText[playerid][pTD_PhoneHome]) {
             HidePlayerPhone(playerid);
             return 1;
         }

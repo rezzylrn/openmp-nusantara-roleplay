@@ -23,6 +23,9 @@
 #include "systems/vehicles.inc"
 #include "systems/shops.inc"
 #include "systems/workshop.inc"
+#include "systems/doors.inc"
+#include "systems/atms.inc"
+#include "systems/trash.inc"
 
 // 5. Gameplay & Factions
 #include "gameplay/mapping.inc"
@@ -60,6 +63,9 @@ public OnGameModeInit()
 	DB_Init();
 	AC_Init();
 	House_Init();
+	Doors_Init();
+	ATMs_Init();
+	Trash_Init();
 
 	// default class spawn
 	AddPlayerClass(0, SPAWN_X, SPAWN_Y, SPAWN_Z, SPAWN_A, WEAPON_FIST, 0, WEAPON_FIST, 0, WEAPON_FIST, 0);
@@ -238,9 +244,25 @@ public OnPlayerText(playerid, text[])
 // key handling
 public OnPlayerKeyStateChange(playerid, KEY:newkeys, KEY:oldkeys)
 {
-	// Key Y (KEY_YES) untuk interaksi properti rumah, pekerjaan, dan fasilitas umum
+	// Key F / ENTER (KEY_SECONDARY_ATTACK) untuk masuk / keluar pintu dinamis (Indoor/Outdoor)
+	if ((newkeys & KEY_SECONDARY_ATTACK) && !(oldkeys & KEY_SECONDARY_ATTACK)) {
+		if (GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) {
+			if (ProcessDoorEnter(playerid)) return 1;
+			if (ProcessDoorExit(playerid)) return 1;
+		}
+	}
+
+	// Key Y (KEY_YES) untuk interaksi properti rumah, ATM, tong sampah, pekerjaan, dan fasilitas umum
 	if ((newkeys & KEY_YES) && !(oldkeys & KEY_YES)) {
 		if (ProcessHouseInteraction(playerid)) return 1;
+		if (IsPlayerNearAnyATM(playerid)) {
+			ShowATMDialog(playerid);
+			return 1;
+		}
+		if (IsPlayerNearAnyTrash(playerid)) {
+			ProcessPlayerScavenge(playerid);
+			return 1;
+		}
 		ProcessKeyActivity(playerid);
 		return 1;
 	}

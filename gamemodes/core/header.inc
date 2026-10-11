@@ -235,6 +235,13 @@ enum E_VEHICLE_DATA {
 #define LANG_ID                   0
 #define LANG_EN                   1
 
+// Dynamic Systems Forward Declarations
+forward IsPlayerNearAnyATM(playerid, Float:range = 2.5);
+forward IsPlayerNearAnyTrash(playerid, Float:range = 2.5);
+forward ProcessDoorEnter(playerid);
+forward ProcessDoorExit(playerid);
+forward ProcessPlayerScavenge(playerid);
+
 #define MAX_DISPATCHES            20
 
 enum E_DISPATCH_DATA {

@@ -108,3 +108,57 @@ CREATE TABLE `settings` (
   `key` VARCHAR(64) PRIMARY KEY,
   `value` TEXT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ---------------------------------------------------------------------------
+-- Tabel: doors (Pintu & Teleportasi Gedung Dinamis Indoor / Outdoor)
+-- ---------------------------------------------------------------------------
+DROP TABLE IF EXISTS `doors`;
+CREATE TABLE `doors` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `name` VARCHAR(48) NOT NULL,
+  `ext_x` FLOAT NOT NULL,
+  `ext_y` FLOAT NOT NULL,
+  `ext_z` FLOAT NOT NULL,
+  `ext_a` FLOAT DEFAULT 0.0,
+  `ext_interior` INT DEFAULT 0,
+  `ext_vw` INT DEFAULT 0,
+  `int_x` FLOAT NOT NULL,
+  `int_y` FLOAT NOT NULL,
+  `int_z` FLOAT NOT NULL,
+  `int_a` FLOAT DEFAULT 0.0,
+  `int_interior` INT DEFAULT 0,
+  `int_vw` INT DEFAULT 0,
+  `locked` TINYINT DEFAULT 0,
+  `admin_level` INT DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ---------------------------------------------------------------------------
+-- Tabel: atms (Mesin ATM Dinamis)
+-- ---------------------------------------------------------------------------
+DROP TABLE IF EXISTS `atms`;
+CREATE TABLE `atms` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `x` FLOAT NOT NULL,
+  `y` FLOAT NOT NULL,
+  `z` FLOAT NOT NULL,
+  `rx` FLOAT DEFAULT 0.0,
+  `ry` FLOAT DEFAULT 0.0,
+  `rz` FLOAT DEFAULT 0.0,
+  `interior` INT DEFAULT 0,
+  `vw` INT DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ---------------------------------------------------------------------------
+-- Tabel: trash_bins (Tong Sampah Dinamis & Scavenge Rongsokan)
+-- ---------------------------------------------------------------------------
+DROP TABLE IF EXISTS `trash_bins`;
+CREATE TABLE `trash_bins` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `x` FLOAT NOT NULL,
+  `y` FLOAT NOT NULL,
+  `z` FLOAT NOT NULL,
+  `rz` FLOAT DEFAULT 0.0,
+  `interior` INT DEFAULT 0,
+  `vw` INT DEFAULT 0,
+  `capacity` INT DEFAULT 100
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -122,6 +122,63 @@ stock LoadNusantaraMapping()
 	CreateObject(1280, 1750.0, -1860.0, 13.50, 0.0, 0.0, 180.0, 150.0);
 	CreateObject(1337, 1753.0, -1860.0, 13.50, 0.0, 0.0, 0.0, 100.0);
 
-	print("[MAPPING] 35+ Objek modular Nusantara Roleplay sukses dimuat.");
+	// =========================================================================
+	// 6. PERSHING SQUARE CENTRAL FOUNTAIN & GARDEN (Outdoor Park Center)
+	// =========================================================================
+	// Air mancur tengah plaza (di taman rumput, tidak di jalan)
+	CreateObject(2944, 1481.0, -1750.0, 14.20, 0.0, 0.0, 0.0, 200.0);
+	CreateObject(627, 1475.0, -1750.0, 13.50, 0.0, 0.0, 0.0, 150.0);
+	CreateObject(628, 1487.0, -1750.0, 13.50, 0.0, 0.0, 0.0, 150.0);
+	CreateObject(1280, 1476.0, -1745.0, 13.50, 0.0, 0.0, 135.0, 150.0);
+	CreateObject(1280, 1486.0, -1745.0, 13.50, 0.0, 0.0, 225.0, 150.0);
+
+	// =========================================================================
+	// 7. BALAI KOTA LOS SANTOS / SAGOV INTERIOR (Interior 3, VW 101)
+	// =========================================================================
+	// Meja sidang utama & kursi pimpinan
+	CreateObject(2185, 384.80, 176.50, 1007.40, 0.0, 0.0, 180.0, 150.0);
+	CreateObject(1720, 384.80, 177.50, 1007.40, 0.0, 0.0, 0.0, 150.0);
+	CreateObject(1720, 383.50, 175.50, 1007.40, 0.0, 0.0, 180.0, 150.0);
+	CreateObject(1720, 386.10, 175.50, 1007.40, 0.0, 0.0, 180.0, 150.0);
+	// Tiang bendera kenegaraan di ruang rapat
+	CreateObject(1665, 382.00, 178.00, 1007.40, 0.0, 0.0, 0.0, 150.0);
+	CreateObject(1665, 387.60, 178.00, 1007.40, 0.0, 0.0, 0.0, 150.0);
+
+	// =========================================================================
+	// 8. ALL SAINTS GENERAL HOSPITAL WARD INTERIOR (Interior 5, VW 102)
+	// =========================================================================
+	// Meja resepsionis dokter & suster
+	CreateObject(2185, 1145.00, -1308.00, 1005.00, 0.0, 0.0, 90.0, 150.0);
+	CreateObject(1720, 1144.00, -1308.00, 1005.00, 0.0, 0.0, 90.0, 150.0);
+	// Kursi tunggu pasien di koridor rawat
+	CreateObject(1280, 1148.00, -1302.00, 1005.00, 0.0, 0.0, 180.0, 150.0);
+	CreateObject(1280, 1154.00, -1302.00, 1005.00, 0.0, 0.0, 180.0, 150.0);
+	// Kotak suplai obat medis & tempat sampah klinis
+	CreateObject(1431, 1146.00, -1312.00, 1005.00, 0.0, 0.0, 0.0, 150.0);
+	CreateObject(1337, 1144.00, -1314.00, 1005.00, 0.0, 0.0, 0.0, 100.0);
+
+	// =========================================================================
+	// 9. LSPD CENTRAL POLICE STATION INTERIOR (Interior 6, VW 103)
+	// =========================================================================
+	// Meja resepsionis piket pengaduan warga
+	CreateObject(2185, 246.50, 68.00, 1002.70, 0.0, 0.0, 180.0, 150.0);
+	CreateObject(1720, 246.50, 69.20, 1002.70, 0.0, 0.0, 0.0, 150.0);
+	// Kursi saksi / pelapor
+	CreateObject(1720, 245.20, 66.80, 1002.70, 0.0, 0.0, 180.0, 150.0);
+	CreateObject(1720, 247.80, 66.80, 1002.70, 0.0, 0.0, 180.0, 150.0);
+	// Papan pengumuman & tempat sampah
+	CreateObject(1337, 243.00, 67.00, 1002.70, 0.0, 0.0, 0.0, 100.0);
+
+	// =========================================================================
+	// 10. TOKO SERBA ADA 24/7 IDLEWOOD INTERIOR (Interior 17, VW 104)
+	// =========================================================================
+	// Counter kasir minimarket
+	CreateObject(2185, -28.50, -188.00, 1002.60, 0.0, 0.0, 90.0, 150.0);
+	CreateObject(1720, -29.60, -188.00, 1002.60, 0.0, 0.0, 90.0, 150.0);
+	// Mesin minuman dingin & camilan
+	CreateObject(1775, -24.00, -183.00, 1002.60, 0.0, 0.0, 180.0, 150.0);
+	CreateObject(1776, -22.50, -183.00, 1002.60, 0.0, 0.0, 180.0, 150.0);
+
+	print("[MAPPING] 65+ Objek modular Nusantara Roleplay (Indoor & Outdoor) sukses dimuat.");
 	return 1;
 }

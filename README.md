@@ -248,6 +248,19 @@ Gamemode ini mengadopsi arsitektur anti-cheat server-side modular yang dirancang
 ---
 
 ## TextDraw & HUD Lanjutan (`ui/textdraws.inc`)
+- **Smartphone TextDraw OS Modern (OLED Screen & Glassmorphism):**
+  - Tampilan visual smartphone realistis di kanan layar:
+    - Titanium bezel frame & OLED deep dark screen.
+    - Dynamic Island / Notch bar & status bar (Jam digital, sinyal cellular 5G, indikator baterai 100%).
+    - Header OS & nomor telepon pemilik.
+    - 6 Kartu Aplikasi Interaktif Clickable:
+      - `[1] Telepon / Call`: Dial pad panggilan suara (`/call`).
+      - `[2] Pesan / SMS`: Inbox & kirim SMS instan (`/sms`).
+      - `[3] GPS Maps`: Navigasi rute ke 16 POI kota (`/gps`).
+      - `[4] M-Banking`: Mobile banking transfer dana & cek saldo.
+      - `[5] Darurat 911`: Panggilan dispatch polisi & paramedis ambulans.
+      - `[6] Mode & Bahasa`: Alihkan mode dering/hening & switch bahasa (ID/EN).
+    - Tombol navigasi bawah: `[ --- HOME / TUTUP --- ]` untuk menutup ponsel.
 - **Street Zone & Compass HUD (Navigasi Wilayah):**
   - Terletak rapi di atas radar peta (sudut kiri bawah layar).
   - Menampilkan arah mata angin (`[ N ]`, `[ NE ]`, `[ S ]`, `[ SW ]`, dll.) dan nama distrik/wilayah secara real-time (Pershing Square, Idlewood, Ganton, Commerce, Market, ASGH Hospital, Jefferson, Unity Station, Willowfield, Ocean Docks, dll.).
@@ -260,13 +273,36 @@ Gamemode ini mengadopsi arsitektur anti-cheat server-side modular yang dirancang
 
 ---
 
+## Sistem Dinamis Dunia (`systems/doors.inc`, `atms.inc`, `trash.inc`)
+- **Pintu Gedung Dinamis (Indoor / Outdoor Door & Entrance System):**
+  - Akses masuk/keluar gedung menggunakan tombol **F / ENTER** atau perintah `/enter` & `/exit`.
+  - Pickup penanda (1239 exterior / 1318 interior) dan 3D Text Label status pintu.
+  - Dilengkapi proteksi kunci (`dLocked`), level otoritas admin/faksi, dan kalibrasi otomatis anti-teleport.
+  - Perintah Admin: `/createdoor [nama]`, `/setdoorint [id]`, `/destroydoor [id]`, `/lockdoor [id]`, `/doors`.
+  - Preset bawaan: Balai Kota Los Santos (SAGOV), RS All Saints (SAMD ASGH), Kantor Polisi Pusat (SAPD LSPD), Minimarket 24/7 Idlewood, Kantor Arsip Warga.
+- **Jaringan Mesin ATM Dinamis (Dynamic ATMs):**
+  - Mesin ATM realistis (model 2942) dengan 3D Text Label interaktif.
+  - Tekan **Y** atau ketik `/atm` untuk membuka menu perbankan (tarik, setor, transfer, saldo).
+  - Perintah Admin: `/createatm`, `/destroyatm [id]`, `/atms`.
+  - Tersebar di titik strategis: Pershing Square Bank Wall, ASGH Drop-off, Idlewood Store, Unity Station, Santa Maria Beach Pier.
+- **Tong Sampah Dinamis & Pemulung Rongsokan (Dynamic Trash & Scavenge):**
+  - Objek tong sampah kota (model 1337) dengan 3D Text Label.
+  - Interaksi warga:
+    - `/rongsok` / `/scavenge` / `/ngais` / Tekan **Y**: Mengais tong sampah (animasi membungkuk, cooldown 25 detik).
+    - Berpeluang mendapatkan: Barang Rongsokan (`ITEM_RECYCLED` x1-x3 untuk dijual ke pengepul `/selltrash`), Uang receh ($5 - $35), Makanan/Minuman kaleng.
+    - `/buang` / `/trash`: Membuang barang yang tidak terpakai dari inventaris.
+  - Perintah Admin: `/createtrash`, `/destroytrash [id]`, `/trashes`.
+
+---
+
 ## Mapping Dunia Modular Los Santos (`gameplay/mapping.inc`)
-- 35+ Objek detail yang diselaraskan rapi dengan ketinggian tanah (ground-aligned) dan diletakkan di trotoar/plaza tanpa memotong atau menghalangi jalan lalu lintas kendaraan (**zero collision / tidak nabrak**):
-  - **Pershing Square Civic Plaza & Bank:** Mesin ATM outdoor di dinding bank, bangku santai pedestrian, lampu jalan, tanaman hias pot, tempat sampah, dan tiang bendera pusat.
-  - **All Saints General Hospital (ASGH) Emergency Bay:** Jalur bollard drop-off ambulans, kerucut pengaman (traffic cones), brankar/stretcher darurat, peti suplai medis, dan bangku tunggu rumah sakit.
-  - **LSPD Headquarters Secure Yard:** Pos jaga gerbang belakang polisi, portal gate otomatis, menara lampu sorot pengamanan malam, dan pembatas parkir armada cruiser.
+- 65+ Objek detail yang diselaraskan rapi dengan ketinggian tanah (ground-aligned) dan diletakkan di trotoar/plaza tanpa memotong atau menghalangi jalan lalu lintas kendaraan (**zero collision / tidak nabrak**):
+  - **Pershing Square Civic Plaza & Garden:** Air mancur tengah taman plaza (`2944`), tanaman pot bunga besar, mesin ATM outdoor di dinding bank, bangku santai pedestrian, lampu jalan, tempat sampah, dan tiang bendera pusat.
+  - **All Saints General Hospital (ASGH) Bay & Medical Ward:** Jalur bollard drop-off ambulans, kerucut pengaman (traffic cones), brankar/stretcher darurat, peti suplai medis, bangku tunggu, meja dokter resepsionis, kursi periksa, dan tirai medis.
+  - **LSPD Headquarters Secure Yard & Station Interior:** Pos jaga gerbang belakang polisi, portal gate otomatis, menara lampu sorot pengamanan malam, pembatas parkir armada cruiser, meja resepsionis piket, komputer arsip, kursi interogasi.
   - **Nusantara Mechanical Workshop (Idlewood/Commerce):** Struktur hidrolik mobil, derek mesin, lemari toolkit baja, tumpukan ban balap, drum oli, dan kompresor angin.
   - **Unity Station Public Park & Arrival Hub:** Papan peta informasi kota, mesin penjual snack & minuman otomatis, telepon umum luar ruangan, bangku peristirahatan stasiun.
+  - **Toko 24/7 Idlewood Interior:** Counter kasir minimarket, rak belanjaan snack, mesin pendingin minuman otomatis.
 
 ---
 
