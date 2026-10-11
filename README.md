@@ -366,6 +366,52 @@ Gamemode ini mengadopsi arsitektur anti-cheat server-side modular yang dirancang
 
 ---
 
+## Sistem Interaksi & Fitur Kebebasan Kota Lanjutan
+
+### 1. Perampokan Kasir Minimarket 24/7 (`systems/store_robbery.inc`)
+- **Mekanisme Perampokan Toko Bersenjata:**
+  - Pemain membawa senjata api ke meja kasir toko 24/7 (Idlewood, Commerce, Mulholland) dan menggunakan `/robstore` atau `/rampok`.
+  - Kasir panik, memulai timer pembongkaran brankas selama 35 detik.
+  - Sinyal darurat diam-diam otomatis dikirim ke seluruh radio petugas kepolisian SAPD (`[ALARM 911 PERAMPOKAN]`).
+  - Pemain yang bertahan di kasir hingga timer tuntas mendapatkan tas uang jarahan ($1.200 - $2.500).
+  - Cooldown toko 15 menit agar tidak terjadi spamming.
+
+### 2. Pertanian Ganja Bawah Tanah Dinamis (`systems/weed_farm.inc`)
+- **Penanaman & Pertumbuhan Ganja (MySQL `weed_plants`):**
+  - Pemain membeli benih ganja (`ITEM_WEEDSEED`) di Black Market.
+  - Menanam pot di tanah terbuka atau pekarangan rahasia via `/plantweed` atau `/tanam`.
+  - Objek pot tanaman hijau (`3409`/`861`) dengan visual 3 tahap pertumbuhan:
+    - Tahap 1: Bibit Baru (0–90 detik)
+    - Tahap 2: Tunas Daun (90–180 detik)
+    - Tahap 3: Siap Panen (180+ detik)
+  - Pemanenan via `/harvestweed` / `/panen` menghasilkan 2x–4x Daun Ganja Kering (`ITEM_WEED`).
+  - Daun ganja dapat dijual ke penadah Black Market ($110 / pcs) atau dilinting.
+  - Petugas kepolisian SAPD on-duty dapat memusnahkan tanaman ilegal dengan `/burnweed` atau `/hanguskan`.
+
+### 3. Detektor Logam & Harta Karun Pantai (`systems/metal_detector.inc`)
+- **Pencarian Harta Karun Terpendam:**
+  - Pemain membeli Detektor Logam (`ITEM_DETECTOR`) dan Sekop (`ITEM_SHOVEL`) di toko 24/7.
+  - Menelusuri pasir pantai (Santa Maria Beach, Verona Beach, Flint Waters) via `/detect` atau `/deteksi`.
+  - Audio beeping proximity sound berbunyi semakin kencang saat mendekati titik harta karun.
+  - Menggali titik temuan via `/dig` atau `/gali` (animasi menggali + cooldown 15 detik).
+  - Tabel Hadiah: Harta Karun Kuno (`ITEM_TREASURE`, laku $250 di Black Market), uang tunai receh tercecer di pasir ($40–$120), kotak peluru militer tua (Desert Eagle 20 peluru), atau logam rongsokan.
+
+### 4. Pendaftaran Plat Nomor Kustom DMV (`systems/dmv_plates.inc`)
+- **Kustomisasi Identitas Kendaraan Pribadi:**
+  - Pemain yang mengendarai mobil pribadi dapat mendaftarkan plat nomor kustom via `/customplate [plat_baru]` atau `/setplate`.
+  - Biaya pendaftaran $500 (dibayar tunai atau via rekening bank).
+  - Validasi teks 3–8 karakter alphanumeric kapital dan sensor kata terlarang.
+  - Plat langsung ter-render live di kendaraan fisik (`SetVehicleNumberPlate`) dan tersimpan permanen di database MySQL `vehicles`.
+
+### 5. Mesin Vending Trotoar Interaktif (`systems/vending_machines.inc`)
+- **Mesin Sprunk & Snack Otomatis di Titik Ramai Pedestrian:**
+  - Tersebar di Unity Station, Pershing Square Plaza, RS All Saints, Dermaga Santa Maria, dan SPBU Idlewood.
+  - Tekan tombol **Y** atau gunakan `/vending`:
+    - Minuman Kaleng Sprunk ($3): Memulihkan dahaga Haus +40%, animasi minum kaleng.
+    - Makanan Ringan Cokelat Energi ($4): Memulihkan Lapar +35%, animasi makan.
+
+---
+
 ## Stasiun Rental Sepeda & Kendaraan Pemula (`systems/rental.inc`)
 - **3 Stasiun Rental Terbuka:**
   - Unity Station (Pintu kedatangan stasiun).

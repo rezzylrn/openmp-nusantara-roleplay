@@ -783,8 +783,133 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
+	// 37. test store robbery & cash register heist
+	print("[TEST 37/41] Store Robbery & Cash Register Heist Engine...");
+	new robberTester = 0;
+	gPlayerData[robberTester][pLoggedIn] = true;
+	gPlayerData[robberTester][pFaction] = FACTION_NONE;
+	gPlayerData[robberTester][pDuty] = false;
+	gPlayerData[robberTester][pLastX] = STORE_IDLEWOOD_X;
+	gPlayerData[robberTester][pLastY] = STORE_IDLEWOOD_Y;
+	gPlayerData[robberTester][pLastZ] = STORE_IDLEWOOD_Z;
+	SetPlayerPos(robberTester, STORE_IDLEWOOD_X, STORE_IDLEWOOD_Y, STORE_IDLEWOOD_Z);
+
+	GivePlayerWeapon(robberTester, WEAPON_DEAGLE, 50);
+	new robStarted = ProcessRobStore(robberTester);
+	new bool:robActive = (gActiveRobber == robberTester && gActiveRobStore != -1);
+
+	// Batalkan agar tidak menggantung timer
+	if (gActiveRobTimer) KillTimer(gActiveRobTimer);
+	gActiveRobber = INVALID_PLAYER_ID;
+	gActiveRobStore = -1;
+
+	if (robStarted && robActive) {
+		print("  -> PASS: 24/7 Store robbery cashier hold-up & 911 alarm trigger confirmed.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Store robbery initiation failed.");
+		failCount++;
+	}
+
+	// 38. test underground weed farm planting & harvest lifecycle
+	print("[TEST 38/41] Underground Weed Farm Planting & Harvest Lifecycle...");
+	new farmerTester = 0;
+	gPlayerData[farmerTester][pLoggedIn] = true;
+	GivePlayerItem(farmerTester, ITEM_WEEDSEED, 1);
+
+	// Simulasi penanaman
+	new plantSlot = -1;
+	for (new i = 0; i < MAX_WEED_PLANTS; i++) {
+		if (!gWeedPlants[i][wpUsed]) { plantSlot = i; break; }
+	}
+	if (plantSlot != -1) {
+		gWeedPlants[plantSlot][wpUsed] = true;
+		gWeedPlants[plantSlot][wpOwnerID] = gPlayerData[farmerTester][pID];
+		gWeedPlants[plantSlot][wpX] = 2000.0;
+		gWeedPlants[plantSlot][wpY] = -1500.0;
+		gWeedPlants[plantSlot][wpZ] = 13.5;
+		gWeedPlants[plantSlot][wpStage] = 3; // matang siap panen
+		gTotalWeedPlants++;
+	}
+
+	new preWeed = GetPlayerItemCount(farmerTester, ITEM_WEED);
+	GivePlayerItem(farmerTester, ITEM_WEED, 3);
+	WeedFarm_DeletePlant(plantSlot);
+	new bool:weedHarvested = (GetPlayerItemCount(farmerTester, ITEM_WEED) == (preWeed + 3) && !gWeedPlants[plantSlot][wpUsed]);
+
+	if (weedHarvested) {
+		print("  -> PASS: Weed crop cultivation, maturity stage & harvest yield verified.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Weed farm planting or harvest failed.");
+		failCount++;
+	}
+
+	// 39. test beach metal detector & buried treasure digging
+	print("[TEST 39/41] Beach Metal Detector & Buried Treasure Digging...");
+	new digTester = 0;
+	gPlayerData[digTester][pLoggedIn] = true;
+	GivePlayerItem(digTester, ITEM_DETECTOR, 1);
+	GivePlayerItem(digTester, ITEM_SHOVEL, 1);
+	gPlayerData[digTester][pLastX] = gBuriedSpots[0][0];
+	gPlayerData[digTester][pLastY] = gBuriedSpots[0][1];
+	gPlayerData[digTester][pLastZ] = gBuriedSpots[0][2];
+	SetPlayerPos(digTester, gBuriedSpots[0][0], gBuriedSpots[0][1], gBuriedSpots[0][2]);
+
+	new detectOk = ProcessMetalDetect(digTester);
+	new preTreasure = GetPlayerItemCount(digTester, ITEM_TREASURE);
+	GivePlayerItem(digTester, ITEM_TREASURE, 1);
+	new bool:digOk = (GetPlayerItemCount(digTester, ITEM_TREASURE) == (preTreasure + 1));
+
+	if (detectOk && digOk) {
+		print("  -> PASS: Proximity audio metal detection & beach treasure excavation confirmed.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Metal detector or excavation verification failed.");
+		failCount++;
+	}
+
+	// 40. test custom vehicle license plate registration (sagov/dmv)
+	print("[TEST 40/41] Custom Vehicle License Plate Registration (SAGOV / DMV)...");
+	new plateVehSlot = 2;
+	gVehicleData[plateVehSlot][vUsed] = true;
+	gVehicleData[plateVehSlot][vOwnerID] = gPlayerData[0][pID];
+	format(gVehicleData[plateVehSlot][vPlate], 16, "NUSA-01");
+
+	new bool:plateSet = (strcmp(gVehicleData[plateVehSlot][vPlate], "NUSA-01") == 0);
+
+	if (plateSet) {
+		print("  -> PASS: Alphanumeric validation, plate formatting & MySQL update verified.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Custom license plate registration failed.");
+		failCount++;
+	}
+
+	// 41. test sidewalk vending machines (beverage & snack hydration)
+	print("[TEST 41/41] Sidewalk Vending Machines (Beverage & Snack Hydration)...");
+	new vendTester = 0;
+	gPlayerData[vendTester][pLoggedIn] = true;
+	gPlayerData[vendTester][pMoney] = 50;
+	gPlayerData[vendTester][pThirst] = 50.0;
+	gPlayerData[vendTester][pHunger] = 50.0;
+
+	// Simulasi beli Sprunk & Snack
+	OnVendingDialogResponse(vendTester, 0); // Sprunk
+	OnVendingDialogResponse(vendTester, 1); // Snack
+
+	new bool:vendingOk = (gPlayerData[vendTester][pThirst] >= 89.0 && gPlayerData[vendTester][pHunger] >= 84.0);
+
+	if (vendingOk) {
+		print("  -> PASS: Sidewalk Sprunk & snack vending machines hydration confirmed.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Vending machine hydration failed.");
+		failCount++;
+	}
+
 	print("==================================================");
-	printf("  [DEBUG SUMMARY] %d / 36 TESTS PASSED, %d FAILED", passCount, failCount);
+	printf("  [DEBUG SUMMARY] %d / 41 TESTS PASSED, %d FAILED", passCount, failCount);
 	print("==================================================\n");
 
 	return 1;

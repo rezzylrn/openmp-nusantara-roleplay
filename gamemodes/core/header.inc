@@ -94,7 +94,12 @@ enum {
 	ITEM_LOCKPICK,      // Obeng Pembobol Kunci (Lockpick)
 	ITEM_CROWBAR,       // Linggis Pembongkar (Crowbar)
 	ITEM_CONTRABAND,    // Paket Kontraband Gelap
-	ITEM_CARPARTS       // Suku Cadang Mobil Curian
+	ITEM_CARPARTS,      // Suku Cadang Mobil Curian
+	ITEM_DETECTOR,      // Alat Detektor Logam Pantai
+	ITEM_SHOVEL,        // Sekop Penggali Tanah
+	ITEM_TREASURE,      // Koin & Perhiasan Kuno Terpendam
+	ITEM_WEEDSEED,      // Benih Tanaman Ganja
+	ITEM_WEED           // Paket Daun Ganja Kering
 };
 
 enum E_ITEM_DATA {
@@ -248,6 +253,9 @@ enum E_VEHICLE_DATA {
 #define DIALOG_BLACKMARKET_SELL   54
 #define DIALOG_CHOPSHOP_CONFIRM   55
 #define DIALOG_SMUGGLE_MENU       56
+#define DIALOG_ROB_CONFIRM        57
+#define DIALOG_DMV_PLATE          58
+#define DIALOG_VENDING_SNACK      59
 
 #define LANG_ID                   0
 #define LANG_EN                   1
@@ -483,6 +491,11 @@ stock GetItemName(itemtype, dest[], len = sizeof(dest))
 		case ITEM_CROWBAR:   format(dest, len, "Linggis Baja (Crowbar)");
 		case ITEM_CONTRABAND:format(dest, len, "Paket Kontraband");
 		case ITEM_CARPARTS:  format(dest, len, "Suku Cadang Mobil Curian");
+		case ITEM_DETECTOR:  format(dest, len, "Detektor Logam");
+		case ITEM_SHOVEL:    format(dest, len, "Sekop Penggali");
+		case ITEM_TREASURE:  format(dest, len, "Harta Karun Kuno");
+		case ITEM_WEEDSEED:  format(dest, len, "Benih Ganja");
+		case ITEM_WEED:      format(dest, len, "Paket Daun Ganja");
 		default:             format(dest, len, "Kosong");
 	}
 	return 1;

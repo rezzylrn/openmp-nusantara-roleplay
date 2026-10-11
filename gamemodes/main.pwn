@@ -28,6 +28,11 @@
 #include "systems/trash.inc"
 #include "systems/traffic_camera.inc"
 #include "systems/rental.inc"
+#include "systems/store_robbery.inc"
+#include "systems/weed_farm.inc"
+#include "systems/metal_detector.inc"
+#include "systems/dmv_plates.inc"
+#include "systems/vending_machines.inc"
 
 // 5. Gameplay & Factions
 #include "gameplay/mapping.inc"
@@ -74,6 +79,10 @@ public OnGameModeInit()
 	Rental_Init();
 	Armory_Init();
 	IllegalActivities_Init();
+	StoreRobbery_Init();
+	WeedFarm_Init();
+	MetalDetector_Init();
+	VendingMachines_Init();
 
 	// default class spawn
 	AddPlayerClass(0, SPAWN_X, SPAWN_Y, SPAWN_Z, SPAWN_A, WEAPON_FIST, 0, WEAPON_FIST, 0, WEAPON_FIST, 0);
@@ -270,6 +279,10 @@ public OnPlayerKeyStateChange(playerid, KEY:newkeys, KEY:oldkeys)
 		}
 		if (IsPlayerNearAnyTrash(playerid)) {
 			ProcessPlayerScavenge(playerid);
+			return 1;
+		}
+		if (IsPlayerNearVendingMachine(playerid) != -1) {
+			ShowVendingDialog(playerid);
 			return 1;
 		}
 		ProcessKeyActivity(playerid);
@@ -513,6 +526,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		case DIALOG_TRUNK_WEAPON: OnTrunkWeaponResponse(playerid, listitem);
 		case DIALOG_BLACKMARKET_BUY: OnBlackMarketBuyResponse(playerid, listitem);
 		case DIALOG_BLACKMARKET_SELL: OnBlackMarketSellResponse(playerid, listitem);
+		case DIALOG_VENDING_SNACK: OnVendingDialogResponse(playerid, listitem);
 	}
 	return 1;
 }

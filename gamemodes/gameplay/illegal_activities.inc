@@ -365,26 +365,28 @@ stock ShowBlackMarketDialog(playerid)
 		return 0;
 	}
 
-	new dialogContent[450];
+	new dialogContent[550];
 	if (gPlayerData[playerid][pLanguage] == LANG_EN) {
 		format(dialogContent, sizeof(dialogContent),
-			"Item / Tool\tPrice\n\
-{FFFFFF}1. Lockpick Tool\t{FF3B30}$150\n\
-{FFFFFF}2. Steel Crowbar\t{FF3B30}$100\n\
-{FFFFFF}3. Illegal Colt .45 Pistol (50 Ammo)\t{FF3B30}$1,200\n\
-{FFFFFF}4. Raw Contraband Crate\t{FF3B30}$250\n\
-{4CD964}$ Sell Stolen / Illicit Goods\t{4CD964}->");
+			"Item / Tool	Price\n\
+{FFFFFF}1. Lockpick Tool	{FF3B30}$150\n\
+{FFFFFF}2. Steel Crowbar	{FF3B30}$100\n\
+{FFFFFF}3. Illegal Colt .45 Pistol (50 Ammo)	{FF3B30}$1,200\n\
+{FFFFFF}4. Raw Contraband Crate	{FF3B30}$250\n\
+{FFFFFF}5. Pack of Weed Seeds	{FF3B30}$120\n\
+{4CD964}$ Sell Stolen / Illicit Goods	{4CD964}->");
 
 		ShowPlayerDialog(playerid, DIALOG_BLACKMARKET_BUY, DIALOG_STYLE_TABLIST_HEADERS,
 			"UNDERWORLD BLACK MARKET", dialogContent, "Select", "Close");
 	} else {
 		format(dialogContent, sizeof(dialogContent),
-			"Barang Gelap / Peralatan\tHarga\n\
-{FFFFFF}1. Obeng Lockpick Pembobol Kunci\t{FF3B30}$150\n\
-{FFFFFF}2. Linggis Baja (Crowbar)\t{FF3B30}$100\n\
-{FFFFFF}3. Pistol Rakitan Colt .45 (50 Peluru)\t{FF3B30}$1.200\n\
-{FFFFFF}4. Paket Kontraband Mentah\t{FF3B30}$250\n\
-{4CD964}$ Jual Suku Cadang & Barang Sitaan\t{4CD964}->");
+			"Barang Gelap / Peralatan	Harga\n\
+{FFFFFF}1. Obeng Lockpick Pembobol Kunci	{FF3B30}$150\n\
+{FFFFFF}2. Linggis Baja (Crowbar)	{FF3B30}$100\n\
+{FFFFFF}3. Pistol Rakitan Colt .45 (50 Peluru)	{FF3B30}$1.200\n\
+{FFFFFF}4. Paket Kontraband Mentah	{FF3B30}$250\n\
+{FFFFFF}5. Sebungkus Benih Ganja	{FF3B30}$120\n\
+{4CD964}$ Jual Suku Cadang & Barang Sitaan	{4CD964}->");
 
 		ShowPlayerDialog(playerid, DIALOG_BLACKMARKET_BUY, DIALOG_STYLE_TABLIST_HEADERS,
 			"PASAR GELAP / BLACK MARKET", dialogContent, "Pilih", "Tutup");
@@ -396,19 +398,23 @@ stock OnBlackMarketBuyResponse(playerid, listitem)
 {
 	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
 
-	// Opsi 4: Beralih ke menu Jual
-	if (listitem == 4) {
-		new sellContent[450];
+	// Opsi 5: Beralih ke menu Jual
+	if (listitem == 5) {
+		new sellContent[550];
 		new parts = GetPlayerItemCount(playerid, ITEM_CARPARTS);
 		new contra = GetPlayerItemCount(playerid, ITEM_CONTRABAND);
 		new trash = GetPlayerItemCount(playerid, ITEM_RECYCLED);
+		new weed = GetPlayerItemCount(playerid, ITEM_WEED);
+		new treasure = GetPlayerItemCount(playerid, ITEM_TREASURE);
 
 		format(sellContent, sizeof(sellContent),
-			"Barang Jarahan\tJumlah Dimiliki\tHarga Beli Penadah\n\
-{FFFFFF}1. Suku Cadang Mobil Curian\t{FFFF00}%dx\t{4CD964}$280 / pcs\n\
-{FFFFFF}2. Paket Kontraband Gelap\t{FFFF00}%dx\t{4CD964}$650 / pcs\n\
-{FFFFFF}3. Logam Daur Ulang Pemulung\t{FFFF00}%dx\t{4CD964}$35 / pcs",
-			parts, contra, trash);
+			"Barang Jarahan	Jumlah Dimiliki	Harga Beli Penadah\n\
+{FFFFFF}1. Suku Cadang Mobil Curian	{FFFF00}%dx	{4CD964}$280 / pcs\n\
+{FFFFFF}2. Paket Kontraband Gelap	{FFFF00}%dx	{4CD964}$650 / pcs\n\
+{FFFFFF}3. Daun Ganja Siap Edar	{FFFF00}%dx	{4CD964}$110 / pcs\n\
+{FFFFFF}4. Harta Karun Antik Terpendam	{FFFF00}%dx	{4CD964}$250 / pcs\n\
+{FFFFFF}5. Logam Daur Ulang Pemulung	{FFFF00}%dx	{4CD964}$35 / pcs",
+			parts, contra, weed, treasure, trash);
 
 		ShowPlayerDialog(playerid, DIALOG_BLACKMARKET_SELL, DIALOG_STYLE_TABLIST_HEADERS,
 			"PENADAH HASIL KEJAHATAN", sellContent, "Jual", "Kembali");
@@ -421,6 +427,7 @@ stock OnBlackMarketBuyResponse(playerid, listitem)
 		case 1: cost = 100;  // Crowbar
 		case 2: cost = 1200; // Colt .45
 		case 3: cost = 250;  // Contraband
+		case 4: cost = 120;  // Weed Seeds
 		default: return 1;
 	}
 
@@ -458,6 +465,14 @@ stock OnBlackMarketBuyResponse(playerid, listitem)
 			}
 			TakePlayerMoneyEx(playerid, cost, "beli kontraband pasar gelap");
 			SendClientMessage(playerid, COLOR_SUCCESS, "SUKSES: Membeli 1x Paket Kontraband Mentah seharga $250.");
+		}
+		case 4: {
+			if (!GivePlayerItem(playerid, ITEM_WEEDSEED, 3)) {
+				SendClientMessage(playerid, COLOR_ERROR, "ERROR: Kantung inventaris Anda penuh.");
+				return 1;
+			}
+			TakePlayerMoneyEx(playerid, cost, "beli benih ganja");
+			SendClientMessage(playerid, COLOR_SUCCESS, "SUKSES: Membeli 3x Benih Tanaman Ganja seharga $120.");
 		}
 	}
 	PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
@@ -498,6 +513,34 @@ stock OnBlackMarketSellResponse(playerid, listitem)
 			SendClientMessage(playerid, COLOR_SUCCESS, msg);
 		}
 		case 2: {
+			// Daun Ganja ($110 / pcs)
+			new count = GetPlayerItemCount(playerid, ITEM_WEED);
+			if (count <= 0) {
+				SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda tidak membawa daun ganja siap edar.");
+				return 1;
+			}
+			new earnings = count * 110;
+			TakePlayerItem(playerid, ITEM_WEED, count);
+			GivePlayerMoneyEx(playerid, earnings, "jual daun ganja pasar gelap");
+			new msg[128];
+			format(msg, sizeof(msg), "SUKSES: Menjual %dx Daun Ganja ke penadah seharga $%d.", count, earnings);
+			SendClientMessage(playerid, COLOR_SUCCESS, msg);
+		}
+		case 3: {
+			// Harta Karun Antik ($250 / pcs)
+			new count = GetPlayerItemCount(playerid, ITEM_TREASURE);
+			if (count <= 0) {
+				SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda tidak membawa harta karun antik.");
+				return 1;
+			}
+			new earnings = count * 250;
+			TakePlayerItem(playerid, ITEM_TREASURE, count);
+			GivePlayerMoneyEx(playerid, earnings, "jual harta karun antik");
+			new msg[128];
+			format(msg, sizeof(msg), "SUKSES: Menjual %dx Harta Karun Antik seharga $%d.", count, earnings);
+			SendClientMessage(playerid, COLOR_SUCCESS, msg);
+		}
+		case 4: {
 			// Logam Rongsokan ($35 / pcs)
 			new count = GetPlayerItemCount(playerid, ITEM_RECYCLED);
 			if (count <= 0) {

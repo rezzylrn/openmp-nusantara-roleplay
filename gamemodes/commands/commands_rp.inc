@@ -1153,6 +1153,98 @@ CMD:sita(playerid, params[])
 	return cmd_confiscate(playerid, params);
 }
 
+CMD:robstore(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ProcessRobStore(playerid);
+	return 1;
+}
+
+CMD:rampok(playerid, params[])
+{
+	return cmd_robstore(playerid, params);
+}
+
+CMD:plantweed(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ProcessPlantWeed(playerid);
+	return 1;
+}
+
+CMD:tanam(playerid, params[])
+{
+	return cmd_plantweed(playerid, params);
+}
+
+CMD:harvestweed(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ProcessHarvestWeed(playerid);
+	return 1;
+}
+
+CMD:panen(playerid, params[])
+{
+	return cmd_harvestweed(playerid, params);
+}
+
+CMD:burnweed(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ProcessBurnWeed(playerid);
+	return 1;
+}
+
+CMD:hanguskan(playerid, params[])
+{
+	return cmd_burnweed(playerid, params);
+}
+
+CMD:detect(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ProcessMetalDetect(playerid);
+	return 1;
+}
+
+CMD:deteksi(playerid, params[])
+{
+	return cmd_detect(playerid, params);
+}
+
+CMD:dig(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ProcessDigTreasure(playerid);
+	return 1;
+}
+
+CMD:gali(playerid, params[])
+{
+	return cmd_dig(playerid, params);
+}
+
+CMD:customplate(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (isnull(params)) return SendSyntax(playerid, "/customplate [plat_baru]");
+	ProcessCustomPlate(playerid, params);
+	return 1;
+}
+
+CMD:setplate(playerid, params[])
+{
+	return cmd_customplate(playerid, params);
+}
+
+CMD:vending(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ShowVendingDialog(playerid);
+	return 1;
+}
+
 stock ShowHelpDialog(playerid)
 {
 	new buf[800];

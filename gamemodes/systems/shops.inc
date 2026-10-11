@@ -37,7 +37,9 @@ Sebungkus Rokok\t$8\tMenikmati sebatang rokok\n\
 Korek Api\t$2\tAlat pemantik api\n\
 Ponsel Pintar\t$150\tAlat komunikasi (/call & /sms)\n\
 Handy Talkie (HT)\t$100\tRadio komunikasi dua arah (/r)\n\
-GPS Navigator\t$50\tPeta panduan fasilitas kota (/gps)");
+GPS Navigator\t$50\tPeta panduan fasilitas kota (/gps)\n\
+Detektor Logam Pantai\t$120\tMencari koin & perhiasan terpendam (/detect)\n\
+Sekop Penggali Tanah\t$45\tMenggali temuan detektor logam (/dig)");
 
 	ShowPlayerDialog(playerid, DIALOG_STORE_BUY, DIALOG_STYLE_TABLIST_HEADERS,
 		"TOKO 24/7 - KATALOG PEMBELIAN", list, "Beli", "Batal");
@@ -64,6 +66,8 @@ stock ProcessStorePurchase(playerid, listitem)
 		case 8: { itemType = ITEM_PHONE;     price = 150; }
 		case 9: { itemType = ITEM_RADIO;     price = 100; }
 		case 10: { itemType = ITEM_GPS;      price = 50;  }
+		case 11: { itemType = ITEM_DETECTOR; price = 120; }
+		case 12: { itemType = ITEM_SHOVEL;   price = 45;  }
 		default: return 0;
 	}
 

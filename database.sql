@@ -181,3 +181,31 @@ CREATE TABLE `etle_cameras` (
   `ticket_fee` INT NOT NULL DEFAULT 150,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ---------------------------------------------------------------------------
+-- Tabel: weed_plants (Sistem Pertanian Ganja Bawah Tanah Dinamis)
+-- ---------------------------------------------------------------------------
+DROP TABLE IF EXISTS `weed_plants`;
+CREATE TABLE `weed_plants` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `ownerid` INT NOT NULL,
+  `posx` FLOAT NOT NULL,
+  `posy` FLOAT NOT NULL,
+  `posz` FLOAT NOT NULL,
+  `growth_stage` INT NOT NULL DEFAULT 1,
+  `plant_time` INT NOT NULL DEFAULT 0,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ---------------------------------------------------------------------------
+-- Tabel: store_robberies (Log & Cooldown Perampokan Minimarket Kasir)
+-- ---------------------------------------------------------------------------
+DROP TABLE IF EXISTS `store_robberies`;
+CREATE TABLE `store_robberies` (
+  `store_id` INT PRIMARY KEY,
+  `store_name` VARCHAR(64) NOT NULL,
+  `posx` FLOAT NOT NULL,
+  `posy` FLOAT NOT NULL,
+  `posz` FLOAT NOT NULL,
+  `last_robbed` INT NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
