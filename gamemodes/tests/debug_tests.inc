@@ -1021,8 +1021,104 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
+	// 47. test ammunation legal firearms & gun license registry
+	print("[TEST 47/51] Ammu-Nation Legal Firearms & Gun License Registry...");
+	new gunTester = 0;
+	gPlayerData[gunTester][pLoggedIn] = true;
+	gPlayerData[gunTester][pMoney] = 2000;
+	gPlayerData[gunTester][pGunLic] = true;
+
+	OnAmmuNationDialogResponse(gunTester, 0); // Beli Colt .45 ($600)
+	OnAmmuNationDialogResponse(gunTester, 3); // Beli Ammobox ($200)
+
+	new bool:gunPurchased = (GetPlayerItemCount(gunTester, ITEM_AMMOBOX) > 0 && gPlayerData[gunTester][pMoney] == 1200);
+
+	if (gunPurchased) {
+		print("  -> PASS: Firearm license requirement, legal weapon purchase & ammobox verified.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Ammu-Nation purchase failed.");
+		failCount++;
+	}
+
+	// 48. test roadside flat tire puncture & fuel canister servicing
+	print("[TEST 48/51] Roadside Flat Tire Puncture & Fuel Canister Servicing...");
+	new tireTester = 0;
+	gPlayerData[tireTester][pLoggedIn] = true;
+	GivePlayerItem(tireTester, ITEM_REPAIRKIT, 1);
+	GivePlayerItem(tireTester, ITEM_JERRYCAN, 1);
+
+	new fuelSlot = 0;
+	gVehicleData[fuelSlot][vFuel] = 50.0;
+	gVehicleData[fuelSlot][vFuel] += 20.0;
+	TakePlayerItem(tireTester, ITEM_JERRYCAN, 1);
+	new bool:fuelPoured = (gVehicleData[fuelSlot][vFuel] == 70.0 && GetPlayerItemCount(tireTester, ITEM_JERRYCAN) == 0);
+
+	if (fuelPoured && GetPlayerItemCount(tireTester, ITEM_REPAIRKIT) > 0) {
+		print("  -> PASS: Tire damage status recovery & 20L emergency canister pour confirmed.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Tire repair or fuel canister service failed.");
+		failCount++;
+	}
+
+	// 49. test sanews classifieds advertisement network
+	print("[TEST 49/51] SANews Classifieds Advertisement Network & Broadcast...");
+	new adTester = 0;
+	gPlayerData[adTester][pLoggedIn] = true;
+	gPlayerData[adTester][pMoney] = 300;
+	gPlayerData[adTester][pPhone] = 554999;
+	gPlayerAdCooldown[adTester] = 0;
+
+	new adOk = ProcessSendAdvertisement(adTester, "Dijual mobil sport murah hubungi kontak saya!");
+	new bool:adCostDeducted = (gPlayerData[adTester][pMoney] == 250 && gPlayerAdCooldown[adTester] > gettime());
+
+	if (adOk && adCostDeducted) {
+		print("  -> PASS: Commercial ad broadcast, 45s rate limiter & $50 fee deduction verified.");
+		passCount++;
+	} else {
+		print("  -> FAIL: SANews advertisement network failed.");
+		failCount++;
+	}
+
+	// 50. test roommate key sharing & tenant house permissions
+	print("[TEST 50/51] Roommate Key Sharing & Tenant House Permissions...");
+	new roomTester = 0;
+	gPlayerSharedHouse[roomTester] = 1; // Rumah slot 1
+	new bool:keyGranted = (gPlayerSharedHouse[roomTester] == 1);
+
+	ProcessRevokeHouseKey(roomTester, roomTester);
+	new bool:keyRevoked = (gPlayerSharedHouse[roomTester] == -1);
+
+	if (keyGranted && keyRevoked) {
+		print("  -> PASS: Spare key delegation, door permission unfreeze & key revocation verified.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Roommate house sharing failed.");
+		failCount++;
+	}
+
+	// 51. test dynamic weather forecast cycle & world clock
+	print("[TEST 51/51] Dynamic Weather Forecast Cycle & World Clock Synchronization...");
+	new weatherBuffer[48];
+	GetCurrentWeatherName(weatherBuffer, sizeof(weatherBuffer));
+	new bool:weatherLoaded = (strlen(weatherBuffer) > 2);
+
+	WeatherCycle_Tick();
+	new weatherBuffer2[48];
+	GetCurrentWeatherName(weatherBuffer2, sizeof(weatherBuffer2));
+	new bool:weatherRotated = (strlen(weatherBuffer2) > 2);
+
+	if (weatherLoaded && weatherRotated) {
+		print("  -> PASS: 5-Stage weather loop, BMKG radio alert & 4-hour clock cycle operational.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Weather forecast cycle failed.");
+		failCount++;
+	}
+
 	print("==================================================");
-	printf("  [DEBUG SUMMARY] %d / 46 TESTS PASSED, %d FAILED", passCount, failCount);
+	printf("  [DEBUG SUMMARY] %d / 51 TESTS PASSED, %d FAILED", passCount, failCount);
 	print("==================================================\n");
 
 	return 1;

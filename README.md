@@ -443,6 +443,34 @@ Gamemode ini mengadopsi arsitektur anti-cheat server-side modular yang dirancang
   - Jika lulus, karakter resmi memperoleh Surat Izin Mengemudi (SIM) aktif tersimpan di MySQL (`drive_lic`).
   - Petugas kepolisian SAPD on-duty dapat merazia kelayakan berkendara via `/checklic [targetid]`.
 
+### 11. Toko Senjata Resmi Ammu-Nation & Lisensi Senjata Api (`systems/ammunation.inc`)
+- **Penjualan Senjata Legal Berizin Resmi:**
+  - Kasir resmi Ammu-Nation Willowfield (`/buygun` atau `/ammunation`).
+  - Memerlukan Lisensi Senjata Api Resmi (`gun_lic`) yang diterbitkan oleh kepolisian SAPD via `/issuegunlic [targetid]`.
+  - Katalog Resmi: Pistol Colt .45 ($600), Desert Eagle .50 ($1.500), Shotgun Berburu ($1.200), Kotak Amunisi Resmi ($200), Rompi Kevlar ($300).
+
+### 12. Layanan Perbengkelan Jalanan & Tambal Ban (`systems/tire_service.inc`)
+- **Penanganan Darurat Kendaraan di Pinggir Jalan:**
+  - Tambal ban bocor/kempes via `/fixpuncture` atau `/tambalban` (memerlukan `ITEM_REPAIRKIT`). Tekanan angin keempat roda pulih normal.
+  - Tuang bahan bakar darurat dari jerigen via `/pourfuel` atau `/tuangbensin` (memerlukan `ITEM_JERRYCAN`). Menambahkan 20 Liter bensin langsung ke tangki mobil.
+
+### 13. Jaringan Iklan Baris SANews (`systems/advertisements.inc`)
+- **Publikasi Komersial & Jual-Beli Publik:**
+  - Pasang iklan baris via `/ad [teks]` atau `/iklan` (biaya $50, cooldown 45 detik).
+  - Otomatis mencantumkan nomor ponsel dan nama pemilik iklan ke seluruh warga kota secara live.
+
+### 14. Pembagian Kunci Rumah & Roommate (`systems/house_sharing.inc`)
+- **Akses Delegasi Kunci Hunian:**
+  - Pemilik rumah pribadi dapat membagikan kunci cadangan kepada teman via `/sharekey [targetid]` atau `/bagikunci`.
+  - Teman pemegang kunci dapat keluar-masuk rumah secara bebas tanpa perlu menunggu pemilik.
+  - Pemilik dapat mencabut kembali kunci cadangan kapan saja via `/unsharekey [targetid]`.
+
+### 15. Siklus Cuaca Dinamis & Jam Dunia (`systems/weather_system.inc`)
+- **Rotasi Cuaca & Sinkronisasi Waktu BMKG:**
+  - 5 Tahap cuaca berkala: Cerah Berawan, Panas Tropis, Hujan Gerimis, Kabut Lembut, dan Hujan Badai Kilat.
+  - Waktu server berputar otomatis setiap siklus 10 menit.
+  - Warga dapat mengecek prakiraan cuaca terkini via `/weather` atau `/cuaca`.
+
 ---
 
 ## Stasiun Rental Sepeda & Kendaraan Pemula (`systems/rental.inc`)

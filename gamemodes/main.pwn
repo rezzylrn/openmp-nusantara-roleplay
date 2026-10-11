@@ -38,6 +38,11 @@
 #include "systems/cooking.inc"
 #include "systems/dice_game.inc"
 #include "systems/dmv_exam.inc"
+#include "systems/ammunation.inc"
+#include "systems/tire_service.inc"
+#include "systems/advertisements.inc"
+#include "systems/house_sharing.inc"
+#include "systems/weather_system.inc"
 
 // 5. Gameplay & Factions
 #include "gameplay/mapping.inc"
@@ -93,6 +98,11 @@ public OnGameModeInit()
 	Cooking_Init();
 	Dice_Init();
 	DMV_Init();
+	AmmuNation_Init();
+	TireService_Init();
+	Advertisements_Init();
+	HouseSharing_Init();
+	WeatherSystem_Init();
 
 	// default class spawn
 	AddPlayerClass(0, SPAWN_X, SPAWN_Y, SPAWN_Z, SPAWN_A, WEAPON_FIST, 0, WEAPON_FIST, 0, WEAPON_FIST, 0);
@@ -538,6 +548,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		case DIALOG_BLACKMARKET_SELL: OnBlackMarketSellResponse(playerid, listitem);
 		case DIALOG_VENDING_SNACK: OnVendingDialogResponse(playerid, listitem);
 		case DIALOG_DMV_THEORY: OnDMVDialogResponse(playerid, listitem);
+		case DIALOG_AMMUNATION_BUY: OnAmmuNationDialogResponse(playerid, listitem);
 	}
 	return 1;
 }

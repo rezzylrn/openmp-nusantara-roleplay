@@ -1379,6 +1379,103 @@ CMD:periksasim(playerid, params[])
 	return cmd_checklic(playerid, params);
 }
 
+CMD:buygun(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ShowAmmuNationMenu(playerid);
+	return 1;
+}
+
+CMD:ammunation(playerid, params[])
+{
+	return cmd_buygun(playerid, params);
+}
+
+CMD:issuegunlic(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	new targetid;
+	if (sscanf(params, "u", targetid)) return SendSyntax(playerid, "/issuegunlic [targetid/Nama]");
+	ProcessIssueGunLicense(playerid, targetid);
+	return 1;
+}
+
+CMD:fixpuncture(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ProcessRepairTire(playerid);
+	return 1;
+}
+
+CMD:tambalban(playerid, params[])
+{
+	return cmd_fixpuncture(playerid, params);
+}
+
+CMD:pourfuel(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ProcessPourFuelCanister(playerid);
+	return 1;
+}
+
+CMD:tuangbensin(playerid, params[])
+{
+	return cmd_pourfuel(playerid, params);
+}
+
+CMD:ad(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (isnull(params)) return SendSyntax(playerid, "/ad [teks_iklan_sanews]");
+	ProcessSendAdvertisement(playerid, params);
+	return 1;
+}
+
+CMD:iklan(playerid, params[])
+{
+	return cmd_ad(playerid, params);
+}
+
+CMD:sharekey(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	new targetid;
+	if (sscanf(params, "u", targetid)) return SendSyntax(playerid, "/sharekey [targetid/Nama]");
+	ProcessShareHouseKey(playerid, targetid);
+	return 1;
+}
+
+CMD:bagikunci(playerid, params[])
+{
+	return cmd_sharekey(playerid, params);
+}
+
+CMD:unsharekey(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	new targetid;
+	if (sscanf(params, "u", targetid)) return SendSyntax(playerid, "/unsharekey [targetid/Nama]");
+	ProcessRevokeHouseKey(playerid, targetid);
+	return 1;
+}
+
+CMD:weather(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	new wName[48];
+	GetCurrentWeatherName(wName, sizeof(wName));
+	new msg[128];
+	format(msg, sizeof(msg), "[BMKG] Kondisi cuaca langit saat ini: '%s'.", wName);
+	SendClientMessage(playerid, COLOR_LIGHTBLUE, msg);
+	return 1;
+}
+
+CMD:cuaca(playerid, params[])
+{
+	return cmd_weather(playerid, params);
+}
+
 stock ShowHelpDialog(playerid)
 {
 	new buf[800];

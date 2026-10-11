@@ -93,6 +93,7 @@ stock ResetPlayerData(playerid)
 	gPlayerData[playerid][pTickets] = 0;
 	gPlayerData[playerid][pTicketAmount] = 0;
 	gPlayerData[playerid][pDriveLic] = false;
+	gPlayerData[playerid][pGunLic] = false;
 
 	gPhoneOpen[playerid] = false;
 	gInventoryOpen[playerid] = false;

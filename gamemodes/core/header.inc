@@ -102,7 +102,8 @@ enum {
 	ITEM_WEED,          // Paket Daun Ganja Kering
 	ITEM_SPRAYCAN,      // Kaleng Cat Semprot Grafiti
 	ITEM_COOKEDFISH,    // Ikan Bakar Siap Makan
-	ITEM_DICE           // Dadu Taruhan Jalanan
+	ITEM_DICE,          // Dadu Taruhan Jalanan
+	ITEM_AMMOBOX        // Kotak Amunisi Resmi (50 Peluru)
 };
 
 enum E_ITEM_DATA {
@@ -166,6 +167,7 @@ enum E_PLAYER_DATA {
 	pTickets,
 	pTicketAmount,
 	bool:pDriveLic,
+	bool:pGunLic,
 	// job variables
 	pJobCooldown,
 	pTrashCount,
@@ -264,6 +266,8 @@ enum E_VEHICLE_DATA {
 #define DIALOG_DMV_THEORY         60
 #define DIALOG_DICE_BET           61
 #define DIALOG_CAMPFIRE_MENU      62
+#define DIALOG_AMMUNATION_BUY     63
+#define DIALOG_SHARE_KEY          64
 
 #define LANG_ID                   0
 #define LANG_EN                   1
@@ -507,6 +511,7 @@ stock GetItemName(itemtype, dest[], len = sizeof(dest))
 		case ITEM_SPRAYCAN:  format(dest, len, "Kaleng Cat Semprot");
 		case ITEM_COOKEDFISH:format(dest, len, "Ikan Bakar Matang");
 		case ITEM_DICE:      format(dest, len, "Dadu Kasino");
+		case ITEM_AMMOBOX:   format(dest, len, "Kotak Amunisi Resmi");
 		default:             format(dest, len, "Kosong");
 	}
 	return 1;

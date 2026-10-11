@@ -407,6 +407,9 @@ public OnCharacterLoaded(playerid)
 	new licVal = 0;
 	cache_get_value_name_int(0, "drive_lic", licVal);
 	gPlayerData[playerid][pDriveLic] = (licVal != 0);
+	new gLicVal = 0;
+	cache_get_value_name_int(0, "gun_lic", gLicVal);
+	gPlayerData[playerid][pGunLic] = (gLicVal != 0);
 
 	if (gPlayerData[playerid][pLevel] < 1) gPlayerData[playerid][pLevel] = 1;
 	if (gPlayerData[playerid][pHunger] < 0.0) gPlayerData[playerid][pHunger] = 100.0;
@@ -449,7 +452,7 @@ stock DB_SavePlayerData(playerid)
 		skin=%d, lastx=%.2f, lasty=%.2f, lastz=%.2f, lasta=%.2f, interior=%d, \
 		vworld=%d, cuffed=%d, warnings=%d, kills=%d, deaths=%d, playhours=%d, muted=%d, \
 		phone=%d, phonestatus=%d, radiofreq=%d, radiostatus=%d, injured=%d, language=%d, \
-		tickets=%d, ticket_amount=%d, drive_lic=%d \
+		tickets=%d, ticket_amount=%d, drive_lic=%d, gun_lic=%d \
 		WHERE id=%d",
 		gPlayerData[playerid][pMoney], gPlayerData[playerid][pBank],
 		gPlayerData[playerid][pLevel], gPlayerData[playerid][pExp],
@@ -465,7 +468,7 @@ stock DB_SavePlayerData(playerid)
 		gPlayerData[playerid][pRadioFreq], _:gPlayerData[playerid][pRadioStatus],
 		_:gPlayerData[playerid][pInjured], gPlayerData[playerid][pLanguage],
 		gPlayerData[playerid][pTickets], gPlayerData[playerid][pTicketAmount],
-		_:gPlayerData[playerid][pDriveLic], gPlayerData[playerid][pID]);
+		_:gPlayerData[playerid][pDriveLic], _:gPlayerData[playerid][pGunLic], gPlayerData[playerid][pID]);
 
 	mysql_tquery(gDB, query, "", "");
 	return 1;
