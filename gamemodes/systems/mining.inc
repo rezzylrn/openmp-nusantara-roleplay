@@ -132,6 +132,10 @@ Dialog:DialogMiningStrike(playerid, response, listitem, inputtext[])
 stock ProcessStartMining(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat menambang saat pingsan atau terborgol.");
+		return 0;
+	}
 	if (!IsPlayerNearPoint(playerid, MINING_SITE_X, MINING_SITE_Y, MINING_SITE_Z, 25.0)) {
 		SendErr(playerid, "Anda harus berada di area urat mineral dasar Hunter Quarry.");
 		return 0;
@@ -172,6 +176,10 @@ public OnPlayerFinishSmelting(playerid, extra)
 stock ProcessSmeltMetals(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat melebur logam saat pingsan atau terborgol.");
+		return 0;
+	}
 	if (!IsPlayerNearPoint(playerid, MINING_SMELTER_X, MINING_SMELTER_Y, MINING_SMELTER_Z, 5.0)) {
 		SendErr(playerid, "Anda harus berada di depan Tungku Peleburan Besi Hunter Quarry.");
 		return 0;
@@ -196,6 +204,10 @@ stock ProcessSmeltMetals(playerid)
 stock ProcessSellOre(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat menjual hasil tambang saat pingsan atau terborgol.");
+		return 0;
+	}
 	if (!IsPlayerNearPoint(playerid, MINING_BUYER_X, MINING_BUYER_Y, MINING_BUYER_Z, 5.0)) {
 		SendErr(playerid, "Anda harus berada di Pengepul Hasil Tambang Hunter Quarry.");
 		return 0;

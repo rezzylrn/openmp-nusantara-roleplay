@@ -52,6 +52,10 @@ CMD:starttrash(playerid, params[])
 stock ProcessStartTrash(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Anda belum login.");
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Anda tidak dapat memulai pekerjaan saat pingsan atau terborgol.");
+		return 1;
+	}
 	if (gTrashDuty[playerid]) {
 		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Anda sudah sedang dalam rute pengangkutan sampah.");
 		return 1;

@@ -123,6 +123,10 @@ CMD:plantcrop(playerid, params[])
 stock ProcessPlantCrop(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Anda belum login.");
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Anda tidak dapat menanam saat pingsan atau terborgol.");
+		return 1;
+	}
 	if (!IsPlayerInFlintFarm(playerid)) {
 		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Anda hanya dapat menanam di area ladang Flint County.");
 		return 1;
@@ -216,6 +220,10 @@ CMD:watercrop(playerid, params[])
 stock ProcessWaterCrop(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Anda belum login.");
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Anda tidak dapat menyiram tanaman saat pingsan atau terborgol.");
+		return 1;
+	}
 	if (GetPlayerItemCount(playerid, ITEM_WATERCAN) <= 0) {
 		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Anda membutuhkan Gembor Penyiram Air (/buyseed di Toko Tani).");
 		return 1;
@@ -267,6 +275,10 @@ CMD:harvestcrop(playerid, params[])
 stock ProcessHarvestCrop(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Anda belum login.");
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Anda tidak dapat memanen saat pingsan atau terborgol.");
+		return 1;
+	}
 
 	new nearSlot = -1;
 	for (new i = 0; i < MAX_FARM_CROPS; i++) {
@@ -327,6 +339,10 @@ CMD:sellcrops(playerid, params[])
 stock ProcessSellCrops(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Anda belum login.");
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Anda tidak dapat menjual hasil panen saat pingsan atau terborgol.");
+		return 1;
+	}
 	if (!IsPlayerNearPoint(playerid, FARM_SILO_X, FARM_SILO_Y, FARM_SILO_Z, 5.0)) {
 		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Anda harus berada di Lumbung Hasil Bumi Flint County.");
 		return 1;

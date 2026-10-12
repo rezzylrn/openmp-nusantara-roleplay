@@ -109,6 +109,10 @@ Dialog:DialogScubaSearch(playerid, response, listitem, inputtext[])
 stock ProcessStartDiving(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat menyelam saat pingsan atau terborgol.");
+		return 0;
+	}
 	if (!IsPlayerNearPoint(playerid, SCUBA_REEF_X, SCUBA_REEF_Y, SCUBA_REEF_Z, 60.0)) {
 		SendErr(playerid, "Anda harus berada di zona perairan terumbu karang Santa Maria (/gps).");
 		return 0;

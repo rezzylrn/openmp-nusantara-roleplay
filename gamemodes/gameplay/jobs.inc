@@ -7,6 +7,10 @@
 stock ShowJobDialog(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat mengakses pekerjaan saat pingsan atau terborgol.");
+		return 0;
+	}
 
 	ShowPlayerDialog(playerid, DIALOG_JOB_MENU, DIALOG_STYLE_LIST,
 		"PUSAT BURUH & PEKERJAAN KOTA",
@@ -25,6 +29,11 @@ stock ShowJobDialog(playerid)
 
 stock OnJobMenuResponse(playerid, listitem)
 {
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat mengambil pekerjaan saat pingsan atau terborgol.");
+		return 0;
+	}
+
 	switch (listitem) {
 		case 0: StartCourierJob(playerid);
 		case 1: StartSweeperJob(playerid);
@@ -43,21 +52,27 @@ stock OnJobMenuResponse(playerid, listitem)
 stock StartCourierJob(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat memulai pekerjaan saat pingsan atau terborgol.");
+		return 0;
+	}
 	if (gJobActive[playerid]) {
 		SendErr(playerid, "Anda masih memiliki tugas pekerjaan aktif.");
 		return 0;
 	}
-	if (!IsPlayerNearPoint(playerid, COURIER_X, COURIER_Y, COURIER_Z, RANGE_JOBCENTER)) {
-		SendErr(playerid, "Anda harus berada di Pusat Logistik Kurir (/gps).");
+	if (!IsPlayerNearPoint(playerid, COURIER_X, COURIER_Y, COURIER_Z, 25.0)) {
+		SendErr(playerid, "Anda harus berada di Gudang Logistik Kurir (/gps).");
 		return 0;
 	}
 
+	gPlayerData[playerid][pJob] = JOB_COURIER;
 	gPlayerJobVehicle[playerid] = CreateVehicle(COURIER_VEH_MODEL, COURIER_X + 2.0, COURIER_Y + 2.0, COURIER_Z + 1.0, 90.0, 40, 40, 0);
 	gJobCheckpoint[playerid] = 0;
 	gJobCash[playerid] = 0;
 	gJobActive[playerid] = true;
 	gJobType[playerid] = JOB_COURIER;
 
+	AC_PutPlayerInVehicle(playerid, gPlayerJobVehicle[playerid], 0);
 	CreateJobCheckpoint(playerid, 0);
 	SendInfo(playerid, "Pekerjaan Kurir dimulai. Ikuti tanda merah di peta radar.");
 	return 1;
@@ -67,21 +82,27 @@ stock StartCourierJob(playerid)
 stock StartSweeperJob(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat memulai pekerjaan saat pingsan atau terborgol.");
+		return 0;
+	}
 	if (gJobActive[playerid]) {
 		SendErr(playerid, "Anda masih memiliki tugas pekerjaan aktif.");
 		return 0;
 	}
-	if (!IsPlayerNearPoint(playerid, SWEEPER_X, SWEEPER_Y, SWEEPER_Z, RANGE_JOBCENTER)) {
+	if (!IsPlayerNearPoint(playerid, SWEEPER_X, SWEEPER_Y, SWEEPER_Z, 25.0)) {
 		SendErr(playerid, "Anda harus berada di Depo Pembersih Jalan (/gps).");
 		return 0;
 	}
 
+	gPlayerData[playerid][pJob] = JOB_SWEEPER;
 	gPlayerJobVehicle[playerid] = CreateVehicle(SWEEPER_VEH_MODEL, SWEEPER_X + 2.0, SWEEPER_Y + 2.0, SWEEPER_Z + 1.0, 0.0, 2, 2, 0);
 	gJobCheckpoint[playerid] = 0;
 	gJobCash[playerid] = 0;
 	gJobActive[playerid] = true;
 	gJobType[playerid] = JOB_SWEEPER;
 
+	AC_PutPlayerInVehicle(playerid, gPlayerJobVehicle[playerid], 0);
 	CreateJobCheckpoint(playerid, 0);
 	SendInfo(playerid, "Pembersihan jalan dimulai. Sapu rute jalanan kota.");
 	return 1;
@@ -91,15 +112,20 @@ stock StartSweeperJob(playerid)
 stock StartTruckerJob(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat memulai pekerjaan saat pingsan atau terborgol.");
+		return 0;
+	}
 	if (gJobActive[playerid]) {
 		SendErr(playerid, "Anda masih memiliki tugas pekerjaan aktif.");
 		return 0;
 	}
-	if (!IsPlayerNearPoint(playerid, TRUCKER_X, TRUCKER_Y, TRUCKER_Z, 30.0)) {
+	if (!IsPlayerNearPoint(playerid, TRUCKER_X, TRUCKER_Y, TRUCKER_Z, 35.0)) {
 		SendErr(playerid, "Anda harus berada di Dermaga Kargo Ocean Docks (/gps).");
 		return 0;
 	}
 
+	gPlayerData[playerid][pJob] = JOB_TRUCKER;
 	gPlayerJobVehicle[playerid] = CreateVehicle(TRUCKER_VEH_MODEL, TRUCKER_X + 4.0, TRUCKER_Y, TRUCKER_Z + 1.0, 0.0, 1, 1, 0);
 	gPlayerJobTrailer[playerid] = CreateVehicle(TRUCKER_TRAILER_MODEL, TRUCKER_X + 4.0, TRUCKER_Y - 10.0, TRUCKER_Z + 1.0, 0.0, 1, 1, 0);
 	AttachTrailerToVehicle(gPlayerJobTrailer[playerid], gPlayerJobVehicle[playerid]);
@@ -109,6 +135,7 @@ stock StartTruckerJob(playerid)
 	gJobActive[playerid] = true;
 	gJobType[playerid] = JOB_TRUCKER;
 
+	AC_PutPlayerInVehicle(playerid, gPlayerJobVehicle[playerid], 0);
 	CreateJobCheckpoint(playerid, 0);
 	SendInfo(playerid, "Tugas ekspedisi truk dimulai. Pasang gandengan dan antar ke checkpoint.");
 	return 1;
@@ -118,6 +145,10 @@ stock StartTruckerJob(playerid)
 stock StartMechanicJob(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat mengambil pekerjaan saat pingsan atau terborgol.");
+		return 0;
+	}
 	gPlayerData[playerid][pJob] = JOB_MECHANIC;
 	SendSucc(playerid, "Profesi Anda sekarang: Mekanik Bengkel. Gunakan /service [engine/body] [targetid] [harga].");
 	return 1;
@@ -127,6 +158,10 @@ stock StartMechanicJob(playerid)
 stock StartScavengerJob(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat mengambil pekerjaan saat pingsan atau terborgol.");
+		return 0;
+	}
 	gPlayerData[playerid][pJob] = JOB_SCAVENGER;
 	SendSucc(playerid, "Profesi Anda sekarang: Pemulung Sampah & Rongsokan.");
 	SendInfo(playerid, "Cari tempat sampah di gang kota lalu gunakan /searchtrash. Jual hasil di pengepul (/selltrash).");
@@ -137,6 +172,10 @@ stock StartScavengerJob(playerid)
 stock StartLumberjackJob(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat mengambil pekerjaan saat pingsan atau terborgol.");
+		return 0;
+	}
 	gPlayerData[playerid][pJob] = JOB_LUMBERJACK;
 	AC_GiveWeapon(playerid, WEAPON_CHAINSAW, 1);
 	SendSucc(playerid, "Profesi Anda sekarang: Penebang Pohon. Anda menerima gergaji mesin.");
@@ -148,6 +187,10 @@ stock StartLumberjackJob(playerid)
 stock StartFishermanJob(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat mengambil pekerjaan saat pingsan atau terborgol.");
+		return 0;
+	}
 	gPlayerData[playerid][pJob] = JOB_FISHERMAN;
 	GivePlayerItem(playerid, ITEM_ROD, 1);
 	GivePlayerItem(playerid, ITEM_BAIT, 5);
@@ -160,6 +203,10 @@ stock StartFishermanJob(playerid)
 stock StartBusDriverJob(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat memulai pekerjaan saat pingsan atau terborgol.");
+		return 0;
+	}
 	if (gJobActive[playerid]) {
 		SendErr(playerid, "Anda masih memiliki tugas pekerjaan aktif.");
 		return 0;
@@ -169,12 +216,14 @@ stock StartBusDriverJob(playerid)
 		return 0;
 	}
 
+	gPlayerData[playerid][pJob] = JOB_BUSDRIVER;
 	gPlayerJobVehicle[playerid] = CreateVehicle(BUS_VEH_MODEL, BUS_DEPOT_X + 2.0, BUS_DEPOT_Y + 2.0, BUS_DEPOT_Z + 1.0, 90.0, 3, 3, 0);
 	gJobCheckpoint[playerid] = 0;
 	gJobCash[playerid] = 0;
 	gJobActive[playerid] = true;
 	gJobType[playerid] = JOB_BUSDRIVER;
 
+	AC_PutPlayerInVehicle(playerid, gPlayerJobVehicle[playerid], 0);
 	CreateJobCheckpoint(playerid, 0);
 	SendInfo(playerid, "Trayek Bus Kota Trans-LS dimulai. Singgahi setiap halte halte kota.");
 	return 1;
@@ -184,6 +233,10 @@ stock StartBusDriverJob(playerid)
 stock ProcessSearchTrash(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat memulung saat pingsan atau terborgol.");
+		return 0;
+	}
 	if (gPlayerData[playerid][pJob] != JOB_SCAVENGER) {
 		SendErr(playerid, "Pekerjaan ini khusus untuk Pemulung (/job).");
 		return 0;
@@ -207,6 +260,10 @@ stock ProcessSearchTrash(playerid)
 stock ProcessSellTrash(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat menjual barang saat pingsan atau terborgol.");
+		return 0;
+	}
 	if (!IsPlayerNearPoint(playerid, TRASH_BUYER_X, TRASH_BUYER_Y, TRASH_BUYER_Z, 6.0)) {
 		SendErr(playerid, "Anda harus berada di Pengepul Rongsokan Willowfield (/gps).");
 		return 0;
@@ -230,6 +287,10 @@ stock ProcessSellTrash(playerid)
 stock ProcessCutWood(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat menebang pohon saat pingsan atau terborgol.");
+		return 0;
+	}
 	if (gPlayerData[playerid][pJob] != JOB_LUMBERJACK) {
 		SendErr(playerid, "Pekerjaan ini khusus untuk Penebang Pohon (/job).");
 		return 0;
@@ -240,6 +301,10 @@ stock ProcessCutWood(playerid)
 stock ProcessSellWood(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat menjual kayu saat pingsan atau terborgol.");
+		return 0;
+	}
 	if (!IsPlayerNearPoint(playerid, SAWMILL_X, SAWMILL_Y, SAWMILL_Z, 10.0)) {
 		SendErr(playerid, "Anda harus berada di Pabrik Pengolahan Kayu Sawmill (/gps).");
 		return 0;
@@ -263,12 +328,20 @@ stock ProcessSellWood(playerid)
 stock ProcessFish(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat memancing saat pingsan atau terborgol.");
+		return 0;
+	}
 	return StartFishingMinigameProcess(playerid);
 }
 
 stock ProcessSellFish(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat menjual ikan saat pingsan atau terborgol.");
+		return 0;
+	}
 	if (!IsPlayerNearPoint(playerid, FISH_PIER_X, FISH_PIER_Y, FISH_PIER_Z, 25.0)) {
 		SendErr(playerid, "Anda harus berada di Pasar Ikan Dermaga (/gps).");
 		return 0;
@@ -315,6 +388,7 @@ stock CreateJobCheckpoint(playerid, pointindex)
 stock OnJobCheckpoint(playerid)
 {
 	if (!gJobActive[playerid]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 
 	// Kurir Paket: Verifikasi Resi Paket (Anti-Bot Captcha)
 	if (gJobType[playerid] == JOB_COURIER) {

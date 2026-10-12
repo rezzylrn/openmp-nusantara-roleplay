@@ -125,6 +125,13 @@ stock ProcessPlayerKnockout(playerid, const reason[])
 	gPlayerData[playerid][pInjured] = true;
 	gPlayerData[playerid][pInjuredTime] = 90; // 90 detik countdown darurat
 
+	if (gJobActive[playerid]) ProcessJobQuit(playerid);
+	if (gHoldingTrashBag[playerid]) {
+		gHoldingTrashBag[playerid] = false;
+		RemovePlayerAttachedObject(playerid, 1);
+	}
+	StopProgressBar(playerid, false);
+
 	SetPlayerHealth(playerid, 100.0); // Tahan HP agar tidak langsung mati engine GTA
 	TogglePlayerControllable(playerid, false);
 	ApplyAnimation(playerid, "CRACK", "crckdeth2", 4.1, true, false, false, false, 0);

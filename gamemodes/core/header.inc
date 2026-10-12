@@ -355,8 +355,12 @@ enum E_DISPATCH_DATA {
 #define ATM_Y                    -1739.0
 #define ATM_Z                    13.6
 
-#define COURIER_X                1647.0
-#define COURIER_Y                -1886.0
+#define JOB_CENTER_X             1481.0
+#define JOB_CENTER_Y             -1770.0
+#define JOB_CENTER_Z             15.3
+
+#define COURIER_X                1936.0
+#define COURIER_Y                -2115.0
 #define COURIER_Z                13.5
 
 #define SWEEPER_X                1634.0
@@ -387,9 +391,9 @@ enum E_DISPATCH_DATA {
 #define TRASH_BUYER_Y            -1983.0
 #define TRASH_BUYER_Z            13.5
 
-#define DEALER_X                 1650.0
-#define DEALER_Y                 -1886.0
-#define DEALER_Z                 13.5
+#define DEALER_X                 2131.5
+#define DEALER_Y                 -1150.0
+#define DEALER_Z                 24.0
 
 #define STORE_IDLEWOOD_X         1315.0
 #define STORE_IDLEWOOD_Y         -1748.0

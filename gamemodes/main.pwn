@@ -143,7 +143,7 @@ public OnGameModeInit()
 	// pickups
 	gBankPickup = CreatePickup(1274, 1, BANK_X, BANK_Y, BANK_Z);
 	gATMPickup = CreatePickup(1239, 1, ATM_X, ATM_Y, ATM_Z);
-	gJobPickup = CreatePickup(1239, 1, COURIER_X, COURIER_Y, COURIER_Z);
+	gJobPickup = CreatePickup(1239, 1, JOB_CENTER_X, JOB_CENTER_Y, JOB_CENTER_Z);
 	gDealerPickup = CreatePickup(1239, 1, DEALER_X, DEALER_Y, DEALER_Z);
 	gFuelPickup = CreatePickup(1650, 1, FUEL_STATION_X, FUEL_STATION_Y, FUEL_STATION_Z);
 	gStorePickup = CreatePickup(1239, 1, STORE_IDLEWOOD_X, STORE_IDLEWOOD_Y, STORE_IDLEWOOD_Z);
@@ -154,7 +154,7 @@ public OnGameModeInit()
 	// 3d text labels
 	Create3DTextLabel("{33CCFF}[ BANK NUSANTARA ]\n{FFFFFF}Gunakan /bank untuk transaksi", COLOR_LIGHTBLUE, BANK_X, BANK_Y, BANK_Z + 0.8, 15.0, 0, false);
 	Create3DTextLabel("{33CCFF}[ ATM ]\n{FFFFFF}Gunakan /atm untuk transaksi", COLOR_LIGHTBLUE, ATM_X, ATM_Y, ATM_Z + 0.8, 10.0, 0, false);
-	Create3DTextLabel("{FFFF44}[ PUSAT PEKERJAAN ]\n{FFFFFF}Gunakan /job untuk memilih pekerjaan", COLOR_YELLOW, COURIER_X, COURIER_Y, COURIER_Z + 0.8, 15.0, 0, false);
+	Create3DTextLabel("{FFFF44}[ PUSAT PEKERJAAN ]\n{FFFFFF}Gunakan /job untuk memilih pekerjaan", COLOR_YELLOW, JOB_CENTER_X, JOB_CENTER_Y, JOB_CENTER_Z + 0.8, 15.0, 0, false);
 	Create3DTextLabel("{00FF00}[ DEALERSHIP ]\n{FFFFFF}Gunakan /buyveh untuk membeli kendaraan", COLOR_GREEN, DEALER_X, DEALER_Y, DEALER_Z + 0.8, 15.0, 0, false);
 	Create3DTextLabel("{FF9900}[ SPBU ]\n{FFFFFF}Gunakan /refuel untuk isi bensin", COLOR_ORANGE, FUEL_STATION_X, FUEL_STATION_Y, FUEL_STATION_Z + 0.8, 15.0, 0, false);
 	Create3DTextLabel("{33CCFF}[ TOKO 24/7 ]\n{FFFFFF}Gunakan /buy untuk membeli kebutuhan", COLOR_LIGHTBLUE, STORE_IDLEWOOD_X, STORE_IDLEWOOD_Y, STORE_IDLEWOOD_Z + 0.8, 15.0, 0, false);
