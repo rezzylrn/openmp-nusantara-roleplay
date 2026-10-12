@@ -1459,8 +1459,30 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
+	// 68. test knockout & incapacitated player restrictions (cannot job, use, inv, or menu while injured)
+	print("[TEST 68/68] Knockout & Incapacitated Restrictions Engine (No Job, No Use, No Menu while Injured)...");
+	new koTester = 0;
+	gPlayerData[koTester][pLoggedIn] = true;
+	gPlayerData[koTester][pInjured] = true;
+
+	new bool:koInvBlocked = (ShowPlayerInventoryDialog(koTester) == 0);
+	new bool:koUseBlocked = (UsePlayerItemBySlot(koTester, 0) == 0);
+	new bool:koRadialBlocked = (ShowPlayerRadialMenu(koTester) == 0);
+	new bool:koJobBlocked = (ShowJobDialog(koTester) == 0);
+	new bool:koFishBlocked = (ProcessFish(koTester) == 0);
+
+	gPlayerData[koTester][pInjured] = false; // restore
+
+	if (koInvBlocked && koUseBlocked && koRadialBlocked && koJobBlocked && koFishBlocked) {
+		print("  -> PASS: Complete incapacitation verified: all inventory, items, radial menu, jobs & activities strictly blocked during knockout.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Incapacitated restrictions failed.");
+		failCount++;
+	}
+
 	print("==================================================");
-	printf("  [DEBUG SUMMARY] %d / 67 TESTS PASSED, %d FAILED", passCount, failCount);
+	printf("  [DEBUG SUMMARY] %d / 68 TESTS PASSED, %d FAILED", passCount, failCount);
 	print("==================================================\n");
 
 	return 1;

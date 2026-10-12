@@ -145,7 +145,11 @@ stock TakePlayerItem(playerid, itemtype, amount)
 
 stock ProcessGiveItem(playerid, targetid, itemtype, amount)
 {
-	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat memberikan barang saat pingsan atau terborgol.");
+		return 0;
+	}
 	if (!IsPlayerConnected(targetid) || !gPlayerData[targetid][pLoggedIn]) {
 		SendErr(playerid, "Pemain tujuan tidak terhubung.");
 		return 0;
@@ -190,6 +194,10 @@ stock ProcessGiveItem(playerid, targetid, itemtype, amount)
 stock ShowPlayerInventory(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak sadarkan diri dan tidak dapat membuka inventaris.");
+		return 0;
+	}
 
 	new str[800], itemName[32];
 	format(str, sizeof(str), "Slot\tNama Barang\tJumlah\n");
@@ -215,6 +223,11 @@ stock ShowPlayerInventory(playerid)
 
 stock UsePlayerItemBySlot(playerid, slot)
 {
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat menggunakan barang saat pingsan atau terborgol.");
+		return 0;
+	}
 	if (slot < 0 || slot >= MAX_INVENTORY_SLOTS) return 0;
 	new itemType = gPlayerItems[playerid][slot][itType];
 	if (itemType == ITEM_NONE) return 0;

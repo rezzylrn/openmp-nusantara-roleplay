@@ -16,6 +16,10 @@ forward CallTimeout(playerid, targetid);
 stock ShowPhoneMenu(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat menggunakan handphone saat pingsan atau terborgol.");
+		return 0;
+	}
 	if (GetPlayerItemCount(playerid, ITEM_PHONE) <= 0) {
 		SendErr(playerid, "Anda tidak memiliki ponsel. Beli di toko 24/7.");
 		return 0;
@@ -37,6 +41,10 @@ stock ShowPhoneMenu(playerid)
 stock ProcessCall(playerid, const numberStr[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat menggunakan handphone saat pingsan atau terborgol.");
+		return 0;
+	}
 	if (GetPlayerItemCount(playerid, ITEM_PHONE) <= 0) {
 		SendErr(playerid, "Anda tidak memiliki ponsel. Beli di toko 24/7.");
 		return 0;
@@ -185,6 +193,10 @@ stock ProcessHangup(playerid)
 stock ProcessSMS(playerid, targetNumber, const message[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat menggunakan handphone saat pingsan atau terborgol.");
+		return 0;
+	}
 	if (GetPlayerItemCount(playerid, ITEM_PHONE) <= 0) {
 		SendErr(playerid, "Anda tidak memiliki ponsel.");
 		return 0;

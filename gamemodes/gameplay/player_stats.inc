@@ -131,6 +131,8 @@ stock ProcessPlayerKnockout(playerid, const reason[])
 		RemovePlayerAttachedObject(playerid, 1);
 	}
 	StopProgressBar(playerid, false);
+	HidePlayerDialog(playerid);
+	Dialog_Close(playerid);
 
 	SetPlayerHealth(playerid, 100.0); // Tahan HP agar tidak langsung mati engine GTA
 	TogglePlayerControllable(playerid, false);

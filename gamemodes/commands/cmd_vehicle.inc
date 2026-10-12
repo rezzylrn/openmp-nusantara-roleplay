@@ -42,6 +42,7 @@ CMD:modveh(playerid, params[])
 
 CMD:buyveh(playerid, params[])
 {
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return SendErr(playerid, "Anda tidak dapat melakukan tindakan ini saat pingsan atau terborgol.");
 	ShowDealershipDialog(playerid);
 	return 1;
 }
@@ -49,6 +50,7 @@ CMD:buyveh(playerid, params[])
 
 CMD:myveh(playerid, params[])
 {
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return SendErr(playerid, "Anda tidak dapat melakukan tindakan ini saat pingsan atau terborgol.");
 	ShowMyVehiclesDialog(playerid);
 	return 1;
 }
@@ -56,6 +58,7 @@ CMD:myveh(playerid, params[])
 
 CMD:v(playerid, params[])
 {
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return SendErr(playerid, "Anda tidak dapat melakukan tindakan ini saat pingsan atau terborgol.");
 	ShowMyVehiclesDialog(playerid);
 	return 1;
 }
@@ -63,6 +66,7 @@ CMD:v(playerid, params[])
 
 CMD:engine(playerid, params[])
 {
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return SendErr(playerid, "Anda tidak dapat melakukan tindakan ini saat pingsan atau terborgol.");
 	ProcessEngineToggle(playerid);
 	return 1;
 }
@@ -70,6 +74,7 @@ CMD:engine(playerid, params[])
 
 CMD:lights(playerid, params[])
 {
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return SendErr(playerid, "Anda tidak dapat melakukan tindakan ini saat pingsan atau terborgol.");
 	ProcessLightsToggle(playerid);
 	return 1;
 }
@@ -77,6 +82,7 @@ CMD:lights(playerid, params[])
 
 CMD:lock(playerid, params[])
 {
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return SendErr(playerid, "Anda tidak dapat melakukan tindakan ini saat pingsan atau terborgol.");
 	new slot = -1;
 	if (IsPlayerInAnyVehicle(playerid)) {
 		new vid = GetPlayerVehicleID(playerid);
@@ -106,6 +112,7 @@ CMD:park(playerid, params[])
 
 CMD:hood(playerid, params[])
 {
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return SendErr(playerid, "Anda tidak dapat melakukan tindakan ini saat pingsan atau terborgol.");
 	new slot = -1, vid = 0;
 	if (IsPlayerInAnyVehicle(playerid)) {
 		vid = GetPlayerVehicleID(playerid);
@@ -126,6 +133,7 @@ CMD:hood(playerid, params[])
 
 CMD:trunk(playerid, params[])
 {
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return SendErr(playerid, "Anda tidak dapat melakukan tindakan ini saat pingsan atau terborgol.");
 	if (IsPlayerInAnyVehicle(playerid)) {
 		new vid = GetPlayerVehicleID(playerid);
 		new slot = Vehicle_GetSlot(vid);
@@ -300,6 +308,7 @@ CMD:unrentveh(playerid, params[])
 CMD:glovebox(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return SendErr(playerid, "Anda tidak dapat membuka laci dashboard saat pingsan atau terborgol.");
 	if (!IsPlayerInAnyVehicle(playerid)) {
 		SendErr(playerid, "Anda harus berada di dalam kendaraan untuk membuka laci dashboard.");
 		return 1;
@@ -318,6 +327,7 @@ CMD:glovebox(playerid, params[])
 CMD:stnk(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return SendErr(playerid, "Anda tidak dapat memeriksa STNK saat pingsan atau terborgol.");
 	ProcessInspectSTNK(playerid);
 	return 1;
 }

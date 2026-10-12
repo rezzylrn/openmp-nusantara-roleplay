@@ -14,6 +14,7 @@
 CMD:detect(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return SendErr(playerid, "Anda tidak dapat melakukan aktivitas saat pingsan atau terborgol.");
 	ProcessMetalDetect(playerid);
 	return 1;
 }
@@ -28,6 +29,7 @@ CMD:deteksi(playerid, params[])
 CMD:dig(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return SendErr(playerid, "Anda tidak dapat melakukan aktivitas saat pingsan atau terborgol.");
 	ProcessDigTreasure(playerid);
 	return 1;
 }
@@ -42,6 +44,7 @@ CMD:gali(playerid, params[])
 CMD:vending(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return SendErr(playerid, "Anda tidak dapat menggunakan vending machine saat pingsan atau terborgol.");
 	ShowVendingDialog(playerid);
 	return 1;
 }
@@ -180,6 +183,7 @@ CMD:cuaca(playerid, params[])
 CMD:bar(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return SendErr(playerid, "Anda tidak dapat melakukan aktivitas saat pingsan atau terborgol.");
 	ShowBarDrinksMenu(playerid);
 	return 1;
 }
@@ -194,6 +198,7 @@ CMD:orderdrink(playerid, params[])
 CMD:gym(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return SendErr(playerid, "Anda tidak dapat melakukan aktivitas saat pingsan atau terborgol.");
 	ShowGymStyleDialog(playerid);
 	return 1;
 }
@@ -208,6 +213,7 @@ CMD:fightstyle(playerid, params[])
 CMD:workout(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return SendErr(playerid, "Anda tidak dapat berolahraga saat pingsan atau terborgol.");
 	ProcessGymWorkout(playerid);
 	return 1;
 }
@@ -222,6 +228,7 @@ CMD:angkatbesi(playerid, params[])
 CMD:orderfood(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return SendErr(playerid, "Anda tidak dapat memesan makanan saat pingsan atau terborgol.");
 	ShowFastFoodMenu(playerid);
 	return 1;
 }
@@ -236,6 +243,7 @@ CMD:pesanmakan(playerid, params[])
 CMD:accessories(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return SendErr(playerid, "Anda tidak dapat memakai aksesoris saat pingsan atau terborgol.");
 	ShowAccessoriesMenu(playerid);
 	return 1;
 }

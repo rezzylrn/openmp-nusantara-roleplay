@@ -22,6 +22,10 @@ forward RP_OnFinishUseMedkit(playerid, extra);
 stock ShowPlayerInventoryDialog(playerid)
 {
 	if (playerid < 0 || playerid >= MAX_PLAYERS || !gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak sadarkan diri dan tidak dapat membuka inventaris.");
+		return 0;
+	}
 
 	new itemCount = 0;
 	new dialogContent[1024];

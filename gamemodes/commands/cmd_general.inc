@@ -108,6 +108,9 @@ Level: {FFFF00}%d",
 CMD:inv(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		return SendErr(playerid, "Anda tidak sadarkan diri dan tidak dapat membuka inventaris.");
+	}
 	ShowPlayerInventoryDialog(playerid);
 	return 1;
 }
@@ -128,6 +131,9 @@ CMD:items(playerid, params[])
 CMD:use(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		return SendErr(playerid, "Anda tidak dapat menggunakan barang saat pingsan atau terborgol.");
+	}
 	new slot;
 	if (sscanf(params, "d", slot)) {
 		return SendSyntax(playerid, "/use [nomor slot 1-25]");
@@ -144,6 +150,9 @@ CMD:use(playerid, params[])
 CMD:phone(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		return SendErr(playerid, "Anda tidak dapat menggunakan ponsel saat pingsan atau terborgol.");
+	}
 	if (GetPlayerItemCount(playerid, ITEM_PHONE) <= 0) {
 		return SendErr(playerid, "Anda tidak memiliki ponsel di dalam inventaris (/inv).");
 	}
@@ -165,6 +174,9 @@ CMD:hp(playerid, params[])
 CMD:menu(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		return SendErr(playerid, "Anda tidak sadarkan diri dan tidak dapat membuka menu.");
+	}
 	ShowPlayerActionHub(playerid);
 	return 1;
 }
@@ -191,6 +203,9 @@ CMD:interaksi(playerid, params[])
 CMD:give(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		return SendErr(playerid, "Anda tidak dapat memberikan barang/uang saat pingsan atau terborgol.");
+	}
 
 	new targetid, item[24], amount;
 	if (sscanf(params, "us[24]d", targetid, item, amount)) {
@@ -268,6 +283,9 @@ CMD:gps(playerid, params[])
 CMD:pay(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		return SendErr(playerid, "Anda tidak dapat memberikan uang saat pingsan atau terborgol.");
+	}
 	new targetid, amount;
 	if (sscanf(params, "ud", targetid, amount)) return SendSyntax(playerid, "/pay [playerid/nama] [jumlah]");
 	if (!IsPlayerConnected(targetid)) return SendErr(playerid, "Pemain tidak ditemukan.");
@@ -280,6 +298,9 @@ CMD:pay(playerid, params[])
 
 CMD:bank(playerid, params[])
 {
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		return SendErr(playerid, "Anda tidak dapat melakukan transaksi saat pingsan atau terborgol.");
+	}
 	ShowBankDialog(playerid);
 	return 1;
 }
@@ -287,6 +308,9 @@ CMD:bank(playerid, params[])
 
 CMD:atm(playerid, params[])
 {
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		return SendErr(playerid, "Anda tidak dapat menggunakan ATM saat pingsan atau terborgol.");
+	}
 	ShowATMDialog(playerid);
 	return 1;
 }
@@ -294,6 +318,9 @@ CMD:atm(playerid, params[])
 
 CMD:buy(playerid, params[])
 {
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		return SendErr(playerid, "Anda tidak dapat berbelanja saat pingsan atau terborgol.");
+	}
 	ShowStoreBuyMenu(playerid);
 	return 1;
 }

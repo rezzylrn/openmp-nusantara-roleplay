@@ -97,6 +97,7 @@ stock ShowHelpDialog(playerid)
 CMD:me(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured]) return SendErr(playerid, "Anda sedang pingsan tidak sadarkan diri.");
 	if (isnull(params)) return SendSyntax(playerid, "/me [tindakan]");
 	new msg[160];
 	format(msg, sizeof(msg), "* %s %s", gPlayerData[playerid][pName], params);
@@ -141,6 +142,7 @@ CMD:o(playerid, params[])
 CMD:w(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured]) return SendErr(playerid, "Anda sedang pingsan tidak sadarkan diri.");
 	new targetid, text[128];
 	if (sscanf(params, "us[128]", targetid, text)) return SendSyntax(playerid, "/w [playerid/nama] [pesan]");
 	ProcessWhisper(playerid, targetid, text);
@@ -151,6 +153,7 @@ CMD:w(playerid, params[])
 CMD:s(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured]) return SendErr(playerid, "Anda sedang pingsan tidak sadarkan diri.");
 	if (isnull(params)) return SendSyntax(playerid, "/s [pesan teriakan]");
 	ProcessShout(playerid, params);
 	return 1;
@@ -160,6 +163,7 @@ CMD:s(playerid, params[])
 CMD:l(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured]) return SendErr(playerid, "Anda sedang pingsan tidak sadarkan diri.");
 	if (isnull(params)) return SendSyntax(playerid, "/l [pesan pelan]");
 	ProcessLow(playerid, params);
 	return 1;

@@ -14,6 +14,7 @@
 CMD:enter(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return SendErr(playerid, "Anda tidak dapat masuk gedung saat pingsan atau terborgol.");
 	if (!ProcessDoorEnter(playerid)) {
 		if (gPlayerData[playerid][pLanguage] == LANG_EN) SendErr(playerid, "You are not near any entrance door.");
 		else SendErr(playerid, "Anda tidak berada di dekat pintu masuk.");
@@ -31,6 +32,7 @@ CMD:masuk(playerid, params[])
 CMD:exit(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return SendErr(playerid, "Anda tidak dapat keluar gedung saat pingsan atau terborgol.");
 	if (!ProcessDoorExit(playerid)) {
 		if (gPlayerData[playerid][pLanguage] == LANG_EN) SendErr(playerid, "You are not near any exit door.");
 		else SendErr(playerid, "Anda tidak berada di dekat pintu keluar.");
@@ -48,6 +50,7 @@ CMD:keluar(playerid, params[])
 CMD:buyhouse(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return SendErr(playerid, "Anda tidak dapat membeli rumah saat pingsan atau terborgol.");
 	new h = House_CheckNearby(playerid);
 	if (h == -1) return SendErr(playerid, "Anda tidak berada di depan rumah yang dijual.");
 	if (gHouseData[h][hOwnerID] != 0) return SendErr(playerid, "Rumah ini sudah ada pemiliknya.");
@@ -58,6 +61,7 @@ CMD:buyhouse(playerid, params[])
 CMD:lockhouse(playerid, params[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return SendErr(playerid, "Anda tidak dapat mengunci rumah saat pingsan atau terborgol.");
 	new h = House_CheckNearby(playerid);
 	if (h == -1) h = House_CheckInside(playerid);
 	if (h == -1) return SendErr(playerid, "Anda harus berada di dekat pintu rumah.");

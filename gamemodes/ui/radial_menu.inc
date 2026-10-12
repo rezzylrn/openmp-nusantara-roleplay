@@ -16,6 +16,10 @@ forward RP_OnFinishRefuelAction(playerid, veh);
 stock ShowPlayerRadialMenu(playerid)
 {
 	if (playerid < 0 || playerid >= MAX_PLAYERS || !gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak sadarkan diri dan tidak dapat membuka menu.");
+		return 0;
+	}
 
 	// =========================================================================
 	// 1. KENDARAAN (SEDANG MENYETIR)

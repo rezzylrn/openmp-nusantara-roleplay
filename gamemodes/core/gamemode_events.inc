@@ -113,6 +113,10 @@ public OnPlayerText(playerid, text[])
 		SendErr(playerid, "Anda belum login.");
 		return 0;
 	}
+	if (gPlayerData[playerid][pInjured]) {
+		SendErr(playerid, "Anda sedang pingsan tidak sadarkan diri dan tidak dapat berbicara.");
+		return 0;
+	}
 	if (gPlayerData[playerid][pMuted]) {
 		SendErr(playerid, "Anda sedang dibisukan.");
 		return 0;
@@ -141,6 +145,9 @@ public OnPlayerText(playerid, text[])
 // key handling
 public OnPlayerKeyStateChange(playerid, KEY:newkeys, KEY:oldkeys)
 {
+	// Jika karakter pingsan atau terborgol, nonaktifkan seluruh interaksi tombol
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 1;
+
 	// Key F / ENTER (KEY_SECONDARY_ATTACK) untuk masuk / keluar pintu dinamis (Indoor/Outdoor)
 	if ((newkeys & KEY_SECONDARY_ATTACK) && !(oldkeys & KEY_SECONDARY_ATTACK)) {
 		if (GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) {
