@@ -110,11 +110,11 @@ stock ShowPoliceMDCDialog(playerid)
 
 	new body[512];
 	format(body, sizeof(body),
-		"{FFFFFF}1. 🔍 Pencarian Database Warga (Citizen Record)\n\
-{FFFFFF}2. 🚗 Pencarian Database Kendaraan (Plate Lookup)\n\
-{FFFFFF}3. 🚨 Antrean Panggilan Darurat 911 (Dispatches)\n\
-{FFFFFF}4. 📑 Daftar Surat Tilang ETLE Belum Dibayar\n\
-{FFFFFF}5. 📢 Daftar Buronan Aktif Kota Los Santos");
+		"{FFFFFF}1. [Pencarian] Database Catatan Warga (Citizen Record)\n\
+{FFFFFF}2. [Pencarian] Database Kendaraan (Plate Lookup)\n\
+{FFFFFF}3. [Dispatch] Antrean Panggilan Darurat 911 (Dispatches)\n\
+{FFFFFF}4. [Tilang] Daftar Surat Tilang ETLE Belum Dibayar\n\
+{FFFFFF}5. [Buronan] Daftar Buronan Aktif Kota Los Santos");
 
 	Dialog_Show(playerid, DialogPoliceMDCMain, DIALOG_STYLE_LIST,
 		"{3498DB}SAPD - MOBILE DATA COMPUTER (MDC)", body, "Buka", "Tutup");
@@ -196,7 +196,7 @@ Dialog:DialogPoliceMDCMain(playerid, response, listitem, inputtext[])
 					new wl = GetPlayerWantedLevel(p);
 					if (wl > 0) {
 						new row[128];
-						format(row, sizeof(row), "{FFFFFF}%s (ID %d) | {E74C3C}Bintang Buronan: %d ⭐\n",
+						format(row, sizeof(row), "{FFFFFF}%s (ID %d) | {E74C3C}Buronan: Level %d\n",
 							gPlayerData[p][pName], p, wl);
 						strcat(list, row);
 						count++;
@@ -248,7 +248,7 @@ Dialog:DialogMDCCitizenInput(playerid, response, listitem, inputtext[])
 {FFFFFF}Lisensi Mengemudi: %s\n\
 {FFFFFF}Lisensi Senjata Api: %s\n\
 {FFFFFF}Surat Tilang Aktif: {E74C3C}%d lembar (Denda: $%d)\n\
-{FFFFFF}Status Buronan: {E74C3C}%d Bintang ⭐\n\
+{FFFFFF}Status Buronan: {E74C3C}%d Tingkat Kejahatan\n\
 {FFFFFF}Nomor Ponsel: {FFFF00}%d",
 		gPlayerData[targetid][pName], targetid,
 		gPlayerData[targetid][pBirthDate],

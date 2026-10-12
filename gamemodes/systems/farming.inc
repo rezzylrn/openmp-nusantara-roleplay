@@ -66,7 +66,7 @@ stock IsPlayerInFlintFarm(playerid)
 	return 0;
 }
 
-CMD:buyseed(playerid, params[])
+stock ShowFarmShopDialog(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Anda belum login.");
 	if (!IsPlayerNearPoint(playerid, FARM_SHOP_X, FARM_SHOP_Y, FARM_SHOP_Z, 4.5)) {
@@ -81,6 +81,11 @@ CMD:buyseed(playerid, params[])
 {FFFFFF}3. Gembor Penyiram Tanaman (Water Can) - {2ECC71}$35",
 		"Beli", "Batal");
 	return 1;
+}
+
+CMD:buyseed(playerid, params[])
+{
+	return ShowFarmShopDialog(playerid);
 }
 
 Dialog:DialogFarmShop(playerid, response, listitem, inputtext[])

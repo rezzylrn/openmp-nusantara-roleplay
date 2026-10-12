@@ -489,6 +489,62 @@ stock ProcessKeyActivity(playerid)
 		return 1;
 	}
 
-	SendInfo(playerid, "Tidak ada objek di sekitar Anda. Dekati tempat kerja, tong sampah, ATM, atau toko lalu tekan Y.");
+	// 13. Cek Pertanian Flint County
+	if (IsPlayerNearPoint(playerid, FARM_SHOP_X, FARM_SHOP_Y, FARM_SHOP_Z, 4.5)) {
+		ShowFarmShopDialog(playerid);
+		return 1;
+	}
+	if (IsPlayerNearPoint(playerid, FARM_SILO_X, FARM_SILO_Y, FARM_SILO_Z, 6.0)) {
+		ProcessSellCrops(playerid);
+		return 1;
+	}
+	if (IsPlayerInFlintFarm(playerid)) {
+		if (GetPlayerItemCount(playerid, ITEM_WHEATSEED) > 0 || GetPlayerItemCount(playerid, ITEM_CORNSEED) > 0) {
+			ProcessPlantCrop(playerid);
+			return 1;
+		}
+		ProcessHarvestCrop(playerid);
+		return 1;
+	}
+
+	// 14. Cek Pertambangan Hunter Quarry
+	if (IsPlayerNearPoint(playerid, MINING_SHOP_X, MINING_SHOP_Y, MINING_SHOP_Z, 4.5)) {
+		ProcessBuyPickaxe(playerid);
+		return 1;
+	}
+	if (IsPlayerNearPoint(playerid, MINING_SMELTER_X, MINING_SMELTER_Y, MINING_SMELTER_Z, 5.0)) {
+		ProcessSmeltMetals(playerid);
+		return 1;
+	}
+	if (IsPlayerNearPoint(playerid, MINING_BUYER_X, MINING_BUYER_Y, MINING_BUYER_Z, 5.0)) {
+		ProcessSellOre(playerid);
+		return 1;
+	}
+	if (IsPlayerNearPoint(playerid, MINING_SITE_X, MINING_SITE_Y, MINING_SITE_Z, 25.0)) {
+		ProcessStartMining(playerid);
+		return 1;
+	}
+
+	// 15. Cek Penyelaman Laut Santa Maria
+	if (IsPlayerNearPoint(playerid, SCUBA_SHOP_X, SCUBA_SHOP_Y, SCUBA_SHOP_Z, 4.5)) {
+		if (GetPlayerItemCount(playerid, ITEM_PEARL) > 0) {
+			ProcessSellPearls(playerid);
+			return 1;
+		}
+		ProcessRentScuba(playerid);
+		return 1;
+	}
+	if (IsPlayerNearPoint(playerid, SCUBA_REEF_X, SCUBA_REEF_Y, SCUBA_REEF_Z, 60.0)) {
+		ProcessStartDiving(playerid);
+		return 1;
+	}
+
+	// 16. Cek Depot Truk Sampah
+	if (IsPlayerNearPoint(playerid, TRASH_DEPOT_X, TRASH_DEPOT_Y, TRASH_DEPOT_Z, 8.0)) {
+		ProcessStartTrash(playerid);
+		return 1;
+	}
+
+	SendInfo(playerid, "Tidak ada objek interaksi di sekitar Anda. Dekati fasilitas, toko, atau pekerjaan lalu tekan Y.");
 	return 0;
 }

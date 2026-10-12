@@ -99,13 +99,14 @@ stock UpdateHungerThirst(playerid)
 	if (gPlayerData[playerid][pHunger] < 0.0) gPlayerData[playerid][pHunger] = 0.0;
 	if (gPlayerData[playerid][pThirst] < 0.0) gPlayerData[playerid][pThirst] = 0.0;
 
-	// Jika lapar atau haus 0, kurangi HP
+	// Jika lapar atau haus 0, kurangi HP secara bertahap (setiap 15 detik)
 	new Float:hp;
 	GetPlayerHealth(playerid, hp);
-	if (gPlayerData[playerid][pHunger] <= 0.0 || gPlayerData[playerid][pThirst] <= 0.0) {
-		if (hp > 5.0) {
+	if ((gPlayerData[playerid][pHunger] <= 0.0 || gPlayerData[playerid][pThirst] <= 0.0) && (gPlayerData[playerid][pPaycheckTimer] % 15 == 0)) {
+		if (hp > 10.0) {
 			SetPlayerHealth(playerid, hp - 2.0);
-		} else if (hp <= 5.0 && !gPlayerData[playerid][pInjured]) {
+			SendClientMessage(playerid, COLOR_ERROR, "[PERINGATAN] Anda mengalami dehidrasi/kelaparan berat! Segera makan atau minum (/use /inv).");
+		} else if (hp <= 10.0 && !gPlayerData[playerid][pInjured]) {
 			// Masuk ke fase pingsan kelaparan
 			ProcessPlayerKnockout(playerid, "dehidrasi / kelaparan");
 		}

@@ -16,6 +16,15 @@ mkdir -p "$RUN_DIR/plugins"
 mkdir -p "$RUN_DIR/components"
 mkdir -p "$RUN_DIR/scriptfiles"
 
+# Ensure database service is running and user exists
+sudo systemctl start mariadb || true
+sudo mysql -e "CREATE DATABASE IF NOT EXISTS roleplay;
+CREATE USER IF NOT EXISTS 'samp'@'localhost' IDENTIFIED VIA mysql_native_password USING PASSWORD('samp123');
+CREATE USER IF NOT EXISTS 'samp'@'127.0.0.1' IDENTIFIED VIA mysql_native_password USING PASSWORD('samp123');
+GRANT ALL PRIVILEGES ON roleplay.* TO 'samp'@'localhost';
+GRANT ALL PRIVILEGES ON roleplay.* TO 'samp'@'127.0.0.1';
+FLUSH PRIVILEGES;" 2>/dev/null || true
+
 # Extract base open.mp server if not already present
 if [ ! -f "$RUN_DIR/omp-server" ]; then
     echo "[1/4] Extracting base open.mp binaries and components..."

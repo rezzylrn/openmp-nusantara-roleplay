@@ -435,8 +435,8 @@ enum E_DISPATCH_DATA {
 #define PAJAK_DEFAULT            5
 #define TRANSFER_FEE             10
 
-#define HUNGER_DECAY             0.15
-#define THIRST_DECAY             0.20
+#define HUNGER_DECAY             0.015
+#define THIRST_DECAY             0.020
 #define FUEL_CONSUMPTION_RATE    0.10
 #define FUEL_PRICE               3
 
