@@ -297,3 +297,29 @@ CMD:unrentveh(playerid, params[])
 }
 
 
+CMD:glovebox(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (!IsPlayerInAnyVehicle(playerid)) {
+		SendErr(playerid, "Anda harus berada di dalam kendaraan untuk membuka laci dashboard.");
+		return 1;
+	}
+	new vid = GetPlayerVehicleID(playerid);
+	new slot = Vehicle_GetSlot(vid);
+	if (slot == -1) {
+		SendErr(playerid, "Kendaraan ini tidak memiliki laci dashboard pribadi.");
+		return 1;
+	}
+	ShowVehicleGloveboxDialog(playerid, slot);
+	return 1;
+}
+
+
+CMD:stnk(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	ProcessInspectSTNK(playerid);
+	return 1;
+}
+
+

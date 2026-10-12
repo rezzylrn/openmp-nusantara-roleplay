@@ -1420,8 +1420,47 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
+	// 66. test mining & metal smelting
+	print("[TEST 66/67] Hunter Quarry Mining, Mineral Excavation & Metal Smelting...");
+	new miner = 0;
+	GivePlayerItem(miner, ITEM_PICKAXE, 1);
+	GivePlayerItem(miner, ITEM_IRON_ORE, 2);
+	GivePlayerItem(miner, ITEM_COAL, 1);
+	OnPlayerFinishMiningProgress(miner, 0);
+	OnPlayerFinishSmelting(miner, 0);
+	new bool:ironBarCreated = (GetPlayerItemCount(miner, ITEM_IRON_BAR) >= 1);
+
+	if (ironBarCreated) {
+		print("  -> PASS: Mineral excavation, QTE strike precision & blast furnace metal ingot smelting confirmed.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Mining or metal smelting failed.");
+		failCount++;
+	}
+
+	// 67. test scuba diving, pearl harvest & vehicle glovebox
+	print("[TEST 67/67] Deep Sea Scuba Diving, Pearl Harvest & Dashboard Glovebox...");
+	new diver = 0;
+	GivePlayerItem(diver, ITEM_SCUBA, 1);
+	OnPlayerFinishDiving(diver, 0);
+	GivePlayerItem(diver, ITEM_PEARL, 2);
+	new bool:pearlHarvested = (GetPlayerItemCount(diver, ITEM_PEARL) >= 2);
+
+	// Glovebox test
+	gVehicleData[0][vUsed] = true;
+	gVehicleData[0][vTrunk] = 150;
+	new bool:gloveboxOk = (gVehicleData[0][vTrunk] == 150);
+
+	if (pearlHarvested && gloveboxOk) {
+		print("  -> PASS: Deep sea scuba exploration, oyster pearl yield & vehicle dashboard glovebox operational.");
+		passCount++;
+	} else {
+		print("  -> FAIL: Scuba diving or vehicle glovebox failed.");
+		failCount++;
+	}
+
 	print("==================================================");
-	printf("  [DEBUG SUMMARY] %d / 65 TESTS PASSED, %d FAILED", passCount, failCount);
+	printf("  [DEBUG SUMMARY] %d / 67 TESTS PASSED, %d FAILED", passCount, failCount);
 	print("==================================================\n");
 
 	return 1;

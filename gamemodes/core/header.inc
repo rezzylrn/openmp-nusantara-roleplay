@@ -114,7 +114,13 @@ enum {
 	ITEM_CORN,          // Karung Jagung Hasil Panen
 	ITEM_WATERCAN,      // Gembor Penyiram Air
 	ITEM_DRILL,         // Bor Listrik Pembobol ATM
-	ITEM_BOOMBOX        // Portable Audio Boombox
+	ITEM_BOOMBOX,       // Portable Audio Boombox
+	ITEM_PICKAXE,       // Beliung Tambang Batu (Mining)
+	ITEM_IRON_ORE,      // Bongkahan Bijih Besi
+	ITEM_COAL,          // Bongkahan Batu Bara
+	ITEM_IRON_BAR,      // Batangan Besi Hasil Peleburan
+	ITEM_SCUBA,         // Tabung Oksigen Penyelaman Laut
+	ITEM_PEARL          // Butir Mutiara Laut Dalam
 };
 
 enum E_ITEM_DATA {
@@ -550,6 +556,12 @@ stock GetItemName(itemtype, dest[], len = sizeof(dest))
 		case ITEM_WATERCAN:  format(dest, len, "Gembor Penyiram Air");
 		case ITEM_DRILL:     format(dest, len, "Bor Listrik (Drill)");
 		case ITEM_BOOMBOX:   format(dest, len, "Speaker Boombox");
+		case ITEM_PICKAXE:   format(dest, len, "Beliung Tambang (Pickaxe)");
+		case ITEM_IRON_ORE:  format(dest, len, "Bongkahan Bijih Besi");
+		case ITEM_COAL:      format(dest, len, "Bongkahan Batu Bara");
+		case ITEM_IRON_BAR:  format(dest, len, "Batangan Besi Murni");
+		case ITEM_SCUBA:     format(dest, len, "Tabung Selam Scuba");
+		case ITEM_PEARL:     format(dest, len, "Mutiara Laut Alami");
 		default:             format(dest, len, "Kosong");
 	}
 	return 1;

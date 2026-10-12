@@ -56,6 +56,8 @@
 #include "systems/farming.inc"
 #include "systems/atm_robbery.inc"
 #include "systems/boombox.inc"
+#include "systems/mining.inc"
+#include "systems/scuba_diving.inc"
 
 // 5. Gameplay & Factions
 #include "gameplay/mapping.inc"
@@ -175,6 +177,8 @@ public OnGameModeInit()
 	TrashJob_Init();
 	Boombox_Init();
 	Forensics_Init();
+	Mining_Init();
+	Scuba_Init();
 
 	// run automated tests
 	SetTimer("RunAutomatedRPTests", 1500, false);

@@ -166,3 +166,54 @@ CMD:pesantaksi(playerid, params[])
 }
 
 
+// Hunter Quarry Mining & Metal Smelting
+CMD:buypickaxe(playerid, params[])
+{
+	ProcessBuyPickaxe(playerid);
+	return 1;
+}
+
+CMD:mine(playerid, params[])
+{
+	ProcessStartMining(playerid);
+	return 1;
+}
+
+CMD:smelt(playerid, params[])
+{
+	ProcessSmeltMetals(playerid);
+	return 1;
+}
+
+CMD:sellore(playerid, params[])
+{
+	ProcessSellOre(playerid);
+	return 1;
+}
+
+
+// Santa Maria Scuba Diving & Pearl Harvest
+CMD:rentscuba(playerid, params[])
+{
+	ProcessRentScuba(playerid);
+	return 1;
+}
+
+CMD:dive(playerid, params[])
+{
+	ProcessStartDiving(playerid);
+	return 1;
+}
+
+CMD:scubasearch(playerid, params[])
+{
+	return cmd_dive(playerid, params);
+}
+
+CMD:sellpearl(playerid, params[])
+{
+	ProcessSellPearls(playerid);
+	return 1;
+}
+
+

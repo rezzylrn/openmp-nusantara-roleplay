@@ -13,3 +13,4 @@
 #include "vehicles/vehicle_core.inc"
 #include "vehicles/vehicle_dealership.inc"
 #include "vehicles/vehicle_trunk.inc"
+#include "vehicles/vehicle_glovebox.inc"

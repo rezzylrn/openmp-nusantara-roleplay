@@ -130,14 +130,10 @@ CMD:use(playerid, params[])
 	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
 	new slot;
 	if (sscanf(params, "d", slot)) {
-		new syntaxMsg[64];
-		format(syntaxMsg, sizeof(syntaxMsg), "/use [nomor slot 1-%d]", MAX_INVENTORY_SLOTS);
-		return SendSyntax(playerid, syntaxMsg);
+		return SendSyntax(playerid, "/use [nomor slot 1-25]");
 	}
 	if (slot < 1 || slot > MAX_INVENTORY_SLOTS) {
-		new errMsg[64];
-		format(errMsg, sizeof(errMsg), "Slot harus antara 1 sampai %d.", MAX_INVENTORY_SLOTS);
-		return SendErr(playerid, errMsg);
+		return SendErr(playerid, "Slot harus antara 1 sampai 25.");
 	}
 	UsePlayerItemBySlot(playerid, slot - 1);
 	if (gInventoryOpen[playerid]) UpdatePlayerInventoryUI(playerid);

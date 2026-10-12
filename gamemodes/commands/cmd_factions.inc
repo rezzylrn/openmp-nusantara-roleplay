@@ -390,3 +390,26 @@ CMD:tesalkohol(playerid, params[])
 }
 
 
+CMD:checkreg(playerid, params[])
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (!gPlayerData[playerid][pDuty] || gPlayerData[playerid][pFaction] != FACTION_POLICE) {
+		SendErr(playerid, "Perintah ini khusus untuk petugas Polisi yang sedang bertugas (/duty).");
+		return 1;
+	}
+
+	new targetid = INVALID_PLAYER_ID;
+	if (!sscanf(params, "u", targetid) && IsPlayerConnected(targetid)) {
+		ProcessInspectSTNK(playerid, targetid);
+	} else {
+		ProcessInspectSTNK(playerid);
+	}
+	return 1;
+}
+
+CMD:periksastnk(playerid, params[])
+{
+	return cmd_checkreg(playerid, params);
+}
+
+
