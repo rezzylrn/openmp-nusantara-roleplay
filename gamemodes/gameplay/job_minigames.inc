@@ -207,7 +207,7 @@ Dialog:DialogLumberQTE(playerid, response, listitem, inputtext[])
 // ===========================================================================
 // 3. KURIR PAKET (COURIER CAPTCHA VERIFICATION)
 // ===========================================================================
-stock TriggerCourierVerification(playerid)
+stock TriggerCourierVerification(playerid, const address[] = "")
 {
 	// Generate 4-digit security code
 	new c1 = 'A' + random(26);
@@ -217,12 +217,12 @@ stock TriggerCourierVerification(playerid)
 
 	format(gCourierCode[playerid], 8, "%c%c%c%c", c1, c2, c3, c4);
 
-	new prompt[300];
+	new prompt[320];
 	format(prompt, sizeof(prompt),
-		"{FFFFFF}Paket telah tiba di depan rumah pemesan.\n\
+		"{FFFFFF}Paket telah tiba di alamat pemesan:\n{FFFF00}%s{FFFFFF}\n\n\
 Untuk konfirmasi serah terima dan memverifikasi keaslian pengantaran,\n\
 masukkan {FFFF00}Kode Resi Penerima{FFFFFF} berikut ke kolom di bawah:\n\n\
-Kode Resi: {2ECC71}%s", gCourierCode[playerid]);
+Kode Resi: {2ECC71}%s", (address[0] != '\0') ? address : "Alamat Pemesan", gCourierCode[playerid]);
 
 	Dialog_Show(playerid, DialogCourierReceipt, DIALOG_STYLE_INPUT,
 		"{3498DB}VERIFIKASI SERAH TERIMA RESI PAKET", prompt, "Konfirmasi", "Batal");
@@ -232,30 +232,39 @@ Kode Resi: {2ECC71}%s", gCourierCode[playerid]);
 Dialog:DialogCourierReceipt(playerid, response, listitem, inputtext[])
 {
 	if (!response) {
-		SendClientMessage(playerid, COLOR_ERROR, "[INFO] Serah terima paket ditunda.");
+		SendClientMessage(playerid, COLOR_ERROR, "[INFO] Serah terima paket ditunda. Dekati kembali checkpoint rumah untuk verifikasi.");
+		new dest = gCourierTargetDest[playerid];
+		SetPlayerCheckpoint(playerid, gCourierDestList[dest][cdX], gCourierDestList[dest][cdY], gCourierDestList[dest][cdZ], 6.0);
 		return 1;
 	}
 
 	if (strcmp(inputtext, gCourierCode[playerid], true) == 0) {
-		new pay = 150;
-		new bonus = 35; // Bonus ketelitian
+		new pay = 180;
+		new bonus = 40; // Bonus ketelitian
 		gJobCash[playerid] += (pay + bonus);
+		GivePlayerMoneyEx(playerid, pay + bonus, "upah antar paket");
+		GivePlayerExp(playerid, 15, "antar paket kurir");
 
-		new msg[144];
-		format(msg, sizeof(msg), "[RESI VALID] Paket sukses diserahkan! Mendapatkan upah rute $%d + bonus ketelitian $%d.", pay, bonus);
+		new curStop = gJobCheckpoint[playerid] + 1;
+		gJobCheckpoint[playerid] = curStop;
+
+		new msg[160];
+		format(msg, sizeof(msg), "[RESI VALID] Paket ke-%d sukses diserahkan! Menerima upah $%d + bonus ketelitian $%d.", curStop, pay, bonus);
 		SendClientMessage(playerid, COLOR_SUCCESS, msg);
 
-		new next = gJobCheckpoint[playerid] + 1;
-		if (next >= MAX_COURIER_POINTS) {
-			ProcessJobComplete(playerid);
-		} else {
-			gJobCheckpoint[playerid] = next;
-			CreateJobCheckpoint(playerid, next);
-			SendClientMessage(playerid, COLOR_INFO, "[INFO] Menuju alamat pengiriman berikutnya di radar minimap.");
-		}
+		// Pilih alamat pengiriman baru
+		new nextDest = random(sizeof(gCourierDestList));
+		gCourierTargetDest[playerid] = nextDest;
+		SetPlayerCheckpoint(playerid, gCourierDestList[nextDest][cdX], gCourierDestList[nextDest][cdY], gCourierDestList[nextDest][cdZ], 6.0);
+
+		new nextMsg[160];
+		format(nextMsg, sizeof(nextMsg), "[KURIR] Pesanan baru diterima! Antarkan paket berikutnya ke: %s (atau ketik /quitjob untuk selesai).",
+			gCourierDestList[nextDest][cdAddress]);
+		SendClientMessage(playerid, COLOR_INFO, nextMsg);
 	} else {
 		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Kode resi yang Anda masukkan salah! Coba periksa kembali.");
-		TriggerCourierVerification(playerid);
+		new dest = gCourierTargetDest[playerid];
+		TriggerCourierVerification(playerid, gCourierDestList[dest][cdAddress]);
 	}
 	return 1;
 }

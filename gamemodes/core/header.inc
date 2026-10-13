@@ -47,22 +47,30 @@
 #define SendInfo(%0,%1)        SendClientMessage(%0, COLOR_INFO, "INFO: " %1)
 
 // factions
-#define FACTION_NONE           0
-#define FACTION_POLICE         1 // SAPD
-#define FACTION_MEDIC          2 // SAMD
-#define FACTION_GOV            3 // SAGOV
-#define FACTION_GANG           4 // Underground
+enum {
+	FACTION_NONE = 0,
+	FACTION_POLICE,        // SAPD
+	FACTION_MEDIC,         // SAMD
+	FACTION_GOV,           // SAGOV
+	FACTION_GANG,          // Underground
+	MAX_FACTIONS
+};
 
-// jobs (8 jobs)
-#define JOB_NONE               0
-#define JOB_COURIER            1 // Kurir Paket
-#define JOB_SWEEPER            2 // Pembersih Jalan
-#define JOB_TRUCKER            3 // Pengangkut Muatan
-#define JOB_MECHANIC           4 // Mekanik Bengkel
-#define JOB_SCAVENGER          5 // Pemulung Sampah
-#define JOB_LUMBERJACK         6 // Penebang Pohon
-#define JOB_FISHERMAN          7 // Nelayan Dermaga
-#define JOB_BUSDRIVER          8 // Supir Bus Trans-LS
+// jobs
+enum {
+	JOB_NONE = 0,
+	JOB_COURIER,           // Kurir Paket
+	JOB_SWEEPER,           // Pembersih Jalan
+	JOB_TRUCKER,           // Pengangkut Muatan
+	JOB_MECHANIC,          // Mekanik Bengkel
+	JOB_SCAVENGER,         // Pemulung Sampah
+	JOB_LUMBERJACK,        // Penebang Pohon
+	JOB_FISHERMAN,         // Nelayan Dermaga
+	JOB_BUSDRIVER,         // Supir Bus Trans-LS
+	JOB_TRASHMAN,          // Dinas Kebersihan Kota
+	JOB_MINER,             // Penambang Batu Quarry
+	MAX_JOBS
+};
 
 #define COURIER_VEH_MODEL      422 // Bobcat
 #define SWEEPER_VEH_MODEL      574 // Sweeper
@@ -225,81 +233,87 @@ enum E_VEHICLE_DATA {
 };
 
 // dialog IDs
-#define DIALOG_UCP_LOGIN          1
-#define DIALOG_UCP_REG_CODE       2
-#define DIALOG_UCP_REG_PASS       3
-#define DIALOG_UCP_OTP_VERIFY     40
-#define DIALOG_CHAR_SELECT        4
-#define DIALOG_CHAR_CREATE_NAME   5
-#define DIALOG_CHAR_CREATE_DOB    6
-#define DIALOG_CHAR_CREATE_GENDER 7
-#define DIALOG_REGISTER           8
-#define DIALOG_REGISTER_CONFIRM   9
-#define DIALOG_LOGIN              10
-#define DIALOG_STATS              11
-#define DIALOG_BANK_MENU          12
-#define DIALOG_BANK_DEPOSIT       13
-#define DIALOG_BANK_WITHDRAW      14
-#define DIALOG_BANK_TRANSFER      15
-#define DIALOG_ATM_MENU           16
-#define DIALOG_ATM_WITHDRAW       17
-#define DIALOG_ATM_DEPOSIT        18
-#define DIALOG_PAY                19
-#define DIALOG_JOB_MENU           20
-#define DIALOG_DEALERSHIP         21
-#define DIALOG_MYVEH              22
-#define DIALOG_MYVEH_ACTION       23
-#define DIALOG_TRUNK              24
-#define DIALOG_TRUNK_DEPOSIT      25
-#define DIALOG_TRUNK_WITHDRAW     26
-#define DIALOG_REFUEL             27
-#define DIALOG_SAPD_ACTIONS       28
-#define DIALOG_HELP               29
-#define DIALOG_INVENTORY          30
-#define DIALOG_ITEM_ACTION        31
-#define DIALOG_STORE_BUY          32
-#define DIALOG_PHONE_MENU         33
-#define DIALOG_PHONE_CALL         34
-#define DIALOG_PHONE_SMS          35
-#define DIALOG_RADIO_FREQ         36
-#define DIALOG_GPS_MENU           37
-#define DIALOG_GIVE_PLAYER        38
-#define DIALOG_GIVE_AMOUNT        39
-#define DIALOG_TRUNK_DEPOSIT_ITEM 41
-#define DIALOG_TRUNK_WITHDRAW_ITEM 42
-#define DIALOG_911_SERVICE        43
-#define DIALOG_911_MESSAGE        44
-#define DIALOG_TRUNK_TAKE_CASH    45
-#define DIALOG_LANGUAGE_SELECT    46
-#define DIALOG_ARMORY_MENU        47
-#define DIALOG_RENTAL_MENU        48
-#define DIALOG_TRUNK_WEAPON       49
-#define DIALOG_PAY_TICKETS        50
-#define DIALOG_BLACKMARKET_BUY    53
-#define DIALOG_BLACKMARKET_SELL   54
-#define DIALOG_CHOPSHOP_CONFIRM   55
-#define DIALOG_SMUGGLE_MENU       56
-#define DIALOG_ROB_CONFIRM        57
-#define DIALOG_DMV_PLATE          58
-#define DIALOG_VENDING_SNACK      59
-#define DIALOG_DMV_THEORY         60
-#define DIALOG_DICE_BET           61
-#define DIALOG_CAMPFIRE_MENU      62
-#define DIALOG_AMMUNATION_BUY     63
-#define DIALOG_SHARE_KEY          64
-#define DIALOG_BAR_MENU           65
-#define DIALOG_GYM_STYLES         66
-#define DIALOG_FASTFOOD_MENU      67
-#define DIALOG_ACCESSORIES        68
-#define DIALOG_ACTION_HUB         70
-#define DIALOG_ACTION_NEAR_PLAYER 71
-#define DIALOG_ACTION_JOBS_MENU   72
-#define DIALOG_ACTION_AD_INPUT    73
-#define DIALOG_ACTION_PLATE_INPUT 74
-#define DIALOG_ACTION_TAG_INPUT   75
+enum {
+	DIALOG_NONE = 0,
+	DIALOG_UCP_LOGIN,
+	DIALOG_UCP_REG_CODE,
+	DIALOG_UCP_REG_PASS,
+	DIALOG_UCP_OTP_VERIFY,
+	DIALOG_CHAR_SELECT,
+	DIALOG_CHAR_CREATE_NAME,
+	DIALOG_CHAR_CREATE_DOB,
+	DIALOG_CHAR_CREATE_GENDER,
+	DIALOG_REGISTER,
+	DIALOG_REGISTER_CONFIRM,
+	DIALOG_LOGIN,
+	DIALOG_STATS,
+	DIALOG_BANK_MENU,
+	DIALOG_BANK_DEPOSIT,
+	DIALOG_BANK_WITHDRAW,
+	DIALOG_BANK_TRANSFER,
+	DIALOG_ATM_MENU,
+	DIALOG_ATM_WITHDRAW,
+	DIALOG_ATM_DEPOSIT,
+	DIALOG_PAY,
+	DIALOG_JOB_MENU,
+	DIALOG_DEALERSHIP,
+	DIALOG_MYVEH,
+	DIALOG_MYVEH_ACTION,
+	DIALOG_TRUNK,
+	DIALOG_TRUNK_DEPOSIT,
+	DIALOG_TRUNK_WITHDRAW,
+	DIALOG_REFUEL,
+	DIALOG_SAPD_ACTIONS,
+	DIALOG_HELP,
+	DIALOG_INVENTORY,
+	DIALOG_ITEM_ACTION,
+	DIALOG_STORE_BUY,
+	DIALOG_PHONE_MENU,
+	DIALOG_PHONE_CALL,
+	DIALOG_PHONE_SMS,
+	DIALOG_RADIO_FREQ,
+	DIALOG_GPS_MENU,
+	DIALOG_GIVE_PLAYER,
+	DIALOG_GIVE_AMOUNT,
+	DIALOG_TRUNK_DEPOSIT_ITEM,
+	DIALOG_TRUNK_WITHDRAW_ITEM,
+	DIALOG_911_SERVICE,
+	DIALOG_911_MESSAGE,
+	DIALOG_TRUNK_TAKE_CASH,
+	DIALOG_LANGUAGE_SELECT,
+	DIALOG_ARMORY_MENU,
+	DIALOG_RENTAL_MENU,
+	DIALOG_TRUNK_WEAPON,
+	DIALOG_PAY_TICKETS,
+	DIALOG_BLACKMARKET_BUY,
+	DIALOG_BLACKMARKET_SELL,
+	DIALOG_CHOPSHOP_CONFIRM,
+	DIALOG_SMUGGLE_MENU,
+	DIALOG_ROB_CONFIRM,
+	DIALOG_DMV_PLATE,
+	DIALOG_VENDING_SNACK,
+	DIALOG_DMV_THEORY,
+	DIALOG_DICE_BET,
+	DIALOG_CAMPFIRE_MENU,
+	DIALOG_AMMUNATION_BUY,
+	DIALOG_SHARE_KEY,
+	DIALOG_BAR_MENU,
+	DIALOG_GYM_STYLES,
+	DIALOG_FASTFOOD_MENU,
+	DIALOG_ACCESSORIES,
+	DIALOG_ACTION_HUB,
+	DIALOG_ACTION_NEAR_PLAYER,
+	DIALOG_ACTION_JOBS_MENU,
+	DIALOG_ACTION_AD_INPUT,
+	DIALOG_ACTION_PLATE_INPUT,
+	DIALOG_ACTION_TAG_INPUT,
+	MAX_DIALOGS
+};
 
-#define LANG_ID                   0
-#define LANG_EN                   1
+enum {
+	LANG_ID = 0,
+	LANG_EN
+};
 
 // Dynamic Systems Forward Declarations
 forward ShowPlayerActionHub(playerid);
@@ -330,7 +344,6 @@ enum E_DISPATCH_DATA {
 
 // server limits & config
 #define MAX_DEALER_STOCK         8
-#define MAX_COURIER_POINTS       8
 #define MAX_SWEEPER_POINTS       8
 #define MAX_TRUCKER_POINTS       6
 #define MAX_BUS_POINTS           8
@@ -513,6 +526,8 @@ stock GetJobName(jobid, dest[], len = sizeof(dest))
 		case JOB_LUMBERJACK: format(dest, len, "Penebang Pohon");
 		case JOB_FISHERMAN:  format(dest, len, "Nelayan Dermaga");
 		case JOB_BUSDRIVER:  format(dest, len, "Supir Bus Kota");
+		case JOB_TRASHMAN:   format(dest, len, "Dinas Kebersihan");
+		case JOB_MINER:      format(dest, len, "Penambang Batu");
 		default:             format(dest, len, "Pengangguran");
 	}
 	return 1;
@@ -626,12 +641,27 @@ new const gDealerStock[MAX_DEALER_STOCK][4] = {
 	{542, 21000, 66, 66}  // Clover
 };
 
-// job checkpoint coordinates
-new const gCourierPoints[MAX_COURIER_POINTS][3] = {
-	{2226, -1673, 15}, {1836, -1842, 13}, {1596, -2326, 13}, {1199, -1277, 14},
-	{934, -1408, 13}, {812, -1616, 13}, {652, -1864, 5}, {494, -1760, 12}
+enum E_COURIER_DEST {
+	cdAddress[48],
+	Float:cdX,
+	Float:cdY,
+	Float:cdZ
 };
 
+new const gCourierDestList[8][E_COURIER_DEST] = {
+	{"101 Grove Street, Ganton", 2495.3, -1690.8, 13.5},
+	{"205 Idlewood Motel, Idlewood", 1978.2, -1582.4, 13.4},
+	{"502 Verona Beach Pierway", 1142.0, -2040.5, 13.8},
+	{"Balai Kota SAGOV, Pershing Square", 1481.0, -1770.0, 15.3},
+	{"Minimarket 24/7 Idlewood", 1315.0, -1748.0, 13.5},
+	{"Bengkel Modifikasi Commerce", 1995.0, -2060.0, 13.5},
+	{"Dermaga Santa Maria Pier", 383.0, -2079.0, 7.8},
+	{"104 East Ganton Boulevard", 2262.1, -1647.5, 15.2}
+};
+
+new gCourierTargetDest[MAX_PLAYERS];
+
+// job checkpoint coordinates
 new const gSweeperPoints[MAX_SWEEPER_POINTS][3] = {
 	{1489, -1744, 13}, {1354, -1769, 13}, {1209, -1769, 13}, {1063, -1779, 13},
 	{961, -1676, 13}, {1069, -1557, 13}, {1192, -1480, 13}, {1347, -1479, 13}
@@ -659,6 +689,7 @@ new gPlayerData[MAX_PLAYERS][E_PLAYER_DATA];
 new gPlayerItems[MAX_PLAYERS][MAX_INVENTORY_SLOTS][E_ITEM_DATA];
 new gVehicleData[MAX_OWNED_VEHICLES][E_VEHICLE_DATA];
 new gVehicleTrunkItems[MAX_OWNED_VEHICLES][MAX_TRUNK_SLOTS][E_ITEM_DATA];
+new bool:gVehicleEngineState[MAX_VEHICLES];
 new gVehicleCount;
 new gCurrentTax = PAJAK_DEFAULT;
 

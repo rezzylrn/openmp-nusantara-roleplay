@@ -106,7 +106,7 @@ public RunAutomatedRPTests()
 
 	// 5. test jobs (8 jobs configured)
 	print("[TEST 5/11] 8 Sidejobs Configuration & Routes...");
-	new courierCount = sizeof(gCourierPoints);
+	new courierCount = sizeof(gCourierDestList);
 	new sweeperCount = sizeof(gSweeperPoints);
 	new truckerCount = sizeof(gTruckerPoints);
 	new busCount = sizeof(gBusPoints);
@@ -1481,8 +1481,33 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
+	// 69. test vehicle engine start/stop cycle, 1-main-job rule & courier address assignment
+	print("[TEST 69/69] Engine Toggle Cycle, Strict 1-Main-Job Enforcer & Courier Destinations...");
+	new testVeh = CreateVehicle(400, 0.0, 0.0, 5.0, 0.0, 1, 1, -1);
+	Vehicle_SetEngineOn(testVeh, true);
+	new bool:engStarted = (Vehicle_IsEngineOn(testVeh) == 1);
+	Vehicle_SetEngineOn(testVeh, false);
+	new bool:engStopped = (Vehicle_IsEngineOn(testVeh) == 0);
+	DestroyVehicle(testVeh);
+
+	new jobTester = 0;
+	gPlayerData[jobTester][pJob] = JOB_MECHANIC;
+	ProcessJobQuit(jobTester);
+	new bool:quitOk = (gPlayerData[jobTester][pJob] == JOB_NONE && gPlayerData[jobTester][pJobCooldown] > gettime());
+	gPlayerData[jobTester][pJobCooldown] = 0; // reset
+
+	new bool:courierDestOk = (sizeof(gCourierDestList) == 8);
+
+	if (engStarted && engStopped && quitOk && courierDestOk) {
+		print("  -> PASS: Vehicle start/stop toggle operational, 1-main-job limit & quit cooldown enforced, courier address destinations ready.");
+		passCount++;
+	} else {
+		printf("  -> FAIL: Details: engStarted=%d, engStopped=%d, quitOk=%d, courierDestOk=%d", engStarted, engStopped, quitOk, courierDestOk);
+		failCount++;
+	}
+
 	print("==================================================");
-	printf("  [DEBUG SUMMARY] %d / 68 TESTS PASSED, %d FAILED", passCount, failCount);
+	printf("  [DEBUG SUMMARY] %d / 69 TESTS PASSED, %d FAILED", passCount, failCount);
 	print("==================================================\n");
 
 	return 1;

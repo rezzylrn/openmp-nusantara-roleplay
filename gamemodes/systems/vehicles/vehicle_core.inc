@@ -39,18 +39,29 @@ stock Vehicle_SetFuel(vehicleid, Float:fuel)
 
 stock Vehicle_IsEngineOn(vehicleid)
 {
+	if (vehicleid <= 0 || vehicleid >= MAX_VEHICLES) return 0;
+	if (IsValidVehicle(vehicleid)) {
+		new eng = -1, lights = -1, alarm = -1, doors = -1, bonnet = -1, boot = -1, objective = -1;
+		GetVehicleParamsEx(vehicleid, eng, lights, alarm, doors, bonnet, boot, objective);
+		if (eng == 1) return 1;
+		if (eng == 0) return 0;
+	}
 	new slot = Vehicle_GetSlot(vehicleid);
-	if (slot == -1) return 1;
-	return gVehicleData[slot][vEngine];
+	if (slot != -1) return (gVehicleData[slot][vEngine]) ? 1 : 0;
+	return (gVehicleEngineState[vehicleid]) ? 1 : 0;
 }
 
 stock Vehicle_SetEngineOn(vehicleid, bool:engine)
 {
+	if (vehicleid <= 0 || vehicleid >= MAX_VEHICLES) return 0;
 	new slot = Vehicle_GetSlot(vehicleid);
 	if (slot != -1) gVehicleData[slot][vEngine] = engine;
-	new eng, lights, alarm, doors, bonnet, boot, objective;
-	GetVehicleParamsEx(vehicleid, eng, lights, alarm, doors, bonnet, boot, objective);
-	SetVehicleParamsEx(vehicleid, _:engine, lights, alarm, doors, bonnet, boot, objective);
+	gVehicleEngineState[vehicleid] = engine;
+	if (IsValidVehicle(vehicleid)) {
+		new eng = -1, lights = -1, alarm = -1, doors = -1, bonnet = -1, boot = -1, objective = -1;
+		GetVehicleParamsEx(vehicleid, eng, lights, alarm, doors, bonnet, boot, objective);
+		SetVehicleParamsEx(vehicleid, (engine) ? 1 : 0, lights, alarm, doors, bonnet, boot, objective);
+	}
 	return 1;
 }
 

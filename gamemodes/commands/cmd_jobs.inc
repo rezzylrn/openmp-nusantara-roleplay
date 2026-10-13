@@ -216,4 +216,24 @@ CMD:sellpearl(playerid, params[])
 	return 1;
 }
 
+CMD:startcourier(playerid, params[])
+{
+	return StartCourierJob(playerid);
+}
+
+CMD:startsweeper(playerid, params[])
+{
+	return StartSweeperJob(playerid);
+}
+
+CMD:starttrucker(playerid, params[])
+{
+	return StartTruckerJob(playerid);
+}
+
+CMD:startbus(playerid, params[])
+{
+	return StartBusDriverJob(playerid);
+}
+
 

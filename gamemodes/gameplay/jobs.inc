@@ -3,7 +3,7 @@
 #endif
 #define _INC_rp_jobs
 
-// job menu dialog
+// job menu dialog (Pusat Buruh & Balai Kota)
 stock ShowJobDialog(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
@@ -12,18 +12,32 @@ stock ShowJobDialog(playerid)
 		return 0;
 	}
 
+	new currentJob[64];
+	if (gPlayerData[playerid][pJob] == JOB_NONE) {
+		format(currentJob, sizeof(currentJob), "{2ECC71}Menganggur (Belum memiliki pekerjaan)");
+	} else {
+		new jName[32];
+		GetJobName(gPlayerData[playerid][pJob], jName, sizeof(jName));
+		format(currentJob, sizeof(currentJob), "{FFFF00}%s {AFAFAF}(Gunakan /quitjob untuk resign)", jName);
+	}
+
+	new body[950];
+	format(body, sizeof(body),
+		"{FFFFFF}Pekerjaan Utama Anda Saat Ini: %s\n\n\
+{FFFFFF}1. Kurir Paket Logistik (Gudang Willowfield/Ocean Docks)\n\
+{FFFFFF}2. Pembersih Jalan Raya (Depo Sweeper Unity)\n\
+{FFFFFF}3. Supir Truk Kargo Ekspedisi (Dermaga Ocean Docks)\n\
+{FFFFFF}4. Mekanik Bengkel Mesin & Bodi (/service)\n\
+{FFFFFF}5. Pemulung Barang Rongsokan Gang Kota (/searchtrash)\n\
+{FFFFFF}6. Penebang Pohon Hutan Shady Creeks (/cutwood)\n\
+{FFFFFF}7. Nelayan Dermaga Santa Maria Pier (/fish)\n\
+{FFFFFF}8. Supir Bus Kota Trans-LS (Terminal Bus)\n\
+{FFFFFF}9. Petugas Dinas Truk Sampah (/starttrash)\n\
+{FFFFFF}10. Penambang Batu Hunter Quarry (/mine)\n\
+{E74C3C}11. Mengundurkan Diri dari Pekerjaan Utama (/quitjob)", currentJob);
+
 	ShowPlayerDialog(playerid, DIALOG_JOB_MENU, DIALOG_STYLE_LIST,
-		"PUSAT BURUH & PEKERJAAN KOTA",
-		"1. Kurir Paket (Logistik Bobcat)\n\
-2. Pembersih Jalan (Sweeper)\n\
-3. Pengangkut Muatan (Trucker Hauler)\n\
-4. Mekanik Kendaraan (/service)\n\
-5. Pemulung Rongsokan (/searchtrash)\n\
-6. Penebang Pohon Hutan (/cutwood)\n\
-7. Nelayan Dermaga (/fish)\n\
-8. Supir Bus Trans-LS (Bus Rute)\n\
-9. Berhenti dari Pekerjaan (/quitjob)",
-		"Pilih", "Batal");
+		"PUSAT BURUH & PEKERJAAN UTAMA KOTA", body, "Pilih", "Tutup");
 	return 1;
 }
 
@@ -34,17 +48,57 @@ stock OnJobMenuResponse(playerid, listitem)
 		return 0;
 	}
 
-	switch (listitem) {
-		case 0: StartCourierJob(playerid);
-		case 1: StartSweeperJob(playerid);
-		case 2: StartTruckerJob(playerid);
-		case 3: StartMechanicJob(playerid);
-		case 4: StartScavengerJob(playerid);
-		case 5: StartLumberjackJob(playerid);
-		case 6: StartFishermanJob(playerid);
-		case 7: StartBusDriverJob(playerid);
-		case 8: ProcessJobQuit(playerid);
+	if (listitem == 10) {
+		return ProcessJobQuit(playerid);
 	}
+
+	new targetJob = JOB_NONE;
+	switch (listitem) {
+		case 0: targetJob = JOB_COURIER;
+		case 1: targetJob = JOB_SWEEPER;
+		case 2: targetJob = JOB_TRUCKER;
+		case 3: targetJob = JOB_MECHANIC;
+		case 4: targetJob = JOB_SCAVENGER;
+		case 5: targetJob = JOB_LUMBERJACK;
+		case 6: targetJob = JOB_FISHERMAN;
+		case 7: targetJob = JOB_BUSDRIVER;
+		case 8: targetJob = JOB_TRASHMAN;
+		case 9: targetJob = JOB_MINER;
+		default: return 1;
+	}
+
+	// 1. Cek jika sudah memiliki pekerjaan tetap (hanya boleh 1 main job)
+	if (gPlayerData[playerid][pJob] != JOB_NONE) {
+		if (gPlayerData[playerid][pJob] == targetJob) {
+			new jName[32];
+			GetJobName(targetJob, jName, sizeof(jName));
+			SendInfo(playerid, "Anda sudah bekerja sebagai %s! Silakan menuju tempat kerja Anda (/gps).", jName);
+			return 1;
+		}
+		new currName[32];
+		GetJobName(gPlayerData[playerid][pJob], currName, sizeof(currName));
+		SendErr(playerid, "Anda masih terikat pekerjaan sebagai %s! Setiap warga hanya boleh memiliki 1 pekerjaan utama.", currName);
+		SendInfo(playerid, "Gunakan /quitjob terlebih dahulu jika Anda ingin mengundurkan diri dan berganti profesi.");
+		return 1;
+	}
+
+	// 2. Cek jeda timing quitjob (cooldown 10 menit)
+	if (gPlayerData[playerid][pJobCooldown] > gettime()) {
+		new sisa = gPlayerData[playerid][pJobCooldown] - gettime();
+		new menit = sisa / 60;
+		new detik = sisa % 60;
+		SendErr(playerid, "Anda masih dalam masa jeda resign. Tunggu %d menit %d detik lagi sebelum melamar pekerjaan baru.", menit, detik);
+		return 1;
+	}
+
+	// 3. Terima pekerjaan
+	gPlayerData[playerid][pJob] = targetJob;
+	new newJobName[32];
+	GetJobName(targetJob, newJobName, sizeof(newJobName));
+
+	SendSucc(playerid, "Selamat! Anda resmi diterima bekerja sebagai: %s.", newJobName);
+	SendInfo(playerid, "Buka peta atau gunakan /gps untuk menuju ke lokasi tempat pekerjaan Anda.");
+	PlayerPlaySound(playerid, 1058, 0.0, 0.0, 0.0);
 	return 1;
 }
 
@@ -56,25 +110,33 @@ stock StartCourierJob(playerid)
 		SendErr(playerid, "Anda tidak dapat memulai pekerjaan saat pingsan atau terborgol.");
 		return 0;
 	}
-	if (gJobActive[playerid]) {
-		SendErr(playerid, "Anda masih memiliki tugas pekerjaan aktif.");
+	if (gPlayerData[playerid][pJob] != JOB_COURIER) {
+		SendErr(playerid, "Pekerjaan ini khusus untuk pegawai Kurir Paket (/job di Balai Kota).");
 		return 0;
 	}
-	if (!IsPlayerNearPoint(playerid, COURIER_X, COURIER_Y, COURIER_Z, 25.0)) {
+	if (gJobActive[playerid]) {
+		SendErr(playerid, "Anda masih memiliki tugas pengantaran paket yang sedang aktif.");
+		return 0;
+	}
+	if (!IsPlayerNearPoint(playerid, COURIER_X, COURIER_Y, COURIER_Z, 30.0)) {
 		SendErr(playerid, "Anda harus berada di Gudang Logistik Kurir (/gps).");
 		return 0;
 	}
 
-	gPlayerData[playerid][pJob] = JOB_COURIER;
 	gPlayerJobVehicle[playerid] = CreateVehicle(COURIER_VEH_MODEL, COURIER_X + 2.0, COURIER_Y + 2.0, COURIER_Z + 1.0, 90.0, 40, 40, 0);
 	gJobCheckpoint[playerid] = 0;
 	gJobCash[playerid] = 0;
 	gJobActive[playerid] = true;
 	gJobType[playerid] = JOB_COURIER;
 
+	// Pilih alamat pengiriman
+	new dest = random(sizeof(gCourierDestList));
+	gCourierTargetDest[playerid] = dest;
+
 	AC_PutPlayerInVehicle(playerid, gPlayerJobVehicle[playerid], 0);
-	CreateJobCheckpoint(playerid, 0);
-	SendInfo(playerid, "Pekerjaan Kurir dimulai. Ikuti tanda merah di peta radar.");
+	SetPlayerCheckpoint(playerid, gCourierDestList[dest][cdX], gCourierDestList[dest][cdY], gCourierDestList[dest][cdZ], 6.0);
+
+	SendSucc(playerid, "[KURIR] Paket diambil di Gudang! Antarkan ke alamat: %s (Tanda merah di radar).", gCourierDestList[dest][cdAddress]);
 	return 1;
 }
 
@@ -86,6 +148,10 @@ stock StartSweeperJob(playerid)
 		SendErr(playerid, "Anda tidak dapat memulai pekerjaan saat pingsan atau terborgol.");
 		return 0;
 	}
+	if (gPlayerData[playerid][pJob] != JOB_SWEEPER) {
+		SendErr(playerid, "Pekerjaan ini khusus untuk petugas Pembersih Jalan (/job di Balai Kota).");
+		return 0;
+	}
 	if (gJobActive[playerid]) {
 		SendErr(playerid, "Anda masih memiliki tugas pekerjaan aktif.");
 		return 0;
@@ -95,7 +161,6 @@ stock StartSweeperJob(playerid)
 		return 0;
 	}
 
-	gPlayerData[playerid][pJob] = JOB_SWEEPER;
 	gPlayerJobVehicle[playerid] = CreateVehicle(SWEEPER_VEH_MODEL, SWEEPER_X + 2.0, SWEEPER_Y + 2.0, SWEEPER_Z + 1.0, 0.0, 2, 2, 0);
 	gJobCheckpoint[playerid] = 0;
 	gJobCash[playerid] = 0;
@@ -116,6 +181,10 @@ stock StartTruckerJob(playerid)
 		SendErr(playerid, "Anda tidak dapat memulai pekerjaan saat pingsan atau terborgol.");
 		return 0;
 	}
+	if (gPlayerData[playerid][pJob] != JOB_TRUCKER) {
+		SendErr(playerid, "Pekerjaan ini khusus untuk Supir Truk Kargo (/job di Balai Kota).");
+		return 0;
+	}
 	if (gJobActive[playerid]) {
 		SendErr(playerid, "Anda masih memiliki tugas pekerjaan aktif.");
 		return 0;
@@ -125,7 +194,6 @@ stock StartTruckerJob(playerid)
 		return 0;
 	}
 
-	gPlayerData[playerid][pJob] = JOB_TRUCKER;
 	gPlayerJobVehicle[playerid] = CreateVehicle(TRUCKER_VEH_MODEL, TRUCKER_X + 4.0, TRUCKER_Y, TRUCKER_Z + 1.0, 0.0, 1, 1, 0);
 	gPlayerJobTrailer[playerid] = CreateVehicle(TRUCKER_TRAILER_MODEL, TRUCKER_X + 4.0, TRUCKER_Y - 10.0, TRUCKER_Z + 1.0, 0.0, 1, 1, 0);
 	AttachTrailerToVehicle(gPlayerJobTrailer[playerid], gPlayerJobVehicle[playerid]);
@@ -149,9 +217,7 @@ stock StartMechanicJob(playerid)
 		SendErr(playerid, "Anda tidak dapat mengambil pekerjaan saat pingsan atau terborgol.");
 		return 0;
 	}
-	gPlayerData[playerid][pJob] = JOB_MECHANIC;
-	SendSucc(playerid, "Profesi Anda sekarang: Mekanik Bengkel. Gunakan /service [engine/body] [targetid] [harga].");
-	return 1;
+	return ShowJobDialog(playerid);
 }
 
 // 5. pemulung
@@ -162,10 +228,7 @@ stock StartScavengerJob(playerid)
 		SendErr(playerid, "Anda tidak dapat mengambil pekerjaan saat pingsan atau terborgol.");
 		return 0;
 	}
-	gPlayerData[playerid][pJob] = JOB_SCAVENGER;
-	SendSucc(playerid, "Profesi Anda sekarang: Pemulung Sampah & Rongsokan.");
-	SendInfo(playerid, "Cari tempat sampah di gang kota lalu gunakan /searchtrash. Jual hasil di pengepul (/selltrash).");
-	return 1;
+	return ShowJobDialog(playerid);
 }
 
 // 6. penebang pohon
@@ -176,11 +239,7 @@ stock StartLumberjackJob(playerid)
 		SendErr(playerid, "Anda tidak dapat mengambil pekerjaan saat pingsan atau terborgol.");
 		return 0;
 	}
-	gPlayerData[playerid][pJob] = JOB_LUMBERJACK;
-	AC_GiveWeapon(playerid, WEAPON_CHAINSAW, 1);
-	SendSucc(playerid, "Profesi Anda sekarang: Penebang Pohon. Anda menerima gergaji mesin.");
-	SendInfo(playerid, "Pergi ke Hutan Shady Creeks (/gps) lalu tebang pohon dengan /cutwood. Jual di Sawmill (/sellwood).");
-	return 1;
+	return ShowJobDialog(playerid);
 }
 
 // 7. nelayan
@@ -191,12 +250,7 @@ stock StartFishermanJob(playerid)
 		SendErr(playerid, "Anda tidak dapat mengambil pekerjaan saat pingsan atau terborgol.");
 		return 0;
 	}
-	gPlayerData[playerid][pJob] = JOB_FISHERMAN;
-	GivePlayerItem(playerid, ITEM_ROD, 1);
-	GivePlayerItem(playerid, ITEM_BAIT, 5);
-	SendSucc(playerid, "Profesi Anda sekarang: Nelayan Dermaga. Anda menerima Joran & 5 Umpan di /inv.");
-	SendInfo(playerid, "Pergi ke Dermaga Santa Maria Pier (/gps) lalu gunakan /fish. Jual tangkapan dengan /sellfish.");
-	return 1;
+	return ShowJobDialog(playerid);
 }
 
 // 8. supir bus
@@ -205,6 +259,10 @@ stock StartBusDriverJob(playerid)
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
 	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
 		SendErr(playerid, "Anda tidak dapat memulai pekerjaan saat pingsan atau terborgol.");
+		return 0;
+	}
+	if (gPlayerData[playerid][pJob] != JOB_BUSDRIVER) {
+		SendErr(playerid, "Pekerjaan ini khusus untuk Supir Bus Kota (/job di Balai Kota).");
 		return 0;
 	}
 	if (gJobActive[playerid]) {
@@ -216,7 +274,6 @@ stock StartBusDriverJob(playerid)
 		return 0;
 	}
 
-	gPlayerData[playerid][pJob] = JOB_BUSDRIVER;
 	gPlayerJobVehicle[playerid] = CreateVehicle(BUS_VEH_MODEL, BUS_DEPOT_X + 2.0, BUS_DEPOT_Y + 2.0, BUS_DEPOT_Z + 1.0, 90.0, 3, 3, 0);
 	gJobCheckpoint[playerid] = 0;
 	gJobCash[playerid] = 0;
@@ -238,7 +295,7 @@ stock ProcessSearchTrash(playerid)
 		return 0;
 	}
 	if (gPlayerData[playerid][pJob] != JOB_SCAVENGER) {
-		SendErr(playerid, "Pekerjaan ini khusus untuk Pemulung (/job).");
+		SendErr(playerid, "Pekerjaan ini khusus untuk Pemulung (/job di Balai Kota).");
 		return 0;
 	}
 
@@ -292,7 +349,7 @@ stock ProcessCutWood(playerid)
 		return 0;
 	}
 	if (gPlayerData[playerid][pJob] != JOB_LUMBERJACK) {
-		SendErr(playerid, "Pekerjaan ini khusus untuk Penebang Pohon (/job).");
+		SendErr(playerid, "Pekerjaan ini khusus untuk Penebang Pohon (/job di Balai Kota).");
 		return 0;
 	}
 	return StartLumberjackMinigameProcess(playerid);
@@ -332,6 +389,10 @@ stock ProcessFish(playerid)
 		SendErr(playerid, "Anda tidak dapat memancing saat pingsan atau terborgol.");
 		return 0;
 	}
+	if (gPlayerData[playerid][pJob] != JOB_FISHERMAN) {
+		SendErr(playerid, "Pekerjaan ini khusus untuk Nelayan Dermaga (/job di Balai Kota).");
+		return 0;
+	}
 	return StartFishingMinigameProcess(playerid);
 }
 
@@ -367,8 +428,8 @@ stock CreateJobCheckpoint(playerid, pointindex)
 
 	switch (gJobType[playerid]) {
 		case JOB_COURIER: {
-			if (pointindex >= MAX_COURIER_POINTS) return;
-			SetPlayerCheckpoint(playerid, gCourierPoints[pointindex][0] * 1.0, gCourierPoints[pointindex][1] * 1.0, gCourierPoints[pointindex][2] * 1.0, 10.0);
+			new dest = gCourierTargetDest[playerid];
+			SetPlayerCheckpoint(playerid, gCourierDestList[dest][cdX], gCourierDestList[dest][cdY], gCourierDestList[dest][cdZ], 6.0);
 		}
 		case JOB_SWEEPER: {
 			if (pointindex >= MAX_SWEEPER_POINTS) return;
@@ -390,9 +451,11 @@ stock OnJobCheckpoint(playerid)
 	if (!gJobActive[playerid]) return 0;
 	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 
-	// Kurir Paket: Verifikasi Resi Paket (Anti-Bot Captcha)
+	// Kurir Paket: Tiba di alamat rumah pemesan yang sebenarnya!
 	if (gJobType[playerid] == JOB_COURIER) {
-		TriggerCourierVerification(playerid);
+		new dest = gCourierTargetDest[playerid];
+		DisablePlayerCheckpoint(playerid);
+		TriggerCourierVerification(playerid, gCourierDestList[dest][cdAddress]);
 		return 1;
 	}
 
@@ -400,7 +463,6 @@ stock OnJobCheckpoint(playerid)
 	new total = 0, pay = 0;
 
 	switch (gJobType[playerid]) {
-		case JOB_COURIER:   { total = MAX_COURIER_POINTS; pay = 150; }
 		case JOB_SWEEPER:   { total = MAX_SWEEPER_POINTS; pay = 100; }
 		case JOB_TRUCKER:   { total = MAX_TRUCKER_POINTS; pay = 350; }
 		case JOB_BUSDRIVER: { total = MAX_BUS_POINTS;     pay = 80;  }
@@ -456,9 +518,13 @@ stock ProcessJobComplete(playerid)
 stock ProcessJobQuit(playerid)
 {
 	if (!gJobActive[playerid] && gPlayerData[playerid][pJob] == JOB_NONE) {
-		SendErr(playerid, "Anda tidak sedang menjalankan rute pekerjaan.");
+		SendErr(playerid, "Anda tidak memiliki pekerjaan tetap.");
 		return 0;
 	}
+
+	new oldJob = gPlayerData[playerid][pJob];
+	new jName[32];
+	GetJobName(oldJob, jName, sizeof(jName));
 
 	DisablePlayerCheckpoint(playerid);
 
@@ -472,13 +538,23 @@ stock ProcessJobQuit(playerid)
 	}
 	gPlayerJobTrailer[playerid] = -1;
 
+	if (gTrashDuty[playerid] && gTrashVeh[playerid] > 0 && IsValidVehicle(gTrashVeh[playerid])) {
+		DestroyVehicle(gTrashVeh[playerid]);
+		gTrashVeh[playerid] = 0;
+		gTrashDuty[playerid] = false;
+	}
+
 	gJobActive[playerid] = false;
 	gJobCash[playerid] = 0;
 	gJobCheckpoint[playerid] = 0;
 	gJobType[playerid] = 0;
 	gPlayerData[playerid][pJob] = JOB_NONE;
 
-	SendInfo(playerid, "Anda telah membatalkan dan keluar dari pekerjaan.");
+	// Cooldown 10 menit (600 detik)
+	gPlayerData[playerid][pJobCooldown] = gettime() + 600;
+
+	SendSucc(playerid, "Anda telah resmi mengundurkan diri dari pekerjaan (%s).", jName);
+	SendInfo(playerid, "Masa jeda berlaku: Anda harus menunggu 10 menit sebelum dapat melamar pekerjaan baru.");
 	return 1;
 }
 
@@ -527,9 +603,33 @@ stock ProcessKeyActivity(playerid)
 		return 1;
 	}
 
-	// 7. Cek pusat pekerjaan umum
-	if (IsPlayerInRangeOfPoint(playerid, 5.0, COURIER_X, COURIER_Y, COURIER_Z)) {
+	// 7. Cek pusat pekerjaan umum (Balai Kota SAGOV Pershing Square)
+	if (IsPlayerInRangeOfPoint(playerid, 6.0, JOB_CENTER_X, JOB_CENTER_Y, JOB_CENTER_Z)) {
 		ShowJobDialog(playerid);
+		return 1;
+	}
+
+	// 7a. Cek gudang kurir paket
+	if (IsPlayerInRangeOfPoint(playerid, 10.0, COURIER_X, COURIER_Y, COURIER_Z)) {
+		StartCourierJob(playerid);
+		return 1;
+	}
+
+	// 7b. Cek depo pembersih jalan sweeper
+	if (IsPlayerInRangeOfPoint(playerid, 10.0, SWEEPER_X, SWEEPER_Y, SWEEPER_Z)) {
+		StartSweeperJob(playerid);
+		return 1;
+	}
+
+	// 7c. Cek terminal bus kota
+	if (IsPlayerInRangeOfPoint(playerid, 10.0, BUS_DEPOT_X, BUS_DEPOT_Y, BUS_DEPOT_Z)) {
+		StartBusDriverJob(playerid);
+		return 1;
+	}
+
+	// 7d. Cek dermaga kargo truk
+	if (IsPlayerInRangeOfPoint(playerid, 15.0, TRUCKER_X, TRUCKER_Y, TRUCKER_Z)) {
+		StartTruckerJob(playerid);
 		return 1;
 	}
 

@@ -105,6 +105,7 @@ public OnGameModeInit()
 	EnableStuntBonusForAll(false);
 	UsePlayerPedAnims();
 	DisableInteriorEnterExits();
+	ManualVehicleEngineAndLights();
 
 	// db init
 	DB_Init();
