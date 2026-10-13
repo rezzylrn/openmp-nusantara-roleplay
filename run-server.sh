@@ -60,8 +60,14 @@ cleanup() {
     if [ -f "$RUN_DIR/log.txt" ]; then
         cp "$RUN_DIR/log.txt" "$SRC_DIR/server_latest.log"
     fi
+    exit 0
 }
 trap cleanup EXIT INT TERM
 
 cd "$RUN_DIR"
-exec qemu-i386-static -d unimp,guest_errors -L /usr/i386-linux-gnu ./omp-server "$@"
+while true; do
+    echo "=== [open.mp] Launching server instance ==="
+    qemu-i386-static -d unimp,guest_errors -L /usr/i386-linux-gnu ./omp-server "$@" || true
+    echo "=== [open.mp] Process exited. Auto-restarting in 2 seconds... ==="
+    sleep 2
+done
