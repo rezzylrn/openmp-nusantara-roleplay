@@ -566,6 +566,7 @@ stock DeserializeTrunkItems(slot, const input[])
 	new curSlot = 0;
 	new i = 0;
 	while (input[i] != '\0' && curSlot < MAX_TRUNK_SLOTS) {
+		new oldI = i;
 		new type = 0, amt = 0;
 		while (input[i] >= '0' && input[i] <= '9') {
 			type = (type * 10) + (input[i] - '0');
@@ -583,6 +584,7 @@ stock DeserializeTrunkItems(slot, const input[])
 			gVehicleData[slot][vTrunkItemAmount][curSlot] = amt;
 			curSlot++;
 		}
+		if (i == oldI) i++;
 	}
 	return 1;
 }

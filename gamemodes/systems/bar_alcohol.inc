@@ -116,7 +116,7 @@ stock ProcessBreathalyzerTest(playerid, targetid)
 	}
 
 	new drunk = gPlayerData[targetid][pDrunkLevel];
-	new statusStr[32];
+	new statusStr[64];
 	if (drunk >= 3000) format(statusStr, sizeof(statusStr), "{FF3B30}POSITIF MABUK BERAT (DUI)");
 	else if (drunk > 500) format(statusStr, sizeof(statusStr), "{FFFF00}TERPENGARUH ALKOHOL");
 	else format(statusStr, sizeof(statusStr), "{4CD964}NEGATIF (SADAR)");

@@ -126,6 +126,9 @@ stock ProcessPlayerKnockout(playerid, const reason[])
 	gPlayerData[playerid][pInjuredTime] = 90; // 90 detik countdown darurat
 
 	if (gJobActive[playerid]) ProcessJobQuit(playerid);
+	if (IsPlayerInAnyVehicle(playerid)) {
+		RemovePlayerFromVehicle(playerid);
+	}
 	if (gHoldingTrashBag[playerid]) {
 		gHoldingTrashBag[playerid] = false;
 		RemovePlayerAttachedObject(playerid, 1);

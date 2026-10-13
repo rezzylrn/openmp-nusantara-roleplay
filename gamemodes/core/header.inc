@@ -690,6 +690,7 @@ new gPlayerItems[MAX_PLAYERS][MAX_INVENTORY_SLOTS][E_ITEM_DATA];
 new gVehicleData[MAX_OWNED_VEHICLES][E_VEHICLE_DATA];
 new gVehicleTrunkItems[MAX_OWNED_VEHICLES][MAX_TRUNK_SLOTS][E_ITEM_DATA];
 new bool:gVehicleEngineState[MAX_VEHICLES];
+new gPlayerVehListSlot[MAX_PLAYERS][MAX_OWNED_VEHICLES];
 new gVehicleCount;
 new gCurrentTax = PAJAK_DEFAULT;
 

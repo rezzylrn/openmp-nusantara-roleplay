@@ -139,6 +139,10 @@ public CallTimeout(playerid, targetid)
 stock ProcessPickup(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat mengangkat telepon saat pingsan atau terborgol.");
+		return 0;
+	}
 	if (gPlayerData[playerid][pCallState] != 1) {
 		SendErr(playerid, "Tidak ada panggilan masuk yang sedang berdering.");
 		return 0;
@@ -250,6 +254,10 @@ stock ShowRadioDialog(playerid)
 stock ProcessRadio(playerid, const message[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat menggunakan radio HT saat pingsan atau terborgol.");
+		return 0;
+	}
 	if (GetPlayerItemCount(playerid, ITEM_RADIO) <= 0) {
 		SendErr(playerid, "Anda tidak memiliki Handy Talkie (HT).");
 		return 0;

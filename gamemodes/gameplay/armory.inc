@@ -194,7 +194,7 @@ stock OnFactionArmoryResponse(playerid, listitem)
 			}
 			case 4: {
 				// Clear Weapons
-				ResetPlayerWeapons(playerid);
+				AC_ResetWeapons(playerid);
 				SetPlayerArmour(playerid, 0.0);
 				gPlayerData[playerid][pRadioFreq] = 0;
 				PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);

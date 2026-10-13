@@ -12,7 +12,7 @@ stock ShowJobDialog(playerid)
 		return 0;
 	}
 
-	new currentJob[64];
+	new currentJob[96];
 	if (gPlayerData[playerid][pJob] == JOB_NONE) {
 		format(currentJob, sizeof(currentJob), "{2ECC71}Menganggur (Belum memiliki pekerjaan)");
 	} else {

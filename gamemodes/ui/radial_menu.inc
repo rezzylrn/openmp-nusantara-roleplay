@@ -74,10 +74,16 @@ Dialog:DialogRadialVehMenu(playerid, response, listitem, inputtext[])
 
 	switch (listitem) {
 		case 0: { // 1. Mesin
-			Vehicle_SetEngineOn(veh, !Vehicle_IsEngineOn(veh));
+			ProcessEngineToggle(playerid);
 		}
 		case 1: { // 2. Kunci
+			if (slot != -1 && gVehicleData[slot][vOwnerID] != gPlayerData[playerid][pID]) {
+				SendErr(playerid, "Anda tidak memiliki kunci untuk kendaraan ini.");
+				return 1;
+			}
 			Vehicle_SetLocked(veh, !Vehicle_IsLocked(veh));
+			new isLocked = Vehicle_IsLocked(veh);
+			SendNearbyPlayer(playerid, COLOR_RP_ME, isLocked ? "* mengunci pintu kendaraan." : "* membuka kunci pintu kendaraan.", RANGE_ME);
 		}
 		case 2: { // 3. Lampu
 			if (slot != -1) Vehicle_SetLights(veh, !gVehicleData[slot][vLights]);

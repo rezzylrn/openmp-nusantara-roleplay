@@ -80,7 +80,7 @@ stock ProcessPoliceRadarTick(playerid)
 			}
 
 			if (targetSpeed > POLICE_SPEED_LIMIT) {
-				new radarAlert[64];
+				new radarAlert[96];
 				format(radarAlert, sizeof(radarAlert), "~r~RADAR: %s [%.0f KM/J] ~w~Plat: %s", vName, targetSpeed, plate);
 				ShowPlayerSubtitle(playerid, radarAlert, 1500);
 			}

@@ -357,7 +357,7 @@ stock OnTrunkWeaponResponse(playerid, listitem)
 			gVehicleData[slot][vTrunkAmmo] = curAmmo;
 			DB_SaveVehicle(slot);
 
-			ResetPlayerWeapons(playerid);
+			AC_ResetWeapons(playerid);
 			SendSucc(playerid, "Menyimpan senjata ke dalam bagasi mobil.");
 			PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
 		}
@@ -374,7 +374,7 @@ stock OnTrunkWeaponResponse(playerid, listitem)
 		gVehicleData[slot][vTrunkAmmo] = curAmmo;
 		DB_SaveVehicle(slot);
 
-		ResetPlayerWeapons(playerid);
+		AC_ResetWeapons(playerid);
 		SendSucc(playerid, "Menyimpan senjata ke dalam bagasi mobil.");
 		PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
 	}

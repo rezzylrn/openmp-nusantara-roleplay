@@ -112,20 +112,24 @@ CMD:sellfish(playerid, params[])
 CMD:service(playerid, params[])
 {
 	if (gPlayerData[playerid][pJob] != JOB_MECHANIC) return SendErr(playerid, "Perintah ini khusus untuk Mekanik Bengkel.");
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return SendErr(playerid, "Anda tidak dapat melakukan service saat pingsan atau terborgol.");
 	new type[16], targetid, price;
 	if (sscanf(params, "s[16]ud", type, targetid, price)) return SendSyntax(playerid, "/service [engine/body] [targetid] [harga]");
-	if (!IsPlayerConnected(targetid)) return SendErr(playerid, "Pemain tidak ditemukan.");
+	if (!IsPlayerConnected(targetid) || !gPlayerData[targetid][pLoggedIn]) return SendErr(playerid, "Pemain tidak ditemukan.");
+	if (targetid == playerid) return SendErr(playerid, "Anda tidak dapat melakukan service ke diri sendiri.");
 	if (!IsPlayerInAnyVehicle(targetid)) return SendErr(playerid, "Target tidak berada di dalam kendaraan.");
+	if (!IsPlayerNear(playerid, targetid, 6.0)) return SendErr(playerid, "Anda harus berada di dekat pelanggan.");
+	if (price <= 0 || price > 5000) return SendErr(playerid, "Tarif perbaikan harus antara $1 - $5000.");
 
 	new tVeh = GetPlayerVehicleID(targetid);
 	if (strcmp(type, "engine", true) == 0) {
-		TakePlayerMoneyEx(targetid, price, "service mesin");
+		if (!TakePlayerMoneyEx(targetid, price, "service mesin")) return SendErr(playerid, "Pelanggan tidak memiliki cukup uang tunai.");
 		GivePlayerMoneyEx(playerid, price, "upah service mekanik");
 		TriggerMechanicDiagnostic(playerid, tVeh);
 		SendSucc(targetid, "Mesin kendaraan Anda sedang diperiksa oleh Mekanik %s ($%d).", gPlayerData[playerid][pName], price);
 	} else if (strcmp(type, "body", true) == 0) {
+		if (!TakePlayerMoneyEx(targetid, price, "service bodi")) return SendErr(playerid, "Pelanggan tidak memiliki cukup uang tunai.");
 		RepairVehicle(tVeh);
-		TakePlayerMoneyEx(targetid, price, "service bodi");
 		GivePlayerMoneyEx(playerid, price, "upah service mekanik");
 		SendSucc(playerid, "Bodi kendaraan berhasil diperbaiki. Menerima bayaran $%d.", price);
 		SendSucc(targetid, "Bodi kendaraan Anda diperbaiki oleh Mekanik %s ($%d).", gPlayerData[playerid][pName], price);

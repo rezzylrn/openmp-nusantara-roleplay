@@ -324,11 +324,9 @@ Dialog:DialogAdminBanReason(playerid, response, listitem, inputtext[])
 	SendClientMessageToAll(COLOR_RED, broadcast);
 
 	if (gDBReady) {
-		new query[256];
-		mysql_format(gDB, query, sizeof(query),
-			"INSERT INTO bans (player_name, admin_name, reason, ban_time) VALUES ('%e', '%e', '%e', %d)",
-			gPlayerData[targetid][pName], gPlayerData[playerid][pName], reason, gettime());
-		mysql_tquery(gDB, query);
+		new tip[24];
+		GetPlayerIp(targetid, tip, sizeof(tip));
+		DB_AddBan(gPlayerData[targetid][pName], tip, reason, gPlayerData[playerid][pName]);
 	}
 
 	SetTimerEx("RP_DelayedKick", 350, false, "i", targetid);

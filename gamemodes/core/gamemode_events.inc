@@ -46,6 +46,7 @@ public RP_DelayLogin(playerid)
 public OnPlayerDisconnect(playerid, reason)
 {
 	if (gPlayerData[playerid][pLoggedIn]) {
+		if (gPlayerData[playerid][pCallState] != 0) ProcessHangup(playerid);
 		if (gJobActive[playerid]) ProcessJobQuit(playerid);
 		ProcessRentalDisconnect(playerid);
 		SavePlayerOnDisconnect(playerid);

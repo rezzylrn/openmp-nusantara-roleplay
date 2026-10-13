@@ -107,7 +107,12 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		case DIALOG_ATM_DEPOSIT:       OnATMDepositResponse(playerid, inputtext);
 		case DIALOG_JOB_MENU:          OnJobMenuResponse(playerid, listitem);
 		case DIALOG_DEALERSHIP:        OnDealershipResponse(playerid, listitem);
-		case DIALOG_MYVEH:             ShowVehicleActionDialog(playerid, listitem);
+		case DIALOG_MYVEH: {
+			if (listitem >= 0 && listitem < MAX_OWNED_VEHICLES) {
+				new realSlot = gPlayerVehListSlot[playerid][listitem];
+				ShowVehicleActionDialog(playerid, realSlot);
+			}
+		}
 		case DIALOG_MYVEH_ACTION:      OnMyVehActionResponse(playerid, listitem);
 		case DIALOG_TRUNK:             OnVehicleTrunkResponse(playerid, listitem);
 		case DIALOG_TRUNK_DEPOSIT:      OnTrunkDepositCashResponse(playerid, listitem);

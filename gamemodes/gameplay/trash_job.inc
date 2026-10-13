@@ -56,6 +56,10 @@ stock ProcessStartTrash(playerid)
 		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Anda tidak dapat memulai pekerjaan saat pingsan atau terborgol.");
 		return 1;
 	}
+	if (gPlayerData[playerid][pJob] != JOB_TRASHMAN) {
+		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Pekerjaan ini khusus untuk petugas Dinas Kebersihan (/job di Balai Kota).");
+		return 1;
+	}
 	if (gTrashDuty[playerid]) {
 		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Anda sudah sedang dalam rute pengangkutan sampah.");
 		return 1;

@@ -205,6 +205,14 @@ stock IsPlayerNearAnyTrash(playerid, Float:range = RANGE_TRASH_INTERACTION)
 stock ProcessPlayerScavenge(playerid)
 {
 	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat memulung saat pingsan atau terborgol.");
+		return 0;
+	}
+	if (gPlayerData[playerid][pJob] != JOB_SCAVENGER) {
+		SendErr(playerid, "Aktivitas ini khusus untuk Pemulung Rongsokan (/job di Balai Kota).");
+		return 0;
+	}
 
 	if (!IsPlayerNearAnyTrash(playerid)) {
 		if (gPlayerData[playerid][pLanguage] == LANG_EN) SendErr(playerid, "You must be near a trash bin.");

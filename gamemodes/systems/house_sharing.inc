@@ -22,9 +22,8 @@ stock HouseSharing_Init()
 stock ProcessShareHouseKey(playerid, targetid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
-
-	if (!gPlayerData[targetid][pLoggedIn]) {
-		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Pemain sasaran belum login.");
+	if (targetid < 0 || targetid >= MAX_PLAYERS || !gPlayerData[targetid][pLoggedIn]) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Pemain sasaran tidak ditemukan atau belum login.");
 		return 0;
 	}
 
@@ -74,6 +73,10 @@ stock ProcessShareHouseKey(playerid, targetid)
 stock ProcessRevokeHouseKey(playerid, targetid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (targetid < 0 || targetid >= MAX_PLAYERS || !gPlayerData[targetid][pLoggedIn]) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Pemain sasaran tidak ditemukan atau belum login.");
+		return 0;
+	}
 
 	if (gPlayerSharedHouse[targetid] == -1) {
 		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Pemain tersebut tidak sedang memegang kunci rumah Anda.");

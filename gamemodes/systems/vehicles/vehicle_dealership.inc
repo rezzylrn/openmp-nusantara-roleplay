@@ -106,9 +106,10 @@ stock ShowMyVehiclesDialog(playerid)
 
 	for (new i = 0; i < MAX_OWNED_VEHICLES; i++) {
 		if (gVehicleData[i][vUsed] && gVehicleData[i][vOwnerID] == gPlayerData[playerid][pID]) {
+			gPlayerVehListSlot[playerid][count] = i;
 			GetVehicleModelName(gVehicleData[i][vModel], vname, sizeof(vname));
-			format(list, sizeof(list), "%s#%d\t%s\t%.0f Liter\t%s\n",
-				list, i + 1, vname, gVehicleData[i][vFuel], gVehicleData[i][vPlate]);
+			format(list, sizeof(list), "%s#%d	%s	%.0f Liter	%s\n",
+				list, count + 1, vname, gVehicleData[i][vFuel], gVehicleData[i][vPlate]);
 			count++;
 		}
 	}
@@ -125,6 +126,7 @@ stock ShowMyVehiclesDialog(playerid)
 
 stock ShowVehicleActionDialog(playerid, slot)
 {
+	if (slot < 0 || slot >= MAX_OWNED_VEHICLES || !gVehicleData[slot][vUsed] || gVehicleData[slot][vOwnerID] != gPlayerData[playerid][pID]) return 0;
 	gPlayerVehicleSlot[playerid] = slot;
 	new vname[32];
 	GetVehicleModelName(gVehicleData[slot][vModel], vname, sizeof(vname));

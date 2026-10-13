@@ -34,7 +34,7 @@ stock RemovePlayerFaction(playerid)
 	gPlayerData[playerid][pFaction] = FACTION_NONE;
 	gPlayerData[playerid][pFactionRank] = 0;
 	gPlayerData[playerid][pDuty] = false;
-	ResetPlayerWeapons(playerid);
+	AC_ResetWeapons(playerid);
 	return 1;
 }
 
@@ -57,7 +57,7 @@ stock ProcessFactionDuty(playerid, bool:duty)
 		SetPlayerArmour(playerid, 100.0);
 	} else {
 		SendInfo(playerid, "Anda sekarang OFF DUTY. Semua persenjataan dinas disimpan.");
-		ResetPlayerWeapons(playerid);
+		AC_ResetWeapons(playerid);
 		SetPlayerArmour(playerid, 0.0);
 	}
 	return 1;
@@ -66,7 +66,7 @@ stock ProcessFactionDuty(playerid, bool:duty)
 stock Faction_ApplyWeapons(playerid)
 {
 	new fac = gPlayerData[playerid][pFaction];
-	ResetPlayerWeapons(playerid);
+	AC_ResetWeapons(playerid);
 	if (!gPlayerData[playerid][pDuty]) return 1;
 
 	switch (fac) {
@@ -263,7 +263,7 @@ stock ProcessArrest(playerid, targetid, timeMinutes, fineAmount)
 	gPlayerData[targetid][pCuffed] = false;
 	TogglePlayerControllable(targetid, true);
 	SetPlayerSpecialAction(targetid, SPECIAL_ACTION_NONE);
-	ResetPlayerWeapons(targetid);
+	AC_ResetWeapons(targetid);
 
 	if (fineAmount > 0 && gPlayerData[targetid][pMoney] >= fineAmount) {
 		TakePlayerMoneyEx(targetid, fineAmount, "denda penahanan");
@@ -279,6 +279,10 @@ stock ProcessMegaphone(playerid, const text[])
 {
 	if (!gPlayerData[playerid][pLoggedIn] || !gPlayerData[playerid][pDuty] || gPlayerData[playerid][pFaction] != FACTION_POLICE) {
 		SendErr(playerid, "Perintah ini khusus petugas Kepolisian (SAPD) yang sedang bertugas.");
+		return 0;
+	}
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat menggunakan megaphone saat pingsan atau terborgol.");
 		return 0;
 	}
 	if (!IsPlayerInAnyVehicle(playerid)) {
@@ -400,6 +404,10 @@ stock ProcessDepartmentRadio(playerid, const text[])
 {
 	if (!gPlayerData[playerid][pLoggedIn] || !gPlayerData[playerid][pDuty]) {
 		SendErr(playerid, "Anda harus sedang bertugas dinas.");
+		return 0;
+	}
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat menggunakan radio dinas saat pingsan atau terborgol.");
 		return 0;
 	}
 	new fac = gPlayerData[playerid][pFaction];

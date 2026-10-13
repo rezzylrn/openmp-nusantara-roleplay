@@ -84,6 +84,7 @@ CMD:sharekey(playerid, params[])
 	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
 	new targetid;
 	if (sscanf(params, "u", targetid)) return SendSyntax(playerid, "/sharekey [targetid/Nama]");
+	if (targetid == INVALID_PLAYER_ID || !IsPlayerConnected(targetid)) return SendErr(playerid, "Pemain tidak ditemukan atau sedang offline.");
 	ProcessShareHouseKey(playerid, targetid);
 	return 1;
 }
@@ -100,6 +101,7 @@ CMD:unsharekey(playerid, params[])
 	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
 	new targetid;
 	if (sscanf(params, "u", targetid)) return SendSyntax(playerid, "/unsharekey [targetid/Nama]");
+	if (targetid == INVALID_PLAYER_ID || !IsPlayerConnected(targetid)) return SendErr(playerid, "Pemain tidak ditemukan atau sedang offline.");
 	ProcessRevokeHouseKey(playerid, targetid);
 	return 1;
 }

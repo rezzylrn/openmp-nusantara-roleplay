@@ -15,6 +15,10 @@ static gPlayerGloveboxVeh[MAX_PLAYERS];
 stock ShowVehicleGloveboxDialog(playerid, slot)
 {
 	if (slot < 0 || slot >= MAX_OWNED_VEHICLES || !gVehicleData[slot][vUsed]) return 0;
+	if (gVehicleData[slot][vOwnerID] != gPlayerData[playerid][pID]) {
+		SendErr(playerid, "Anda tidak memiliki akses kunci untuk laci dashboard kendaraan ini.");
+		return 0;
+	}
 	gPlayerGloveboxVeh[playerid] = slot;
 
 	new vname[32];
@@ -94,8 +98,14 @@ Dialog:DialogGloveboxDeposit(playerid, response, listitem, inputtext[])
 		return 1;
 	}
 
+	if (gVehicleData[slot][vTrunk] + amount > 500) {
+		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Laci dashboard hanya dapat menampung maksimal $500 total.");
+		return 1;
+	}
+
 	TakePlayerMoneyEx(playerid, amount, "simpan di glovebox");
 	gVehicleData[slot][vTrunk] += amount;
+	DB_SaveVehicle(slot);
 
 	new msg[144];
 	format(msg, sizeof(msg), "[GLOVEBOX] Anda menyimpan $%d ke dalam laci dashboard mobil.", amount);
@@ -122,6 +132,7 @@ Dialog:DialogGloveboxWithdraw(playerid, response, listitem, inputtext[])
 	}
 
 	gVehicleData[slot][vTrunk] -= amount;
+	DB_SaveVehicle(slot);
 	GivePlayerMoneyEx(playerid, amount, "ambil dari glovebox");
 
 	new msg[144];

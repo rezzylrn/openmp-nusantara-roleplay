@@ -136,6 +136,10 @@ stock ProcessStartMining(playerid)
 		SendErr(playerid, "Anda tidak dapat menambang saat pingsan atau terborgol.");
 		return 0;
 	}
+	if (gPlayerData[playerid][pJob] != JOB_MINER) {
+		SendErr(playerid, "Pekerjaan ini khusus untuk Penambang Batu Quarry (/job di Balai Kota).");
+		return 0;
+	}
 	if (!IsPlayerNearPoint(playerid, MINING_SITE_X, MINING_SITE_Y, MINING_SITE_Z, 25.0)) {
 		SendErr(playerid, "Anda harus berada di area urat mineral dasar Hunter Quarry.");
 		return 0;
