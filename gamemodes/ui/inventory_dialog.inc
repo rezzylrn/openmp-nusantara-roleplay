@@ -248,7 +248,7 @@ stock ProcessUseInventoryItem(playerid, slot)
 public RP_OnFinishEatSnack(playerid, extra)
 {
 	#pragma unused extra
-	TakePlayerItem(playerid, ITEM_SNACK, 1);
+	if (!TakePlayerItem(playerid, ITEM_SNACK, 1)) return 0; // [FIX] atomic; cegah konsumsi ganda
 	gPlayerData[playerid][pHunger] += 30.0;
 	if (gPlayerData[playerid][pHunger] > 100.0) gPlayerData[playerid][pHunger] = 100.0;
 	SendClientMessage(playerid, COLOR_SUCCESS, "[SUKSES] Anda selesai memakan snack (+30 Lapar).");
@@ -258,7 +258,7 @@ public RP_OnFinishEatSnack(playerid, extra)
 public RP_OnFinishDrinkWater(playerid, extra)
 {
 	#pragma unused extra
-	TakePlayerItem(playerid, ITEM_WATER, 1);
+	if (!TakePlayerItem(playerid, ITEM_WATER, 1)) return 0; // [FIX] atomic
 	gPlayerData[playerid][pThirst] += 35.0;
 	if (gPlayerData[playerid][pThirst] > 100.0) gPlayerData[playerid][pThirst] = 100.0;
 	SendClientMessage(playerid, COLOR_SUCCESS, "[SUKSES] Anda selesai meminum air mineral (+35 Haus).");
@@ -268,7 +268,7 @@ public RP_OnFinishDrinkWater(playerid, extra)
 public RP_OnFinishUseBandage(playerid, extra)
 {
 	#pragma unused extra
-	TakePlayerItem(playerid, ITEM_BANDAGE, 1);
+	if (!TakePlayerItem(playerid, ITEM_BANDAGE, 1)) return 0; // [FIX] atomic
 	new Float:hp;
 	GetPlayerHealth(playerid, hp);
 	hp += 25.0;
@@ -281,7 +281,7 @@ public RP_OnFinishUseBandage(playerid, extra)
 public RP_OnFinishUseMedkit(playerid, extra)
 {
 	#pragma unused extra
-	TakePlayerItem(playerid, ITEM_MEDKIT, 1);
+	if (!TakePlayerItem(playerid, ITEM_MEDKIT, 1)) return 0; // [FIX] atomic
 	new Float:hp;
 	GetPlayerHealth(playerid, hp);
 	hp += 75.0;

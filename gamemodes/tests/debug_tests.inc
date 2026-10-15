@@ -1698,6 +1698,12 @@ public RunAutomatedRPTests()
 		new bool:houseGuard = (DB_SaveHouse(-1) == 0 && DB_SaveHouse(MAX_HOUSES) == 0);
 		if (!houseGuard) { rcOk = false; format(failRC, sizeof(failRC), "%s houseGuard;", failRC); }
 
+		// 72f. TakePlayerItem menolak amount negatif / tipe nol
+		new invT2 = 0;
+		for (new s = 0; s < MAX_INVENTORY_SLOTS; s++) { gPlayerItems[invT2][s][itType] = ITEM_NONE; gPlayerItems[invT2][s][itAmount] = 0; }
+		new bool:negReject = (TakePlayerItem(invT2, ITEM_WOOD, -5) == 0 && TakePlayerItem(invT2, ITEM_NONE, 1) == 0);
+		if (!negReject) { rcOk = false; format(failRC, sizeof(failRC), "%s negReject;", failRC); }
+
 		if (rcOk) {
 			print("  -> PASS: Root-cause inventory atomicity, stack clamp, gym cooldown & property persistence guard verified.");
 			passCount++;

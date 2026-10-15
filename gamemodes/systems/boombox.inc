@@ -133,7 +133,11 @@ stock DeployPlayerBoombox(playerid, const url[], const stationName[])
 		return 0;
 	}
 
-	TakePlayerItem(playerid, ITEM_BOOMBOX, 1);
+	// [FIX] Pastikan item benar-benar terambil (atomic) sebelum deploy.
+	if (!TakePlayerItem(playerid, ITEM_BOOMBOX, 1)) {
+		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Anda tidak memiliki Boombox untuk diletakkan.");
+		return 0;
+	}
 
 	new Float:x, Float:y, Float:z, Float:a;
 	if (IsPlayerConnected(playerid)) {

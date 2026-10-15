@@ -102,7 +102,7 @@ stock ShowRentalMenuDialog(playerid)
 {FFFFFF}4. Previon City Car\t{4CD964}$150\n\
 {FF3B30}X. Return Rented Vehicle\t{FF3B30}-");
 
-		ShowPlayerDialog(playerid, DIALOG_RENTAL_MENU, DIALOG_STYLE_TABLIST_HEADERS,
+		RP_ShowPlayerDialog(playerid, DIALOG_RENTAL_MENU, DIALOG_STYLE_TABLIST_HEADERS,
 			"PUBLIC VEHICLE RENTAL", dialogContent, "Rent", "Cancel");
 	} else {
 		format(dialogContent, sizeof(dialogContent),
@@ -113,7 +113,7 @@ stock ShowRentalMenuDialog(playerid)
 {FFFFFF}4. Mobil Kota Previon\t{4CD964}$150\n\
 {FF3B30}X. Kembalikan Kendaraan Sewa\t{FF3B30}-");
 
-		ShowPlayerDialog(playerid, DIALOG_RENTAL_MENU, DIALOG_STYLE_TABLIST_HEADERS,
+		RP_ShowPlayerDialog(playerid, DIALOG_RENTAL_MENU, DIALOG_STYLE_TABLIST_HEADERS,
 			"RENTAL KENDARAAN UMUM", dialogContent, "Sewa", "Batal");
 	}
 	return 1;

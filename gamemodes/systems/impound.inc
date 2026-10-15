@@ -188,10 +188,18 @@ stock ProcessClaimImpoundedVehicle(playerid)
 		return 0;
 	}
 
+	// [FIX] Cek pembayaran: kendaraan hanya ditebus bila transaksi BERHASIL.
+	// Sebelumnya return TakePlayerMoneyEx/BankEx diabaikan.
+	new bool:paid = false;
 	if (gPlayerData[playerid][pMoney] >= IMPOUND_FEE) {
-		TakePlayerMoneyEx(playerid, IMPOUND_FEE, "denda tebus kendaraan sitaan");
-	} else {
-		TakePlayerBankEx(playerid, IMPOUND_FEE, "denda tebus kendaraan sitaan");
+		paid = (TakePlayerMoneyEx(playerid, IMPOUND_FEE, "denda tebus kendaraan sitaan") == 1);
+	}
+	if (!paid && TakePlayerBankEx(playerid, IMPOUND_FEE, "denda tebus kendaraan sitaan") == 1) {
+		paid = true;
+	}
+	if (!paid) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Pembayaran denda tebus gagal. Dana tidak mencukupi.");
+		return 0;
 	}
 
 	gVehicleData[slot][vImpounded] = false;

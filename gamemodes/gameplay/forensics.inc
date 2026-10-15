@@ -175,6 +175,12 @@ public RP_OnFinishCollectCasing(playerid, casingSlot)
 {
 	if (casingSlot < 0 || casingSlot >= MAX_BULLET_CASINGS || !gBulletCasings[casingSlot][bcUsed]) return 0;
 
+	// [FIX] Validasi ulang: pemain harus masih di dekat selongsong saat proses
+	// pengamanan selesai (mencegah ambil dari jauh / kabur di tengah progress).
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
+	if (GetPlayerDistanceFromPoint(playerid, gBulletCasings[casingSlot][bcX], gBulletCasings[casingSlot][bcY], gBulletCasings[casingSlot][bcZ]) > 3.5) return 0;
+
 	new weapName[32];
 	GetWeaponName(gBulletCasings[casingSlot][bcWeapon], weapName, sizeof(weapName));
 

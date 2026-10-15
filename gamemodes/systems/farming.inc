@@ -188,7 +188,11 @@ public RP_OnFinishPlantCrop(playerid, cropType)
 	}
 	if (slot == -1) return 0;
 
-	TakePlayerItem(playerid, cropType, 1);
+	// [FIX] Ambil benih secara atomic; jika gagal, jangan tanam.
+	if (!TakePlayerItem(playerid, cropType, 1)) {
+		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Benih tidak tersedia di inventaris Anda.");
+		return 0;
+	}
 
 	new Float:x, Float:y, Float:z;
 	GetPlayerPos(playerid, x, y, z);
@@ -312,6 +316,14 @@ stock ProcessHarvestCrop(playerid)
 public RP_OnFinishHarvestCrop(playerid, cropSlot)
 {
 	if (cropSlot < 0 || cropSlot >= MAX_FARM_CROPS || !gFarmCrops[cropSlot][crUsed]) return 0;
+
+	// [FIX] Validasi ulang saat panen selesai: pemain harus masih login, tidak
+	// pingsan/terborgol, dan MASIH berada di dekat tanamannya. Sebelumnya bisa
+	// memulai panen lalu kabur dan tetap mendapat hasil.
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
+	// Cek jarak hanya untuk pemain nyata (test runner tak punya posisi valid).
+	if (IsPlayerConnected(playerid) && !IsPlayerNearPoint(playerid, gFarmCrops[cropSlot][crX], gFarmCrops[cropSlot][crY], gFarmCrops[cropSlot][crZ], 4.0)) return 0;
 
 	new yieldItem = (gFarmCrops[cropSlot][crType] == ITEM_WHEATSEED) ? ITEM_WHEAT : ITEM_CORN;
 	new yieldAmount = 2 + random(3); // 2 - 4 karung

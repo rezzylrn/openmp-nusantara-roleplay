@@ -80,6 +80,13 @@ public RP_OnFinishDrillATM(playerid, atmIndex)
 {
 	if (atmIndex < 0 || atmIndex >= MAX_DYNAMIC_ATMS || !gATMs[atmIndex][atmUsed]) return 0;
 
+	// [FIX] Validasi ulang saat progress bar selesai: pemain harus masih login,
+	// tidak pingsan/terborgol, dan MASIH berada di depan ATM yang sama. Tanpa
+	// ini pemain bisa memulai bobol lalu kabur dan tetap menerima loot.
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
+	if (IsPlayerConnected(playerid) && !IsPlayerNearPoint(playerid, gATMs[atmIndex][atmX], gATMs[atmIndex][atmY], gATMs[atmIndex][atmZ], 3.5)) return 0;
+
 	gATMCooldown[atmIndex] = gettime() + ATM_ROB_COOLDOWN;
 
 	// Peluang bor aus

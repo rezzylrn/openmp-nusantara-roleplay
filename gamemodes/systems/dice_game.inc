@@ -73,8 +73,13 @@ stock ProcessPlayDice(playerid, targetid, betAmount)
 
 	new rpMsg[180];
 	if (roll1 > roll2) {
-		// Player 1 Menang
-		TakePlayerMoneyEx(targetid, betAmount, "kalah judi dadu");
+		// Player 1 Menang. [FIX] Ambil dulu uang pecundang; jika gagal (dana
+		// berubah), batalkan agar uang pemenang tidak diciptakan dari udara.
+		if (!TakePlayerMoneyEx(targetid, betAmount, "kalah judi dadu")) {
+			SendClientMessage(playerid, COLOR_ERROR, "ERROR: Taruhan dibatalkan, dana lawan tidak mencukupi.");
+			SendClientMessage(targetid, COLOR_ERROR, "ERROR: Taruhan dibatalkan, dana Anda tidak mencukupi.");
+			return 0;
+		}
 		GivePlayerMoneyEx(playerid, betAmount, "menang judi dadu");
 
 		format(rpMsg, sizeof(rpMsg),
@@ -83,8 +88,12 @@ stock ProcessPlayDice(playerid, targetid, betAmount)
 			gPlayerData[targetid][pName], roll2,
 			gPlayerData[playerid][pName], betAmount);
 	} else if (roll2 > roll1) {
-		// Target Menang
-		TakePlayerMoneyEx(playerid, betAmount, "kalah judi dadu");
+		// Target Menang. [FIX] Ambil dulu uang pecundang; batalkan bila gagal.
+		if (!TakePlayerMoneyEx(playerid, betAmount, "kalah judi dadu")) {
+			SendClientMessage(playerid, COLOR_ERROR, "ERROR: Taruhan dibatalkan, dana Anda tidak mencukupi.");
+			SendClientMessage(targetid, COLOR_ERROR, "ERROR: Taruhan dibatalkan, dana lawan tidak mencukupi.");
+			return 0;
+		}
 		GivePlayerMoneyEx(targetid, betAmount, "menang judi dadu");
 
 		format(rpMsg, sizeof(rpMsg),

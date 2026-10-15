@@ -89,7 +89,7 @@ stock ShowHelpDialog(playerid)
    /stats, /pay, /bank, /atm\n\n\
 6. Pekerjaan:\n\
    /job, /quitjob, /searchtrash, /selltrash, /cutwood, /sellwood, /fish, /sellfish, /service");
-	ShowPlayerDialog(playerid, DIALOG_HELP, DIALOG_STYLE_MSGBOX,
+	RP_ShowPlayerDialog(playerid, DIALOG_HELP, DIALOG_STYLE_MSGBOX,
 		"PANDUAN SERVER - NUSANTARA RP", buf, "Tutup", "");
 	return 1;
 }

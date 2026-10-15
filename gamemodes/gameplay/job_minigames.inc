@@ -65,7 +65,7 @@ stock StartFishingMinigameProcess(playerid)
 		return 0;
 	}
 
-	TakePlayerItem(playerid, ITEM_BAIT, 1);
+	if (!TakePlayerItem(playerid, ITEM_BAIT, 1)) return 0; // [FIX] atomic; cegah cast tanpa umpan
 	ApplyAnimation(playerid, "SWAT", "swt_lkt__01", 4.1, false, false, false, false, 0, 1);
 
 	ApplyProgressBar(playerid, "MEMASANG UMPAN & MELEMPAR KAIL...", 4, "RP_OnFinishCastRod", 0);
@@ -164,6 +164,10 @@ stock StartLumberjackMinigameProcess(playerid)
 public RP_OnFinishChainsaw(playerid, extra)
 {
 	#pragma unused extra
+	// [FIX] Validasi ulang: pemain harus masih bekerja & di dekat area tebang.
+	if (!JobQTE_IsActive(playerid)) return 0;
+	if (!IsPlayerNearPoint(playerid, LUMBER_X, LUMBER_Y, LUMBER_Z, 30.0)) return 0;
+
 	new treeLean = random(3);
 	gLumberTargetCut[playerid] = treeLean;
 
@@ -314,6 +318,9 @@ stock TriggerMechanicDiagnostic(playerid, vehid)
 public RP_OnFinishMechanicInspection(playerid, vehid)
 {
 	#pragma unused vehid
+	// [FIX] Validasi ulang: pemain harus masih mekanik & dekat kendaraan target.
+	if (!JobQTE_IsActive(playerid)) return 0;
+
 	new bug = gMechanicTargetPart[playerid];
 	new prompt[300];
 

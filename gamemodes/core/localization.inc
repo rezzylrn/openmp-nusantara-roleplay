@@ -26,7 +26,7 @@ stock SetPlayerLang(playerid, lang)
 
 stock ShowLanguageSelectionDialog(playerid)
 {
-	ShowPlayerDialog(playerid, DIALOG_LANGUAGE_SELECT, DIALOG_STYLE_LIST,
+	RP_ShowPlayerDialog(playerid, DIALOG_LANGUAGE_SELECT, DIALOG_STYLE_LIST,
 		"PILIH BAHASA / SELECT LANGUAGE",
 		"1. Bahasa Indonesia [ID] (Rekomendasi Warga Nusantara)\n2. English [EN] (International Language)",
 		"Pilih / Select", "Batal / Cancel");

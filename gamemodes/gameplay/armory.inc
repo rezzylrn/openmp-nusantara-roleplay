@@ -108,7 +108,7 @@ stock ShowFactionArmoryDialog(playerid)
 {FFFFFF}4. Take Non-Lethal Taser\t{FFFF00}Silenced 9mm\n\
 {FF6666}X. Return & Clear Duty Weapons\t{FF6666}Reset Weapons");
 
-			ShowPlayerDialog(playerid, DIALOG_ARMORY_MENU, DIALOG_STYLE_TABLIST_HEADERS,
+			RP_ShowPlayerDialog(playerid, DIALOG_ARMORY_MENU, DIALOG_STYLE_TABLIST_HEADERS,
 				"SAPD TACTICAL ARMORY LOCKER", dialogText, "Take", "Close");
 		} else {
 			format(dialogText, sizeof(dialogText),
@@ -119,7 +119,7 @@ stock ShowFactionArmoryDialog(playerid)
 {FFFFFF}4. Ambil Senjata Kejut (Taser)\t{FFFF00}Silenced Pistol\n\
 {FF6666}X. Kembalikan Seluruh Senjata Dinas\t{FF6666}Simpan Senjata");
 
-			ShowPlayerDialog(playerid, DIALOG_ARMORY_MENU, DIALOG_STYLE_TABLIST_HEADERS,
+			RP_ShowPlayerDialog(playerid, DIALOG_ARMORY_MENU, DIALOG_STYLE_TABLIST_HEADERS,
 				"LOKER PERSENJATAAN DINAS SAPD", dialogText, "Ambil", "Tutup");
 		}
 	} else if (gPlayerData[playerid][pFaction] == FACTION_MEDIC) {
@@ -131,7 +131,7 @@ stock ShowFactionArmoryDialog(playerid)
 {FFFFFF}2. Restore Full Health & Energy\t{33CCFF}100% Health Vitality\n\
 {FFFFFF}3. Take Hospital Radio & Pager\t{FFFF00}Channel 911 MHz");
 
-			ShowPlayerDialog(playerid, DIALOG_ARMORY_MENU, DIALOG_STYLE_TABLIST_HEADERS,
+			RP_ShowPlayerDialog(playerid, DIALOG_ARMORY_MENU, DIALOG_STYLE_TABLIST_HEADERS,
 				"SAMD MEDICAL SUPPLY LOCKER", dialogText, "Take", "Close");
 		} else {
 			format(dialogText, sizeof(dialogText),
@@ -140,7 +140,7 @@ stock ShowFactionArmoryDialog(playerid)
 {FFFFFF}2. Pulihkan Kondisi Fisik & Stamina\t{33CCFF}100% Kesehatan Penuh\n\
 {FFFFFF}3. Ambil Handy Talkie Rumah Sakit\t{FFFF00}Frekuensi 911 MHz");
 
-			ShowPlayerDialog(playerid, DIALOG_ARMORY_MENU, DIALOG_STYLE_TABLIST_HEADERS,
+			RP_ShowPlayerDialog(playerid, DIALOG_ARMORY_MENU, DIALOG_STYLE_TABLIST_HEADERS,
 				"LOKER PASOKAN MEDIS SAMD", dialogText, "Ambil", "Tutup");
 		}
 	}

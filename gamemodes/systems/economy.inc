@@ -155,12 +155,12 @@ stock ShowBankDialog(playerid)
 		return 0;
 	}
 	if (gPlayerData[playerid][pLanguage] == LANG_EN) {
-		ShowPlayerDialog(playerid, DIALOG_BANK_MENU, DIALOG_STYLE_LIST,
+		RP_ShowPlayerDialog(playerid, DIALOG_BANK_MENU, DIALOG_STYLE_LIST,
 			"BANK OF NUSANTARA - BANKING SERVICES",
 			"Deposit Funds\nWithdraw Funds\nWire Transfer\nBalance Inquiry",
 			"Select", "Cancel");
 	} else {
-		ShowPlayerDialog(playerid, DIALOG_BANK_MENU, DIALOG_STYLE_LIST,
+		RP_ShowPlayerDialog(playerid, DIALOG_BANK_MENU, DIALOG_STYLE_LIST,
 			"LOKAL BANK - NUSANTARA RP",
 			"Simpan dana (Deposit)\nTarik dana (Withdraw)\nTransfer rekening\nCek saldo",
 			"Pilih", "Batal");
@@ -180,12 +180,12 @@ stock ShowATMDialog(playerid)
 		return 0;
 	}
 	if (gPlayerData[playerid][pLanguage] == LANG_EN) {
-		ShowPlayerDialog(playerid, DIALOG_ATM_MENU, DIALOG_STYLE_LIST,
+		RP_ShowPlayerDialog(playerid, DIALOG_ATM_MENU, DIALOG_STYLE_LIST,
 			"ATM NUSANTARA - AUTOMATED TELLER MACHINE",
 			"Withdraw Cash ($1 - $1,000,000)\nDeposit Cash\nBalance Inquiry",
 			"Select", "Cancel");
 	} else {
-		ShowPlayerDialog(playerid, DIALOG_ATM_MENU, DIALOG_STYLE_LIST,
+		RP_ShowPlayerDialog(playerid, DIALOG_ATM_MENU, DIALOG_STYLE_LIST,
 			"ATM - NUSANTARA RP",
 			"Tarik tunai ($1 - $1.000.000)\nSimpan tunai (Deposit)\nCek saldo",
 			"Pilih", "Batal");
@@ -197,19 +197,19 @@ stock ShowATMDialog(playerid)
 stock OnBankDialogResponse(playerid, listitem)
 {
 	if (listitem == 0) {
-		ShowPlayerDialog(playerid, DIALOG_BANK_DEPOSIT, DIALOG_STYLE_INPUT,
+		RP_ShowPlayerDialog(playerid, DIALOG_BANK_DEPOSIT, DIALOG_STYLE_INPUT,
 			"BANK - SIMPAN DANA", "Masukkan jumlah cash yang ingin disimpan:",
 			"Simpan", "Batal");
 		return 1;
 	}
 	if (listitem == 1) {
-		ShowPlayerDialog(playerid, DIALOG_BANK_WITHDRAW, DIALOG_STYLE_INPUT,
+		RP_ShowPlayerDialog(playerid, DIALOG_BANK_WITHDRAW, DIALOG_STYLE_INPUT,
 			"BANK - TARIK DANA", "Masukkan jumlah yang ingin ditarik:",
 			"Tarik", "Batal");
 		return 1;
 	}
 	if (listitem == 2) {
-		ShowPlayerDialog(playerid, DIALOG_BANK_TRANSFER, DIALOG_STYLE_INPUT,
+		RP_ShowPlayerDialog(playerid, DIALOG_BANK_TRANSFER, DIALOG_STYLE_INPUT,
 			"BANK - TRANSFER", "Masukkan Nama Target dan Jumlah (format: Nama Jumlah):",
 			"Lanjut", "Batal");
 		return 1;
@@ -265,7 +265,7 @@ stock OnBankTransferResponse(playerid, const inputtext[])
 	new targetid, amount;
 	if (sscanf(inputtext, "ud", targetid, amount)) {
 		SendSyntax(playerid, "[ID / Nama Pemain] [Jumlah Uang]");
-		ShowPlayerDialog(playerid, DIALOG_BANK_TRANSFER, DIALOG_STYLE_INPUT,
+		RP_ShowPlayerDialog(playerid, DIALOG_BANK_TRANSFER, DIALOG_STYLE_INPUT,
 			"TRANSFER DANA", "Format: [ID Pemain / Nama] [Jumlah Uang]\nContoh: 0 5000", "Kirim", "Batal");
 		return 0;
 	}
@@ -308,13 +308,13 @@ stock OnBankTransferResponse(playerid, const inputtext[])
 stock OnATMMenuResponse(playerid, listitem)
 {
 	if (listitem == 0) {
-		ShowPlayerDialog(playerid, DIALOG_ATM_WITHDRAW, DIALOG_STYLE_INPUT,
+		RP_ShowPlayerDialog(playerid, DIALOG_ATM_WITHDRAW, DIALOG_STYLE_INPUT,
 			"ATM - TARIK TUNAI", "Masukkan jumlah penarikan tunai ATM ($1 - $1.000.000):",
 			"Tarik", "Batal");
 		return 1;
 	}
 	if (listitem == 1) {
-		ShowPlayerDialog(playerid, DIALOG_ATM_DEPOSIT, DIALOG_STYLE_INPUT,
+		RP_ShowPlayerDialog(playerid, DIALOG_ATM_DEPOSIT, DIALOG_STYLE_INPUT,
 			"ATM - SIMPAN TUNAI", "Masukkan jumlah setor tunai ATM ($1 - $1.000.000):",
 			"Setor", "Batal");
 		return 1;

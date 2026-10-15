@@ -33,7 +33,7 @@ stock ShowPhoneMenu(playerid)
 		"Nomor Telepon: %d\nStatus Mode: %s\n\n1. Lakukan Panggilan (/call)\n2. Kirim Pesan Singkat (/sms)\n3. Ganti Mode (Aktif / Hening)",
 		gPlayerData[playerid][pPhone], statusStr);
 
-	ShowPlayerDialog(playerid, DIALOG_PHONE_MENU, DIALOG_STYLE_LIST,
+	RP_ShowPlayerDialog(playerid, DIALOG_PHONE_MENU, DIALOG_STYLE_LIST,
 		"PONSEL PINTAR", "1. Panggil Nomor\n2. Kirim Pesan (SMS)\n3. Alihkan Mode Dering", "Pilih", "Tutup");
 	return 1;
 }
@@ -62,7 +62,7 @@ stock ProcessCall(playerid, const numberStr[])
 
 	// Layanan Darurat 911
 	if (targetNumber == 911) {
-		ShowPlayerDialog(playerid, DIALOG_911_SERVICE, DIALOG_STYLE_LIST,
+		RP_ShowPlayerDialog(playerid, DIALOG_911_SERVICE, DIALOG_STYLE_LIST,
 			"LAYANAN DARURAT 911 LOS SANTOS",
 			"1. Kepolisian (SAPD) - Laporkan Tindak Kriminalitas & Situasi Darurat\n\
 2. Medis & Ambulans (SAMD) - Laporkan Korban Terluka & Kecelakaan",
@@ -246,7 +246,7 @@ stock ShowRadioDialog(playerid)
 
 	new str[128];
 	format(str, sizeof(str), "Frekuensi saat ini: %d MHz\n\nMasukkan nomor frekuensi baru (1 - 999):", gPlayerData[playerid][pRadioFreq]);
-	ShowPlayerDialog(playerid, DIALOG_RADIO_FREQ, DIALOG_STYLE_INPUT,
+	RP_ShowPlayerDialog(playerid, DIALOG_RADIO_FREQ, DIALOG_STYLE_INPUT,
 		"PENGATURAN FREKUENSI HT", str, "Atur", "Tutup");
 	return 1;
 }
@@ -388,7 +388,7 @@ stock ShowGPSMenu(playerid)
 		GetPlayerDistanceFromPoint(playerid, TRASH_BUYER_X, TRASH_BUYER_Y, TRASH_BUYER_Z)
 	);
 
-	ShowPlayerDialog(playerid, DIALOG_GPS_MENU, DIALOG_STYLE_TABLIST_HEADERS,
+	RP_ShowPlayerDialog(playerid, DIALOG_GPS_MENU, DIALOG_STYLE_TABLIST_HEADERS,
 		"SISTEM GPS NAVIGASI SMARTPHONE", dialogContent, "Tandai", "Batal");
 	return 1;
 }

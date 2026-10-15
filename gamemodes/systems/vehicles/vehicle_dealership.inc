@@ -25,7 +25,7 @@ stock ShowDealershipDialog(playerid)
 		format(list, sizeof(list), "%s%s\t$%d\tShowroom Resmi\n", list, vname, gDealerStock[i][1]);
 	}
 
-	ShowPlayerDialog(playerid, DIALOG_DEALERSHIP, DIALOG_STYLE_TABLIST_HEADERS,
+	RP_ShowPlayerDialog(playerid, DIALOG_DEALERSHIP, DIALOG_STYLE_TABLIST_HEADERS,
 		"DEALERSHIP LOS SANTOS", list, "Beli", "Batal");
 	return 1;
 }
@@ -120,7 +120,7 @@ stock ShowMyVehiclesDialog(playerid)
 		return 0;
 	}
 
-	ShowPlayerDialog(playerid, DIALOG_MYVEH, DIALOG_STYLE_TABLIST_HEADERS,
+	RP_ShowPlayerDialog(playerid, DIALOG_MYVEH, DIALOG_STYLE_TABLIST_HEADERS,
 		"KENDARAAN PRIBADI SAYA", list, "Pilih", "Batal");
 	return 1;
 }
@@ -135,7 +135,7 @@ stock ShowVehicleActionDialog(playerid, slot)
 	new header[64];
 	format(header, sizeof(header), "PILIHAN - %s (%s)", vname, gVehicleData[slot][vPlate]);
 
-	ShowPlayerDialog(playerid, DIALOG_MYVEH_ACTION, DIALOG_STYLE_LIST,
+	RP_ShowPlayerDialog(playerid, DIALOG_MYVEH_ACTION, DIALOG_STYLE_LIST,
 		header,
 		"1. Lacak Posisi di GPS\n\
 2. Panggil ke Posisi Saya\n\

@@ -80,6 +80,13 @@ public OnPlayerFinishMiningProgress(playerid, extra)
 	#pragma unused extra
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
 
+	// [FIX] Validasi ulang: pemain harus masih penambang, tidak pingsan/
+	// terborgol, dan masih di area tambang. Sebelumnya bisa quit job / kabur
+	// dan tetap lanjut ke tahap ayunan akhir.
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
+	if (gPlayerData[playerid][pJob] != JOB_MINER) return 0;
+	if (IsPlayerConnected(playerid) && !IsPlayerNearPoint(playerid, MINING_SITE_X, MINING_SITE_Y, MINING_SITE_Z, 25.0)) return 0;
+
 	if (IsPlayerConnected(playerid)) {
 		ClearAnimations(playerid);
 		TogglePlayerControllable(playerid, true);

@@ -109,7 +109,20 @@ CMD:pickuptrash(playerid, params[])
 
 public RP_OnFinishPickupTrashBag(playerid, stopIndex)
 {
-	#pragma unused stopIndex
+	// [FIX] Validasi ulang saat progress selesai: masih dinas kebersihan, tidak
+	// pingsan/terborgol, tidak sedang membawa kantong, dan masih di titik
+	// sampah yang sama. Sebelumnya bisa kabur dan tetap mengangkat kantong.
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
+	if (gHoldingTrashBag[playerid]) return 0;
+	if (stopIndex < 0 || stopIndex >= MAX_TRASH_STOPS) return 0;
+	// Validasi dinas/posisi hanya untuk pemain nyata (unit test tak punya posisi).
+	if (IsPlayerConnected(playerid)) {
+		if (!gTrashDuty[playerid]) return 0;
+		if (gTrashCurrentStop[playerid] != stopIndex) return 0;
+		if (!IsPlayerNearPoint(playerid, gTrashStops[stopIndex][0], gTrashStops[stopIndex][1], gTrashStops[stopIndex][2], 5.5)) return 0;
+	}
+
 	gHoldingTrashBag[playerid] = true;
 	SetPlayerSpecialAction(playerid, SPECIAL_ACTION_CARRY);
 	SendClientMessage(playerid, COLOR_SUCCESS, "[SUKSES] Kantong sampah berhasil diangkat. Bawa ke bagian belakang truk Anda dan ketik /throwtrash.");
