@@ -272,6 +272,7 @@ Dialog:DialogNearPlayerMenu(playerid, response, listitem, inputtext[])
 				SendClientMessage(playerid, COLOR_SUCCESS, gPlayerData[targetid][pCuffed] ? "[SUKSES] Tersangka diborgol." : "[INFO] Borgol tersangka dilepas.");
 			} else if (gPlayerData[playerid][pFaction] == FACTION_MEDIC) {
 				gPlayerData[targetid][pInjured] = false;
+				ClearHospitalTimer(targetid);
 				SetPlayerHealth(targetid, 40.0);
 				SendClientMessage(playerid, COLOR_SUCCESS, "[SUKSES] Pertolongan P3K berhasil diberikan.");
 			}
@@ -289,6 +290,7 @@ Dialog:DialogNearPlayerMenu(playerid, response, listitem, inputtext[])
 				Dialog_Show(playerid, DialogFriskResult, DIALOG_STYLE_MSGBOX, "{FFFFFF}HASIL PENGGELEDAHAN", friskInfo, "Tutup", "");
 			} else if (gPlayerData[playerid][pFaction] == FACTION_MEDIC) {
 				gPlayerData[targetid][pInjured] = false;
+				ClearHospitalTimer(targetid);
 				SetPlayerHealth(targetid, 100.0);
 				SendClientMessage(playerid, COLOR_SUCCESS, "[SUKSES] Resusitasi CPR berhasil dilakukan.");
 			}

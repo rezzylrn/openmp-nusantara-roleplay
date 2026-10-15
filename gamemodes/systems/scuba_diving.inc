@@ -123,6 +123,11 @@ stock ProcessStartDiving(playerid)
 		return 0;
 	}
 
+	// [SECURITY] Tabung sekali-pakai: habis setelah satu penyelaman. Tanpa ini
+	// satu tabung $75 bisa dipakai menyelam tanpa batas -> panen mutiara liar.
+	// (Pemain menyewa tabung baru di /rentscuba setiap kali menyelam.)
+	TakePlayerItem(playerid, ITEM_SCUBA, 1);
+
 	ApplyAnimation(playerid, "SWIM", "SWIM_under", 4.1, true, false, false, false, 0);
 	ApplyProgressBar(playerid, "MENELUSURI DASAR TERUMBU LAUT...", 6, "OnPlayerFinishDiving", 0);
 	SendRP(playerid, COLOR_ME, "* %s memasang regulator tabung scuba dan menyelam menelusuri dasar karang laut.", gPlayerData[playerid][pName]);

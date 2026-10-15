@@ -32,7 +32,7 @@ stock ShowAccessoriesMenu(playerid)
 {FFFFFF}3. Tas Ransel Petualang / Backpack\t{33CCFF}Punggung (Spine)\n\
 {FF3B30}X. Lepas Seluruh Aksesoris\t{FF3B30}Reset Model");
 
-	ShowPlayerDialog(playerid, DIALOG_ACCESSORIES, DIALOG_STYLE_TABLIST_HEADERS,
+	RP_ShowPlayerDialog(playerid, DIALOG_ACCESSORIES, DIALOG_STYLE_TABLIST_HEADERS,
 		"MENU AKSESORIS FASHION", dialogContent, "Pakai", "Tutup");
 	return 1;
 }

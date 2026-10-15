@@ -11,7 +11,8 @@
 */
 
 forward OnPlayerLevelUp(playerid);
-forward OnEmergencyHospitalRespawn(playerid);
+forward OnEmergencyHospitalRespawn(playerid, session);
+new gHospitalTimer[MAX_PLAYERS] = {-1, ...};
 
 stock ShowStatsDialog(playerid)
 {
@@ -53,7 +54,7 @@ Pekerjaan:\t%s",
 		gPlayerData[playerid][pHunger], gPlayerData[playerid][pThirst],
 		fac, rank, job);
 
-	ShowPlayerDialog(playerid, DIALOG_STATS, DIALOG_STYLE_MSGBOX,
+	RP_ShowPlayerDialog(playerid, DIALOG_STATS, DIALOG_STYLE_MSGBOX,
 		"STATISTIK KARAKTER - NUSANTARA ROLEPLAY", buf, "Tutup", "");
 	return 1;
 }
@@ -148,14 +149,21 @@ stock ProcessPlayerKnockout(playerid, const reason[])
 	format(msg, sizeof(msg), "* %s ambruk ke tanah dan tidak sadarkan diri.", gPlayerData[playerid][pName]);
 	SendNearbyPlayer(playerid, COLOR_RP_ME, msg, RANGE_ME);
 
-	// Timer UGD Rumah Sakit
-	SetTimerEx("OnEmergencyHospitalRespawn", 90000, false, "i", playerid);
+	// Timer UGD Rumah Sakit. Simpan handle agar bisa dibatalkan (revive / mati
+	// ulang / disconnect) sehingga tidak ada dua timer yang masing-masing
+	// menagih $50 pada pemain yang sama.
+	if (gHospitalTimer[playerid] != -1) KillTimer(gHospitalTimer[playerid]);
+	gHospitalTimer[playerid] = SetTimerEx("OnEmergencyHospitalRespawn", 90000, false, "ii", playerid, gPlayerSession[playerid]);
 	return 1;
 }
 
-public OnEmergencyHospitalRespawn(playerid)
+public OnEmergencyHospitalRespawn(playerid, session)
 {
-	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pInjured]) return 0;
+	gHospitalTimer[playerid] = -1;
+	// [SECURITY] Cek session token + kondisi pingsan masih aktif. Mencegah
+	// tagihan ganda / respawn nyasar ke pemain baru di slot playerid sama.
+	if (!IsPlayerConnected(playerid) || gPlayerSession[playerid] != session) return 0;
+	if (!gPlayerData[playerid][pInjured]) return 0;
 
 	gPlayerData[playerid][pInjured] = false;
 	gPlayerData[playerid][pHunger] = 80.0;
@@ -174,5 +182,17 @@ public OnEmergencyHospitalRespawn(playerid)
 	TogglePlayerControllable(playerid, true);
 
 	SendInfo(playerid, "[RUMAH SAKIT] Anda telah dirawat oleh tim medis UGD All Saints Hospital (Biaya: $50).");
+	return 1;
+}
+
+// Batalkan timer UGD bila pemain di-revive lebih awal oleh staf medis/admin
+// atau pulih dengan cara lain. Tanpa ini timer 90 detik tetap berjalan dan
+// menagih $50 / memindahkan pemain setelah dia sudah sadar.
+stock ClearHospitalTimer(playerid)
+{
+	if (gHospitalTimer[playerid] != -1) {
+		KillTimer(gHospitalTimer[playerid]);
+		gHospitalTimer[playerid] = -1;
+	}
 	return 1;
 }

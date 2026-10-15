@@ -36,7 +36,7 @@ stock ShowJobDialog(playerid)
 {FFFFFF}10. Penambang Batu Hunter Quarry (/mine)\n\
 {E74C3C}11. Mengundurkan Diri dari Pekerjaan Utama (/quitjob)", currentJob);
 
-	ShowPlayerDialog(playerid, DIALOG_JOB_MENU, DIALOG_STYLE_LIST,
+	RP_ShowPlayerDialog(playerid, DIALOG_JOB_MENU, DIALOG_STYLE_LIST,
 		"PUSAT BURUH & PEKERJAAN UTAMA KOTA", body, "Pilih", "Tutup");
 	return 1;
 }
@@ -548,6 +548,12 @@ stock ProcessJobQuit(playerid)
 	gJobCheckpoint[playerid] = 0;
 	gJobType[playerid] = 0;
 	gPlayerData[playerid][pJob] = JOB_NONE;
+
+	// [SECURITY] Tutup dialog QTE/verifikasi yang masih terbuka. Tanpa ini,
+	// pemain bisa membuka QTE lalu /quitjob dan tetap menjawab dialog untuk
+	// menerima upah padahal job sudah berakhir.
+	HidePlayerDialog(playerid);
+	Dialog_Close(playerid);
 
 	// Cooldown 10 menit (600 detik)
 	gPlayerData[playerid][pJobCooldown] = gettime() + 600;

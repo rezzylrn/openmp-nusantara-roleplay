@@ -54,7 +54,7 @@ stock ShowBarDrinksMenu(playerid)
 {FFFFFF}2. Sloki Minuman Whiskey\t{4CD964}$25\t{FF9900}Kadar Sedang (25%%)\n\
 {FFFFFF}3. Shot Minuman Keras Vodka\t{4CD964}$40\t{FF3B30}Kadar Tinggi (40%%)");
 
-	ShowPlayerDialog(playerid, DIALOG_BAR_MENU, DIALOG_STYLE_TABLIST_HEADERS,
+	RP_ShowPlayerDialog(playerid, DIALOG_BAR_MENU, DIALOG_STYLE_TABLIST_HEADERS,
 		"MENU BAR & MINUMAN BERALKOHOL", dialogContent, "Pesan", "Batal");
 	return 1;
 }

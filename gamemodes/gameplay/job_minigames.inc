@@ -18,6 +18,25 @@
 // State per player
 new gFishingTargetAction[MAX_PLAYERS];
 new gLumberTargetCut[MAX_PLAYERS];
+
+// [SECURITY] Validasi job aktif sebelum QTE membayar. Dialog QTE dijawab lewat
+// easyDialog (id tetap 32700) sehingga tidak bisa di-spoof, TAPI handler lama
+// membayar hadiah tanpa memeriksa apakah job masih berjalan / pemain masih di
+// lokasi. Pemain bisa buka QTE lalu /quitjob (atau berjalan pergi) dan tetap
+// dibayar. Helper ini dipanggil di awal setiap handler reward.
+stock JobQTE_IsActive(playerid)
+{
+	if (!IsPlayerConnected(playerid)) return 0;
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
+	if (!gJobActive[playerid]) return 0;
+	return 1;
+}
+
+stock JobQTE_IsType(playerid, jobtype)
+{
+	return (JobQTE_IsActive(playerid) && gJobType[playerid] == jobtype) ? 1 : 0;
+}
 new gCourierCode[MAX_PLAYERS][8];
 new gMechanicTargetPart[MAX_PLAYERS];
 new gMechanicTargetVeh[MAX_PLAYERS];
@@ -94,6 +113,8 @@ Pilih tindakan yang tepat untuk menyeimbangkan tarikan:\n\
 
 Dialog:DialogFishingQTE(playerid, response, listitem, inputtext[])
 {
+	if (!JobQTE_IsActive(playerid)) return 1;
+
 	if (!response) {
 		SendClientMessage(playerid, COLOR_INFO, "[INFO] Anda melepas tarikan. Ikan berhasil kabur ke laut lepas.");
 		return 1;
@@ -177,6 +198,8 @@ Tentukan teknik tebangan agar pohon tumbang sempurna:\n\n\
 
 Dialog:DialogLumberQTE(playerid, response, listitem, inputtext[])
 {
+	if (!JobQTE_IsActive(playerid)) return 1;
+
 	if (!response) {
 		SendClientMessage(playerid, COLOR_INFO, "[INFO] Anda membatalkan tebangan pohon.");
 		return 1;
@@ -231,6 +254,11 @@ Kode Resi: {2ECC71}%s", (address[0] != '\0') ? address : "Alamat Pemesan", gCour
 
 Dialog:DialogCourierReceipt(playerid, response, listitem, inputtext[])
 {
+	if (!JobQTE_IsType(playerid, JOB_COURIER)) {
+		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Verifikasi resi gagal: Anda tidak sedang bekerja sebagai kurir paket.");
+		return 1;
+	}
+
 	if (!response) {
 		SendClientMessage(playerid, COLOR_ERROR, "[INFO] Serah terima paket ditunda. Dekati kembali checkpoint rumah untuk verifikasi.");
 		new dest = gCourierTargetDest[playerid];
@@ -319,6 +347,7 @@ Tentukan penanganan servis mekanik yang paling tepat:\n\n\
 
 Dialog:DialogMechanicDiagnostic(playerid, response, listitem, inputtext[])
 {
+	if (!JobQTE_IsActive(playerid)) return 1;
 	if (!response) {
 		SendClientMessage(playerid, COLOR_INFO, "[INFO] Perbaikan dibatalkan.");
 		return 1;
@@ -375,6 +404,11 @@ Dialog:DialogScavengerSort(playerid, response, listitem, inputtext[])
 {
 	if (!response) return 1;
 
+	if (!JobQTE_IsType(playerid, JOB_SCAVENGER)) {
+		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Pemilahan gagal: Anda tidak sedang bekerja sebagai pemulung.");
+		return 1;
+	}
+
 	new roll = random(100);
 	if (roll < 45) {
 		new cash = 10 + random(25);
@@ -428,6 +462,7 @@ Tindakan pengemudi profesional:\n\
 
 Dialog:DialogTrafficQTE(playerid, response, listitem, inputtext[])
 {
+	if (!JobQTE_IsActive(playerid)) return 1;
 	if (!response) return 1;
 
 	new target = gTrafficTargetAnswer[playerid];

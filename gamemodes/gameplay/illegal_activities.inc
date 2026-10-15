@@ -225,9 +225,19 @@ stock ProcessChopVehicle(playerid)
 		return 0;
 	}
 
+	// [SECURITY] Tolak kendaraan milik pemain: mencegah money-printer (chop
+	// mobil sendiri, restart server -> mobil di-spawn ulang oleh Vehicle_SpawnAll
+	// lalu di-chop lagi tanpa batas). Kendaraan milik pemain harus dijual lewat
+	// dealer, bukan dimutilasi di chop shop.
+	new ownedSlot = Vehicle_GetSlot(vehicleid);
+	if (ownedSlot != -1) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Penadah menolak mobil ber-STNK resmi! Jual kendaraan Anda di dealer, bukan di sini.");
+		return 0;
+	}
+
 	// Keluarkan pemain dan hapus mobil
 	RemovePlayerFromVehicle(playerid);
-	DestroyVehicle(vehicleid);
+	Vehicle_SafeDestroy(vehicleid);
 
 	// Hasil bongkaran: Uang tunai ($750 - $1600) + 2x - 4x Suku Cadang Curian
 	new cashEarned = 750 + random(851);
@@ -376,7 +386,7 @@ stock ShowBlackMarketDialog(playerid)
 {FFFFFF}5. Pack of Weed Seeds	{FF3B30}$120\n\
 {4CD964}$ Sell Stolen / Illicit Goods	{4CD964}->");
 
-		ShowPlayerDialog(playerid, DIALOG_BLACKMARKET_BUY, DIALOG_STYLE_TABLIST_HEADERS,
+		RP_ShowPlayerDialog(playerid, DIALOG_BLACKMARKET_BUY, DIALOG_STYLE_TABLIST_HEADERS,
 			"UNDERWORLD BLACK MARKET", dialogContent, "Select", "Close");
 	} else {
 		format(dialogContent, sizeof(dialogContent),
@@ -388,7 +398,7 @@ stock ShowBlackMarketDialog(playerid)
 {FFFFFF}5. Sebungkus Benih Ganja	{FF3B30}$120\n\
 {4CD964}$ Jual Suku Cadang & Barang Sitaan	{4CD964}->");
 
-		ShowPlayerDialog(playerid, DIALOG_BLACKMARKET_BUY, DIALOG_STYLE_TABLIST_HEADERS,
+		RP_ShowPlayerDialog(playerid, DIALOG_BLACKMARKET_BUY, DIALOG_STYLE_TABLIST_HEADERS,
 			"PASAR GELAP / BLACK MARKET", dialogContent, "Pilih", "Tutup");
 	}
 	return 1;
@@ -416,7 +426,7 @@ stock OnBlackMarketBuyResponse(playerid, listitem)
 {FFFFFF}5. Logam Daur Ulang Pemulung	{FFFF00}%dx	{4CD964}$35 / pcs",
 			parts, contra, weed, treasure, trash);
 
-		ShowPlayerDialog(playerid, DIALOG_BLACKMARKET_SELL, DIALOG_STYLE_TABLIST_HEADERS,
+		RP_ShowPlayerDialog(playerid, DIALOG_BLACKMARKET_SELL, DIALOG_STYLE_TABLIST_HEADERS,
 			"PENADAH HASIL KEJAHATAN", sellContent, "Jual", "Kembali");
 		return 1;
 	}

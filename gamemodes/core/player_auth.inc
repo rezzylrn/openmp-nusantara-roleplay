@@ -134,14 +134,16 @@ stock ShowUCPNotRegisteredKick(playerid)
 		"[NUSANTARA RP] Akun UCP belum terdaftar. Silakan registrasi via bot resmi untuk mendapat Kode Verifikasi (OTP/PIN).");
 	SendClientMessage(playerid, COLOR_INFO,
 		"[INFO] Koneksi diputus otomatis dalam 5 detik.");
-	SetTimerEx("RP_KickNotRegistered", 5000, false, "i", playerid);
+	SetTimerEx("RP_KickNotRegistered", 5000, false, "ii", playerid, gPlayerSession[playerid]);
 	return 1;
 }
 
-forward RP_KickNotRegistered(playerid);
-public RP_KickNotRegistered(playerid)
+forward RP_KickNotRegistered(playerid, session);
+public RP_KickNotRegistered(playerid, session)
 {
-	if (IsPlayerConnected(playerid)) Kick(playerid);
+	// [SECURITY] Cek session token: cegah kick nyasar bila slot playerid sudah
+	// dipakai pemain lain yang connect dalam 5 detik terakhir.
+	if (IsPlayerConnected(playerid) && gPlayerSession[playerid] == session) Kick(playerid);
 	return 1;
 }
 

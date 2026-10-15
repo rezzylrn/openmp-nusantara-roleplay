@@ -49,7 +49,7 @@ stock ShowAmmuNationMenu(playerid)
 {FFFFFF}4. Kotak Amunisi Resmi (50 Peluru)\t{4CD964}$200\tAmunisi cadangan legal\n\
 {FFFFFF}5. Rompi Anti-Peluru Kevlar\t{4CD964}$300\t100%% Perlindungan dada");
 
-	ShowPlayerDialog(playerid, DIALOG_AMMUNATION_BUY, DIALOG_STYLE_TABLIST_HEADERS,
+	RP_ShowPlayerDialog(playerid, DIALOG_AMMUNATION_BUY, DIALOG_STYLE_TABLIST_HEADERS,
 		"AMMU-NATION GUN STORE", dialogContent, "Beli", "Batal");
 	return 1;
 }

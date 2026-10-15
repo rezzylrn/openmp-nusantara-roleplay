@@ -44,7 +44,7 @@ stock ShowGymStyleDialog(playerid)
 {FFFFFF}4. Kickboxing (Muay Thai)\t{4CD964}$150\tSerangan lutut & siku keras\n\
 {FFFFFF}5. Grab Kick (Elbow Striking)\t{4CD964}$150\tKuncian bantingan jarak dekat");
 
-	ShowPlayerDialog(playerid, DIALOG_GYM_STYLES, DIALOG_STYLE_TABLIST_HEADERS,
+	RP_ShowPlayerDialog(playerid, DIALOG_GYM_STYLES, DIALOG_STYLE_TABLIST_HEADERS,
 		"PELATIHAN GAYA BERTARUNG GYM", dialogContent, "Pilih", "Batal");
 	return 1;
 }

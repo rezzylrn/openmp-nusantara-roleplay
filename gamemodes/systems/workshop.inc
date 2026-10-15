@@ -34,7 +34,7 @@ stock ShowWorkshopMenu(playerid)
 5. Modifikasi Knalpot Racing - $900\n\
 6. Cat Ulang Bodi Kendaraan - $500");
 
-	ShowPlayerDialog(playerid, DIALOG_HELP, DIALOG_STYLE_LIST,
+	RP_ShowPlayerDialog(playerid, DIALOG_WORKSHOP_MENU, DIALOG_STYLE_LIST,
 		"BENGKEL MODIFIKASI WORKSHOP", str, "Pasang", "Batal");
 	return 1;
 }
@@ -43,5 +43,53 @@ stock ApplyVehicleUpgrade(vehid, componentid)
 {
 	if (vehid <= 0 || !IsValidVehicle(vehid)) return 0;
 	AddVehicleComponent(vehid, componentid);
+	return 1;
+}
+
+// ---------------------------------------------------------------------------
+// Handler tombol "Pasang" pada menu workshop. Sebelumnya dialog memakai id
+// DIALOG_HELP yang tidak punya handler -> seluruh menu modifikasi mati.
+// ---------------------------------------------------------------------------
+stock OnWorkshopMenuResponse(playerid, listitem)
+{
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (!IsPlayerNearWorkshop(playerid)) {
+		SendErr(playerid, "Anda harus berada di Bengkel Modifikasi Idlewood.");
+		return 0;
+	}
+
+	// Harga & komponen tiap baris menu
+	static const wsPrice[] = { 1500, 2500, 3000, 1200, 900, 500 };
+	static const wsComp[]  = { 1025, 1087, 1010, 1000, 1018, 0 }; // 0 = cat ulang (tanpa komponen)
+
+	if (listitem < 0 || listitem >= sizeof(wsPrice)) return 0;
+
+	new veh = GetPlayerVehicleID(playerid);
+	if (veh == 0 || !IsValidVehicle(veh) || GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
+		SendErr(playerid, "Anda harus tetap berada di kursi pengemudi kendaraan.");
+		return 0;
+	}
+
+	new cost = wsPrice[listitem];
+	if (gPlayerData[playerid][pMoney] < cost) {
+		SendErr(playerid, "Uang tunai tidak mencukupi ($%d).", cost);
+		return 0;
+	}
+
+	if (listitem == 5) {
+		// Cat ulang bodi: warna acak
+		ChangeVehicleColor(veh, random(126), random(126));
+	} else {
+		if (wsComp[listitem] == 0) return 0;
+		AddVehicleComponent(veh, wsComp[listitem]);
+	}
+
+	TakePlayerMoneyEx(playerid, cost, "modifikasi workshop");
+	PlayerPlaySound(playerid, 1133, 0.0, 0.0, 0.0);
+	SendSucc(playerid, "Modifikasi berhasil dipasang! Biaya: $%d.", cost);
+
+	// Simpan bila kendaraan milik pemain
+	new slot = Vehicle_GetSlot(veh);
+	if (slot != -1) DB_SaveVehicle(slot);
 	return 1;
 }

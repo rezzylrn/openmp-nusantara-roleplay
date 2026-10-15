@@ -167,6 +167,14 @@ public OnPlayerFinishSmelting(playerid, extra)
 		TogglePlayerControllable(playerid, true);
 	}
 
+	// [SECURITY] Verifikasi bahan baku masih ada SEBELUM memberi hasil. Tanpa
+	// cek ini, pemain bisa membuang ore saat progress bar berjalan dan tetap
+	// menerima Batangan Besi gratis.
+	if (GetPlayerItemCount(playerid, ITEM_IRON_ORE) < 2 || GetPlayerItemCount(playerid, ITEM_COAL) < 1) {
+		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Peleburan gagal: bahan baku (2 Bijih Besi + 1 Batubara) tidak lagi mencukupi.");
+		return 0;
+	}
+
 	TakePlayerItem(playerid, ITEM_IRON_ORE, 2);
 	TakePlayerItem(playerid, ITEM_COAL, 1);
 	GivePlayerItem(playerid, ITEM_IRON_BAR, 1);

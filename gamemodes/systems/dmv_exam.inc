@@ -46,7 +46,7 @@ stock ShowDMVExamDialog(playerid)
 {4CD964}2. Memperlambat laju, merapat ke bahu jalan dan memberi prioritas jalan\n\
 {FFFFFF}3. Tetap melaju santai di lajur tengah tanpa memberi ruang");
 
-	ShowPlayerDialog(playerid, DIALOG_DMV_THEORY, DIALOG_STYLE_LIST,
+	RP_ShowPlayerDialog(playerid, DIALOG_DMV_THEORY, DIALOG_STYLE_LIST,
 		"UJIAN TEORI SIM KOTA LOS SANTOS ($150)", dialogContent, "Pilih", "Batal");
 	return 1;
 }
@@ -57,10 +57,21 @@ stock OnDMVDialogResponse(playerid, listitem)
 
 	if (listitem == 1) {
 		// Jawaban Benar
+		// [SECURITY] Cek pembayaran: bila uang tunai & saldo bank tidak cukup,
+		// SIM TIDAK boleh diberikan (sebelumnya return TakePlayerBankEx diabaikan
+		// sehingga pemain miskin dapat SIM gratis).
+		new bool:paid = false;
 		if (gPlayerData[playerid][pMoney] >= DMV_EXAM_FEE) {
-			TakePlayerMoneyEx(playerid, DMV_EXAM_FEE, "biaya ujian SIM");
-		} else {
-			TakePlayerBankEx(playerid, DMV_EXAM_FEE, "biaya ujian SIM");
+			paid = (TakePlayerMoneyEx(playerid, DMV_EXAM_FEE, "biaya ujian SIM") == 1);
+		} else if (TakePlayerBankEx(playerid, DMV_EXAM_FEE, "biaya ujian SIM") == 1) {
+			paid = true;
+		}
+
+		if (!paid) {
+			PlayerPlaySound(playerid, 1053, 0.0, 0.0, 0.0);
+			SendClientMessage(playerid, COLOR_ERROR,
+				"[SAGOV DMV] Uang tunai & saldo bank Anda tidak mencukupi untuk biaya ujian SIM ($150).");
+			return 1;
 		}
 
 		gPlayerData[playerid][pDriveLic] = true;

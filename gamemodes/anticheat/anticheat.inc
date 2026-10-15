@@ -37,10 +37,12 @@ enum E_AC_DATA {
 
 new gACData[MAX_PLAYERS][E_AC_DATA];
 
-forward RP_DelayedKick(playerid);
-public RP_DelayedKick(playerid)
+forward RP_DelayedKick(playerid, session);
+public RP_DelayedKick(playerid, session)
 {
-	if (IsPlayerConnected(playerid)) Kick(playerid);
+	// [SECURITY] Cek session token: cegah kick nyasar ke pemain yang baru
+	// masuk ke slot playerid yang sama.
+	if (IsPlayerConnected(playerid) && gPlayerSession[playerid] == session) Kick(playerid);
 	return 1;
 }
 
@@ -62,7 +64,7 @@ stock AC_AlertAdmins(playerid, const cheatName[], const details[])
 		}
 	}
 	printf("[ANTICHEAT KICK] %s (ID %d) kicked for %s [%s]", gPlayerData[playerid][pName], playerid, cheatName, details);
-	SetTimerEx("RP_DelayedKick", 350, false, "i", playerid);
+	SetTimerEx("RP_DelayedKick", 350, false, "ii", playerid, gPlayerSession[playerid]);
 	return 1;
 }
 

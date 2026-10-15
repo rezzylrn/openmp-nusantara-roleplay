@@ -10,6 +10,48 @@
 ==============================================================================
 */
 
+/* ==========================================================================
+   [SECURITY] Dialog-response spoofing guard
+   --------------------------------------------------------------------------
+   easyDialog memakai id tetap 32700 sehingga aman. Namun gamemode ini masih
+   memakai dialog legacy bernomor (DIALOG_AMMUNATION_BUY, DIALOG_VENDING_SNACK,
+   DIALOG_BAR_MENU, ...). Router me-dispatch nomor itu apa adanya tanpa ingat
+   dialog mana yang terakhir ditampilkan -> client termodifikasi bisa mengirim
+   response dialog yang tak pernah dibuka (beli senjata / tarik ATM dari jauh).
+
+   Guard: tiap dialog legacy yang tampil dicatat (id + session token). Router
+   hanya memproses response bila id == dialog terakhir & session masih sama
+   (mencegah callback bocor antar slot playerid yang dipakai ulang).
+   ========================================================================== */
+new gLastLegacyDialog[MAX_PLAYERS] = {-1, ...};
+new gLastLegacyDialogSession[MAX_PLAYERS] = {-1, ...};
+
+stock RP_ShowPlayerDialog(playerid, dialogid, dialog_style, const caption[], const info[], const button1[], const button2[])
+{
+	gLastLegacyDialog[playerid] = dialogid;
+	gLastLegacyDialogSession[playerid] = gPlayerSession[playerid];
+	return ShowPlayerDialog(playerid, dialogid, DIALOG_STYLE:dialog_style, caption, info, button1, button2);
+}
+
+stock RP_DialogConsume(playerid) { gLastLegacyDialog[playerid] = -1; return 1; }
+
+stock RP_DialogIsExpected(playerid, dialogid)
+{
+	if (dialogid < 0 || dialogid >= 32700) return 0;
+	if (gLastLegacyDialogSession[playerid] != gPlayerSession[playerid]) return 0;
+	return (gLastLegacyDialog[playerid] == dialogid) ? 1 : 0;
+}
+
+stock RP_IsAuthExemptDialog(dialogid)
+{
+	switch (dialogid) {
+		case DIALOG_LOGIN, DIALOG_UCP_OTP_VERIFY, DIALOG_UCP_REG_PASS,
+		     DIALOG_CHAR_SELECT, DIALOG_CHAR_CREATE_NAME,
+		     DIALOG_CHAR_CREATE_DOB, DIALOG_CHAR_CREATE_GENDER: return 1;
+	}
+	return 0;
+}
+
 public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 {
 	if (!response) {
@@ -18,6 +60,16 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			Kick(playerid);
 		}
 		return 1;
+	}
+
+	// [SECURITY] Tolak response untuk dialog legacy yang tidak sedang ditampilkan
+	// ke pemain ini (mencegah spoofing dialog-id dari client termodifikasi).
+	if (!RP_IsAuthExemptDialog(dialogid)) {
+		if (!RP_DialogIsExpected(playerid, dialogid)) {
+			gLastLegacyDialog[playerid] = -1;
+			return 1;
+		}
+		RP_DialogConsume(playerid);
 	}
 
 	switch (dialogid) {
@@ -31,7 +83,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		case DIALOG_INVENTORY: {
 			if (listitem < 0 || listitem >= MAX_INVENTORY_SLOTS) return 1;
 			gSelectedInvSlot[playerid] = gInvSlotMap[playerid][listitem];
-			ShowPlayerDialog(playerid, DIALOG_ITEM_ACTION, DIALOG_STYLE_LIST,
+			RP_ShowPlayerDialog(playerid, DIALOG_ITEM_ACTION, DIALOG_STYLE_LIST,
 				"TINDAKAN BARANG", "1. Gunakan Barang\n2. Buang Barang", "Pilih", "Kembali");
 		}
 		case DIALOG_ITEM_ACTION: {
@@ -59,8 +111,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		}
 		case DIALOG_STORE_BUY:         ProcessStorePurchase(playerid, listitem);
 		case DIALOG_PHONE_MENU: {
-			if (listitem == 0) ShowPlayerDialog(playerid, DIALOG_PHONE_CALL, DIALOG_STYLE_INPUT, "PANGGILAN", "Nomor tujuan:", "Panggil", "Batal");
-			else if (listitem == 1) ShowPlayerDialog(playerid, DIALOG_PHONE_SMS, DIALOG_STYLE_INPUT, "SMS", "Format: [Nomor] [Pesan]", "Kirim", "Batal");
+			if (listitem == 0) RP_ShowPlayerDialog(playerid, DIALOG_PHONE_CALL, DIALOG_STYLE_INPUT, "PANGGILAN", "Nomor tujuan:", "Panggil", "Batal");
+			else if (listitem == 1) RP_ShowPlayerDialog(playerid, DIALOG_PHONE_SMS, DIALOG_STYLE_INPUT, "SMS", "Format: [Nomor] [Pesan]", "Kirim", "Batal");
 			else if (listitem == 2) {
 				gPlayerData[playerid][pPhoneStatus] = !gPlayerData[playerid][pPhoneStatus];
 				SendInfo(playerid, "Mode dering: %s.", gPlayerData[playerid][pPhoneStatus] ? "Aktif" : "Hening");
@@ -128,7 +180,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			gPending911Service[playerid] = (listitem == 0) ? 1 : 2;
 			new title[48];
 			format(title, sizeof(title), "LAPORAN DARURAT %s", (listitem == 0) ? "SAPD POLISI" : "SAMD MEDIS");
-			ShowPlayerDialog(playerid, DIALOG_911_MESSAGE, DIALOG_STYLE_INPUT,
+			RP_ShowPlayerDialog(playerid, DIALOG_911_MESSAGE, DIALOG_STYLE_INPUT,
 				title, "Jelaskan situasi darurat dan kondisi Anda secara singkat:", "Kirim", "Batal");
 		}
 		case DIALOG_911_MESSAGE: {
@@ -163,6 +215,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		case DIALOG_GYM_STYLES: OnGymStyleDialogResponse(playerid, listitem);
 		case DIALOG_FASTFOOD_MENU: OnFastFoodDialogResponse(playerid, listitem);
 		case DIALOG_ACCESSORIES: OnAccessoriesDialogResponse(playerid, listitem);
+		case DIALOG_WORKSHOP_MENU: OnWorkshopMenuResponse(playerid, listitem);
 		case DIALOG_ACTION_PLATE_INPUT: {
 			if (response && strlen(inputtext) > 0) ProcessCustomPlate(playerid, inputtext);
 		}

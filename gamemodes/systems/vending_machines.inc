@@ -85,7 +85,7 @@ stock ShowVendingDialog(playerid)
 {FFFFFF}1. Minuman Kaleng Dingin Sprunk\t{4CD964}$3\t{33CCFF}+40%% Rasa Haus\n\
 {FFFFFF}2. Makanan Ringan Cokelat Energi\t{4CD964}$4\t{FFCC00}+35%% Rasa Lapar");
 
-	ShowPlayerDialog(playerid, DIALOG_VENDING_SNACK, DIALOG_STYLE_TABLIST_HEADERS,
+	RP_ShowPlayerDialog(playerid, DIALOG_VENDING_SNACK, DIALOG_STYLE_TABLIST_HEADERS,
 		gVendingMachines[slot][vmName], dialogContent, "Beli", "Batal");
 	return 1;
 }

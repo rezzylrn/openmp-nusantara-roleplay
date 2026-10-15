@@ -196,7 +196,7 @@ stock ProcessFrisk(playerid, targetid)
 
 	new header[64];
 	format(header, sizeof(header), "HASIL PENGGELEDAHAN - %s", gPlayerData[targetid][pName]);
-	ShowPlayerDialog(playerid, DIALOG_SAPD_ACTIONS, DIALOG_STYLE_MSGBOX, header, list, "Tutup", "");
+	RP_ShowPlayerDialog(playerid, DIALOG_SAPD_ACTIONS, DIALOG_STYLE_MSGBOX, header, list, "Tutup", "");
 
 	new msg[128];
 	format(msg, sizeof(msg), "* %s memeriksa seluruh pakaian dan kantong %s dengan teliti.",
@@ -345,6 +345,7 @@ stock ProcessRevive(playerid, targetid)
 	}
 
 	gPlayerData[targetid][pInjured] = false;
+	ClearHospitalTimer(targetid);
 	ClearAnimations(targetid);
 	TogglePlayerControllable(targetid, true);
 	SetPlayerHealth(targetid, 50.0);

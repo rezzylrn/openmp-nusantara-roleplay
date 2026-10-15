@@ -205,6 +205,7 @@ Dialog:DialogAdminHeal(playerid, response, listitem, inputtext[])
 	gPlayerData[targetid][pHunger] = 100.0;
 	gPlayerData[targetid][pThirst] = 100.0;
 	gPlayerData[targetid][pInjured] = false;
+	ClearHospitalTimer(targetid);
 
 	SendClientMessage(targetid, COLOR_SUCCESS, "[ADMIN] Darah, armor, dan stamina Anda telah dipulihkan oleh admin.");
 	SendClientMessage(playerid, COLOR_SUCCESS, "[ADMIN] Pemain berhasil dipulihkan secara penuh.");

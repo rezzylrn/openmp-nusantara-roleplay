@@ -100,7 +100,7 @@ CMD:dispatches(playerid, params[])
 		return 1;
 	}
 
-	ShowPlayerDialog(playerid, DIALOG_HELP, DIALOG_STYLE_MSGBOX, "DAFTAR DISPATCH 911 AKTIF", listStr, "Tutup", "");
+	RP_ShowPlayerDialog(playerid, DIALOG_HELP, DIALOG_STYLE_MSGBOX, "DAFTAR DISPATCH 911 AKTIF", listStr, "Tutup", "");
 	return 1;
 }
 
@@ -129,6 +129,7 @@ CMD:treat(playerid, params[])
 
 	if (gPlayerData[targetid][pInjured]) {
 		gPlayerData[targetid][pInjured] = false;
+		ClearHospitalTimer(targetid);
 		ClearAnimations(targetid);
 		TogglePlayerControllable(targetid, true);
 		SetPlayerHealth(targetid, 35.0);
@@ -184,6 +185,7 @@ CMD:revive(playerid, params[])
 
 	ApplyAnimation(playerid, "MEDIC", "CPR", 4.1, false, false, false, false, 3000);
 	gPlayerData[targetid][pInjured] = false;
+	ClearHospitalTimer(targetid);
 	ClearAnimations(targetid);
 	TogglePlayerControllable(targetid, true);
 	SetPlayerHealth(targetid, 100.0);

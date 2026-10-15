@@ -66,7 +66,7 @@ stock ShowFastFoodMenu(playerid)
 {FFFFFF}2. Cluckin' Crispy Fried Chicken\t{4CD964}$15\t{FFCC00}+60%% Lapar | +25 HP\n\
 {FFFFFF}3. Pizza Stack Meat Lovers Slice\t{4CD964}$14\t{FFCC00}+55%% Lapar | +25 HP");
 
-	ShowPlayerDialog(playerid, DIALOG_FASTFOOD_MENU, DIALOG_STYLE_TABLIST_HEADERS,
+	RP_ShowPlayerDialog(playerid, DIALOG_FASTFOOD_MENU, DIALOG_STYLE_TABLIST_HEADERS,
 		gFastFoodNames[slot], dialogContent, "Pesan", "Batal");
 	return 1;
 }

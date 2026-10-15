@@ -110,6 +110,8 @@ CMD:givemoney(playerid, params[])
 	if (sscanf(params, "ud", targetid, amount)) return SendSyntax(playerid, "/givemoney [targetid] [jumlah]");
 	if (!IsPlayerConnected(targetid)) return SendErr(playerid, "Target tidak ditemukan.");
 	if (amount <= 0) return SendErr(playerid, "Jumlah uang harus bernilai positif.");
+	// [SECURITY] Batasi jumlah agar pMoney (int32) tidak overflow / wrap negatif.
+	if (amount > 100000000) return SendErr(playerid, "Jumlah maksimum $100,000,000 per pemberian.");
 
 	GivePlayerMoneyEx(targetid, amount, "admin reward");
 	DB_SavePlayerData(targetid);
@@ -162,14 +164,15 @@ CMD:kick(playerid, params[])
 		gPlayerData[targetid][pName], gPlayerData[playerid][pName], reason);
 	SendClientMessageToAll(COLOR_RED, msg);
 
-	SetTimerEx("RP_KickPlayer", 100, false, "i", targetid);
+	SetTimerEx("RP_KickPlayer", 100, false, "ii", targetid, gPlayerSession[targetid]);
 	return 1;
 }
 
-forward RP_KickPlayer(playerid);
-public RP_KickPlayer(playerid)
+forward RP_KickPlayer(playerid, session);
+public RP_KickPlayer(playerid, session)
 {
-	if (IsPlayerConnected(playerid)) Kick(playerid);
+	// [SECURITY] Cek session token: cegah kick nyasar ke pemain baru di slot sama.
+	if (IsPlayerConnected(playerid) && gPlayerSession[playerid] == session) Kick(playerid);
 	return 1;
 }
 
@@ -189,7 +192,7 @@ CMD:ban(playerid, params[])
 		gPlayerData[targetid][pName], gPlayerData[playerid][pName], reason);
 	SendClientMessageToAll(COLOR_RED, msg);
 
-	SetTimerEx("RP_KickPlayer", 100, false, "i", targetid);
+	SetTimerEx("RP_KickPlayer", 100, false, "ii", targetid, gPlayerSession[targetid]);
 	return 1;
 }
 

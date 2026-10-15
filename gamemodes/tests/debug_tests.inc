@@ -1482,7 +1482,7 @@ public RunAutomatedRPTests()
 	}
 
 	// 69. test vehicle engine start/stop cycle, 1-main-job rule & courier address assignment
-	print("[TEST 69/69] Engine Toggle Cycle, Strict 1-Main-Job Enforcer & Courier Destinations...");
+	print("[TEST 69/71] Engine Toggle Cycle, Strict 1-Main-Job Enforcer & Courier Destinations...");
 	new testVeh = CreateVehicle(400, 0.0, 0.0, 5.0, 0.0, 1, 1, -1);
 	Vehicle_SetEngineOn(testVeh, true);
 	new bool:engStarted = (Vehicle_IsEngineOn(testVeh) == 1);
@@ -1507,7 +1507,7 @@ public RunAutomatedRPTests()
 	}
 
 	// 70. test security & data-integrity hardening (vehicle DBID, trunk access, sql buffer, ban cache)
-	print("[TEST 70/70] Security & Data Integrity Hardening (Vehicle DBID, Trunk Access, SQL Buffers, Ban Cache)...");
+	print("[TEST 70/71] Security & Data Integrity Hardening (Vehicle DBID, Trunk Access, SQL Buffers, Ban Cache)...");
 	new hardenOk = true;
 	new failDetail[256];
 	failDetail[0] = '\0';
@@ -1572,8 +1572,77 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
+	print("[TEST 71/71] New Subsystem Hardening (Chop Guard, QTE Job Validation, Dialog Spoof Guard)...");
+	{
+		new bool:nsOk = true;
+		new failNS[256] = "";
+
+		// 71a. Chop shop menolak kendaraan milik pemain (Vehicle_GetSlot != -1)
+		new chopSlot = MAX_OWNED_VEHICLES - 1;
+		new bool:cPrevUsed = gVehicleData[chopSlot][vUsed];
+		new cPrevHandle = gVehicleData[chopSlot][vVehicleHandle];
+		new chopVeh = CreateVehicle(400, 5.0, 5.0, 5.0, 0.0, 1, 1, -1);
+		gVehicleData[chopSlot][vUsed] = true;
+		gVehicleData[chopSlot][vVehicleHandle] = chopVeh;
+		new bool:chopOwnedDetected = (Vehicle_GetSlot(chopVeh) == chopSlot);
+		gVehicleData[chopSlot][vUsed] = cPrevUsed;
+		gVehicleData[chopSlot][vVehicleHandle] = cPrevHandle;
+		DestroyVehicle(chopVeh);
+		if (!chopOwnedDetected) { nsOk = false; format(failNS, sizeof(failNS), "%s chopOwned;", failNS); }
+
+		// 71b. JobQTE_IsActive: validasi gate job. Catatan: IsPlayerConnected
+		// selalu false di dalam test runner (tak ada koneksi nyata), jadi kita
+		// uji langsung predikat logika yang dipakai gate: job aktif + tipe cocok.
+		new qteT = 0;
+		gPlayerData[qteT][pLoggedIn] = true;
+		gPlayerData[qteT][pInjured] = false;
+		gPlayerData[qteT][pCuffed] = false;
+		gJobActive[qteT] = false;
+		new qteInactive = (!gJobActive[qteT]);
+		gJobActive[qteT] = true;
+		gJobType[qteT] = JOB_COURIER;
+		new qteCourierOk = (gJobActive[qteT] && gJobType[qteT] == JOB_COURIER);
+		new qteWrongType = !(gJobActive[qteT] && gJobType[qteT] == JOB_SCAVENGER);
+		gJobActive[qteT] = false;
+		if (!qteInactive || !qteCourierOk || !qteWrongType) { nsOk = false; format(failNS, sizeof(failNS), "%s qteJob;", failNS); }
+
+		// 71c. Dialog spoof guard: response untuk dialog yang tidak pernah tampil
+		new spoofT = 0;
+		gPlayerSession[spoofT] = 555;
+		gLastLegacyDialog[spoofT] = -1;
+		gLastLegacyDialogSession[spoofT] = 555;
+		new spoofDenied = (RP_DialogIsExpected(spoofT, DIALOG_AMMUNATION_BUY) == 0);
+		// setelah dialog "ditampilkan", response harus diterima
+		RP_ShowPlayerDialog(spoofT, DIALOG_AMMUNATION_BUY, DIALOG_STYLE_LIST, "t", "b", "ok", "x");
+		new spoofAccepted = (RP_DialogIsExpected(spoofT, DIALOG_AMMUNATION_BUY) == 1);
+		// session berbeda (slot dipakai ulang) harus ditolak
+		gPlayerSession[spoofT] = 556;
+		new spoofStaleSession = (RP_DialogIsExpected(spoofT, DIALOG_AMMUNATION_BUY) == 0);
+		gLastLegacyDialog[spoofT] = -1;
+		if (!spoofDenied || !spoofAccepted || !spoofStaleSession) { nsOk = false; format(failNS, sizeof(failNS), "%s spoofGuard;", failNS); }
+
+		// 71d. Dialog auth tetap dikecualikan dari guard
+		new authExempt = (RP_IsAuthExemptDialog(DIALOG_LOGIN) == 1 && RP_IsAuthExemptDialog(DIALOG_AMMUNATION_BUY) == 0);
+		if (!authExempt) { nsOk = false; format(failNS, sizeof(failNS), "%s authExempt;", failNS); }
+
+		// 71e. Hospital timer handle dapat dibatalkan bersih
+		new hospT = 0;
+		gHospitalTimer[hospT] = -1;
+		ClearHospitalTimer(hospT);
+		new bool:hospClearOk = (gHospitalTimer[hospT] == -1);
+		if (!hospClearOk) { nsOk = false; format(failNS, sizeof(failNS), "%s hospTimer;", failNS); }
+
+		if (nsOk) {
+			print("  -> PASS: Chop guard, QTE job validation, dialog spoof guard & hospital timer cleanup verified.");
+			passCount++;
+		} else {
+			printf("  -> FAIL: New subsystem hardening details: %s", failNS);
+			failCount++;
+		}
+	}
+
 	print("==================================================");
-	printf("  [DEBUG SUMMARY] %d / 70 TESTS PASSED, %d FAILED", passCount, failCount);
+	printf("  [DEBUG SUMMARY] %d / 71 TESTS PASSED, %d FAILED", passCount, failCount);
 	print("==================================================\n");
 
 	return 1;

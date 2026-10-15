@@ -43,7 +43,7 @@ Sekop Penggali Tanah\t$45\tMenggali temuan detektor logam (/dig)\n\
 Kaleng Cat Semprot\t$25\tMenggambar grafiti di dinding (/tag)\n\
 Dadu Kasino Jalanan\t$15\tBermain dadu taruhan peran (/dice)");
 
-	ShowPlayerDialog(playerid, DIALOG_STORE_BUY, DIALOG_STYLE_TABLIST_HEADERS,
+	RP_ShowPlayerDialog(playerid, DIALOG_STORE_BUY, DIALOG_STYLE_TABLIST_HEADERS,
 		"TOKO 24/7 - KATALOG PEMBELIAN", list, "Beli", "Batal");
 	return 1;
 }
