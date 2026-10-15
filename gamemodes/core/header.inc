@@ -713,6 +713,7 @@ new gGiveItemType[MAX_PLAYERS];
 new bool:gPhoneOpen[MAX_PLAYERS];
 new bool:gInventoryOpen[MAX_PLAYERS];
 new gPlayerSharedHouse[MAX_PLAYERS] = {-1, ...};
+new gGymWorkoutCooldown[MAX_PLAYERS]; // cooldown /workout (anti spam-heal)
 
 // forward prototypes
 forward Float:GetItemWeight(itemtype);

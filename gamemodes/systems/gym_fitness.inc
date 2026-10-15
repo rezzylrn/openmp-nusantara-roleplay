@@ -99,6 +99,14 @@ stock ProcessGymWorkout(playerid)
 		return 0;
 	}
 
+	// [FIX] Cooldown 30 detik: mencegah spam /workout untuk heal tak terbatas
+	// (sebelumnya tiap panggilan +5 HP tanpa batas waktu).
+	if (gettime() < gGymWorkoutCooldown[playerid]) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Tubuh Anda masih lelah. Istirahat dulu sebelum olahraga lagi.");
+		return 0;
+	}
+	gGymWorkoutCooldown[playerid] = gettime() + 30;
+
 	// Animasi benchpress
 	ApplyAnimation(playerid, "BENCHPRESS", "gym_bp_celebrate", 4.1, false, false, false, false, 0);
 	PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);

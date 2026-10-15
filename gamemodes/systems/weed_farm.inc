@@ -121,8 +121,22 @@ stock ProcessPlantWeed(playerid)
 		return 0;
 	}
 
+	// [FIX] Tanaman ganja hanya boleh di dunia terbuka (bukan interior/rumah/
+	// virtual world) dan di daratan. Sebelumnya bisa ditanam di mana saja,
+	// termasuk interior bisnis / atap gedung.
+	if (GetPlayerInterior(playerid) != 0 || GetPlayerVirtualWorld(playerid) != 0) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Benih ganja hanya bisa ditanam di alam terbuka, bukan di dalam ruangan.");
+		return 0;
+	}
+
 	new Float:px, Float:py, Float:pz;
 	GetPlayerPos(playerid, px, py, pz);
+
+	// Tolak menanam di dalam air (z lebih rendah dari permukaan laut umum).
+	if (pz < 0.0) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda tidak bisa menanam ganja di dalam air.");
+		return 0;
+	}
 
 	// Periksa jarak agar tidak menumpuk pot tanaman terlalu dekat
 	for (new i = 0; i < MAX_WEED_PLANTS; i++) {

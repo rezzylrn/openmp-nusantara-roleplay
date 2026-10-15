@@ -108,9 +108,10 @@ public OnGameModeInit()
 	ManualVehicleEngineAndLights();
 
 	// db init
-	DB_Init();
 	AC_Init();
-	House_Init();
+	House_Init();   // inisialisasi default rumah DULU, sebelum DB_Init men-trigger
+	                // query async OnHousesLoaded yang butuh hUsed=true.
+	DB_Init();
 	Doors_Init();
 	ATMs_Init();
 	Trash_Init();

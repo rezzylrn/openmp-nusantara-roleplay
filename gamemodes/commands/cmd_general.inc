@@ -94,7 +94,7 @@ Level: {FFFF00}%d",
 		(gPlayerData[playerid][pGender] == 1) ? "Laki-Laki" : "Perempuan",
 		gPlayerData[playerid][pLevel]);
 
-	ShowPlayerDialog(targetid, DIALOG_HELP, DIALOG_STYLE_MSGBOX, "KARTU IDENTITAS PENDUDUK", idCard, "Tutup", "");
+	RP_ShowPlayerDialog(targetid, DIALOG_HELP, DIALOG_STYLE_MSGBOX, "KARTU IDENTITAS PENDUDUK", idCard, "Tutup", "");
 
 	new rpMsg[128];
 	format(rpMsg, sizeof(rpMsg), "* %s memperlihatkan KTP miliknya kepada %s.",
@@ -256,7 +256,9 @@ CMD:give(playerid, params[])
 		return SendErr(playerid, "Jumlah barang Anda tidak mencukupi di inventaris.");
 	}
 
-	TakePlayerItem(playerid, itemType, amount);
+	if (!TakePlayerItem(playerid, itemType, amount)) {
+		return SendErr(playerid, "Gagal memberikan barang: stok tidak mencukupi.");
+	}
 	GivePlayerItem(targetid, itemType, amount);
 
 	new itemName[32];

@@ -353,7 +353,11 @@ Dialog:DialogInvGiveAmount(playerid, response, listitem, inputtext[])
 		return 1;
 	}
 
-	TakePlayerItem(playerid, itemType, amount);
+	// [FIX] Pastikan pengambilan sukses sebelum memberi ke target (atomic).
+	if (!TakePlayerItem(playerid, itemType, amount)) {
+		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Gagal memberikan barang: stok tidak mencukupi.");
+		return 1;
+	}
 	GivePlayerItem(targetid, itemType, amount);
 
 	new itemName[48];
@@ -388,7 +392,10 @@ Dialog:DialogInvDropAmount(playerid, response, listitem, inputtext[])
 		return 1;
 	}
 
-	TakePlayerItem(playerid, itemType, amount);
+	if (!TakePlayerItem(playerid, itemType, amount)) {
+		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Gagal membuang barang: stok tidak mencukupi.");
+		return 1;
+	}
 
 	new itemName[48];
 	GetItemName(itemType, itemName, sizeof(itemName));

@@ -107,10 +107,10 @@ stock ShowVehicleTrunkDialog(playerid, slot)
 	else format(title, sizeof(title), "BAGASI - %s (%s)", vName, gVehicleData[slot][vPlate]);
 
 	if (isEn) {
-		ShowPlayerDialog(playerid, DIALOG_TRUNK, DIALOG_STYLE_TABLIST_HEADERS,
+		RP_ShowPlayerDialog(playerid, DIALOG_TRUNK, DIALOG_STYLE_TABLIST_HEADERS,
 			title, str, "Select", "Close");
 	} else {
-		ShowPlayerDialog(playerid, DIALOG_TRUNK, DIALOG_STYLE_TABLIST_HEADERS,
+		RP_ShowPlayerDialog(playerid, DIALOG_TRUNK, DIALOG_STYLE_TABLIST_HEADERS,
 			title, str, "Pilih", "Tutup");
 	}
 	return 1;
@@ -127,7 +127,7 @@ stock OnVehicleTrunkResponse(playerid, listitem)
 		new prompt[144];
 		format(prompt, sizeof(prompt), "1. Simpan Uang Tunai ke Bagasi (Dompet: $%d)\n2. Ambil Uang Tunai dari Bagasi (Tersedia: $%d)",
 			gPlayerData[playerid][pMoney], gVehicleData[slot][vTrunk]);
-		ShowPlayerDialog(playerid, DIALOG_TRUNK_DEPOSIT, DIALOG_STYLE_LIST, "KELOLA UANG BAGASI", prompt, "Pilih", "Kembali");
+		RP_ShowPlayerDialog(playerid, DIALOG_TRUNK_DEPOSIT, DIALOG_STYLE_LIST, "KELOLA UANG BAGASI", prompt, "Pilih", "Kembali");
 		return 1;
 	}
 
@@ -142,7 +142,7 @@ stock OnVehicleTrunkResponse(playerid, listitem)
 		} else {
 			format(gunPrompt, sizeof(gunPrompt), "1. Simpan Senjata Yang Sedang Dipegang ke Bagasi\n2. (Bagasi senjata sedang kosong)");
 		}
-		ShowPlayerDialog(playerid, DIALOG_TRUNK_WEAPON, DIALOG_STYLE_LIST, "KELOLA SENJATA BAGASI", gunPrompt, "Pilih", "Kembali");
+		RP_ShowPlayerDialog(playerid, DIALOG_TRUNK_WEAPON, DIALOG_STYLE_LIST, "KELOLA SENJATA BAGASI", gunPrompt, "Pilih", "Kembali");
 		return 1;
 	}
 
@@ -160,7 +160,7 @@ stock OnVehicleTrunkResponse(playerid, listitem)
 		new prompt[128];
 		format(prompt, sizeof(prompt), "Masukkan jumlah %s yang ingin diambil (Tersedia: %d):",
 			itemName, gVehicleData[slot][vTrunkItemAmount][s]);
-		ShowPlayerDialog(playerid, DIALOG_TRUNK_WITHDRAW_ITEM, DIALOG_STYLE_INPUT, "AMBIL BARANG DARI BAGASI", prompt, "Ambil", "Batal");
+		RP_ShowPlayerDialog(playerid, DIALOG_TRUNK_WITHDRAW_ITEM, DIALOG_STYLE_INPUT, "AMBIL BARANG DARI BAGASI", prompt, "Ambil", "Batal");
 		return 1;
 	}
 
@@ -179,7 +179,7 @@ stock OnVehicleTrunkResponse(playerid, listitem)
 				format(dialogList, sizeof(dialogList), "%s[Slot %d] (Kosong)\n", dialogList, s + 1);
 			}
 		}
-		ShowPlayerDialog(playerid, DIALOG_TRUNK_DEPOSIT_ITEM, DIALOG_STYLE_LIST, "PILIH BARANG DARI KANTUNG", dialogList, "Simpan", "Kembali");
+		RP_ShowPlayerDialog(playerid, DIALOG_TRUNK_DEPOSIT_ITEM, DIALOG_STYLE_LIST, "PILIH BARANG DARI KANTUNG", dialogList, "Simpan", "Kembali");
 		return 1;
 	}
 	return 1;
@@ -193,11 +193,11 @@ stock OnTrunkDepositCashResponse(playerid, listitem)
 
 	if (listitem == 0) {
 		// Simpan Uang ke Bagasi
-		ShowPlayerDialog(playerid, DIALOG_TRUNK_DEPOSIT_CASH, DIALOG_STYLE_INPUT,
+		RP_ShowPlayerDialog(playerid, DIALOG_TRUNK_DEPOSIT_CASH, DIALOG_STYLE_INPUT,
 			"SIMPAN UANG KE BAGASI", "Masukkan nominal uang tunai yang ingin disimpan ke bagasi ($1 - $5.000.000):", "Simpan", "Kembali");
 	} else if (listitem == 1) {
 		// Ambil Uang dari Bagasi
-		ShowPlayerDialog(playerid, DIALOG_TRUNK_TAKE_CASH, DIALOG_STYLE_INPUT,
+		RP_ShowPlayerDialog(playerid, DIALOG_TRUNK_TAKE_CASH, DIALOG_STYLE_INPUT,
 			"AMBIL UANG DARI BAGASI", "Masukkan nominal uang tunai yang ingin diambil dari bagasi ($1 - $5.000.000):", "Ambil", "Kembali");
 	}
 	return 1;
@@ -300,7 +300,15 @@ stock OnTrunkDepositItemResponse(playerid, listitem)
 
 	// Pindahkan seluruh stack atau 1..5 unit
 	new transferAmt = (iAmt > 5) ? 5 : iAmt;
-	TakePlayerItem(playerid, iType, transferAmt);
+
+	// [FIX] Ambil item dari inventaris DULU dan pastikan berhasil. Sebelumnya
+	// return TakePlayerItem diabaikan -> bila stok kurang, item tetap masuk ke
+	// bagasi padahal tidak terpotong dari kantong (duplikasi item).
+	if (!TakePlayerItem(playerid, iType, transferAmt)) {
+		SendErr(playerid, "Barang di inventaris Anda tidak mencukupi.");
+		ShowVehicleTrunkDialog(playerid, slot);
+		return 1;
+	}
 
 	gVehicleData[slot][vTrunkItemType][targetTrunkSlot] = iType;
 	gVehicleData[slot][vTrunkItemAmount][targetTrunkSlot] += transferAmt;

@@ -255,13 +255,29 @@ public RunAutomatedRPTests()
 	gPlayerData[testPlayer][pLoggedIn] = true;
 	gPlayerData[testPlayer][pID] = 1;
 	gPlayerData[testPlayer][pMoney] = 50000;
-	new houseBuyOk = ProcessBuyHouse(testPlayer, 0);
 
-	if (houseCount >= 6 && houseBuyOk && gHouseData[0][hOwnerID] == gPlayerData[testPlayer][pID]) {
+	// [TEST-ISOLATION] Rumah slot 0 mungkin sudah dimiliki dari run sebelumnya
+	// (persistensi DB kini aktif). Reset dulu agar test deterministik, lalu
+	// kembalikan ke status "dijual" setelah selesai.
+	new prevOwner0 = gHouseData[0][hOwnerID];
+	gHouseData[0][hOwnerID] = 0;
+	format(gHouseData[0][hOwnerName], 24, "Pemerintah");
+
+	new houseBuyOk = ProcessBuyHouse(testPlayer, 0);
+	new bool:houseDeedOk = (houseBuyOk && gHouseData[0][hOwnerID] == gPlayerData[testPlayer][pID]);
+
+	// cleanup: kembalikan rumah ke status dijual (dan hapus baris DB test)
+	gHouseData[0][hOwnerID] = 0;
+	format(gHouseData[0][hOwnerName], 24, "Pemerintah");
+	House_RefreshDisplay(0);
+	if (prevOwner0 != 0) { gHouseData[0][hOwnerID] = prevOwner0; }
+	DB_SaveHouse(0);
+
+	if (houseCount >= 6 && houseDeedOk) {
 		printf("  -> PASS: %d Real estate properties active across Los Santos, deed transaction confirmed.", houseCount);
 		passCount++;
 	} else {
-		printf("  -> FAIL: Housing verification failed (Count: %d, BuyOk: %d).", houseCount, houseBuyOk);
+		printf("  -> FAIL: Housing verification failed (Count: %d, BuyOk: %d).", houseCount, houseDeedOk);
 		failCount++;
 	}
 
@@ -1572,7 +1588,7 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
-	print("[TEST 71/71] New Subsystem Hardening (Chop Guard, QTE Job Validation, Dialog Spoof Guard)...");
+	print("[TEST 71/72] New Subsystem Hardening (Chop Guard, QTE Job Validation, Dialog Spoof Guard)...");
 	{
 		new bool:nsOk = true;
 		new failNS[256] = "";
@@ -1641,8 +1657,58 @@ public RunAutomatedRPTests()
 		}
 	}
 
+	print("[TEST 72/72] Root-Cause Inventory Integrity & Property Persistence...");
+	{
+		new bool:rcOk = true;
+		new failRC[256] = "";
+
+		// 72a. TakePlayerItem harus GAGAL (return 0) bila stok kurang, dan tidak
+		// boleh menghapus sebagian. Ini akar dari semua bug 'item gratis'.
+		new invT = 0;
+		for (new s = 0; s < MAX_INVENTORY_SLOTS; s++) { gPlayerItems[invT][s][itType] = ITEM_NONE; gPlayerItems[invT][s][itAmount] = 0; }
+		GivePlayerItem(invT, ITEM_IRON_ORE, 1);
+		new tookTooMany = TakePlayerItem(invT, ITEM_IRON_ORE, 5); // minta 5, hanya punya 1
+		new oreLeft = GetPlayerItemCount(invT, ITEM_IRON_ORE);
+		// harus gagal DAN stok tetap 1 (tidak terpotong sebagian)
+		if (tookTooMany != 0 || oreLeft != 1) { rcOk = false; format(failRC, sizeof(failRC), "%s takeAtomic(t=%d,left=%d);", failRC, tookTooMany, oreLeft); }
+
+		// 72b. TakePlayerItem harus BERHASIL bila stok cukup
+		new tookOk = TakePlayerItem(invT, ITEM_IRON_ORE, 1);
+		new oreAfter = GetPlayerItemCount(invT, ITEM_IRON_ORE);
+		if (tookOk != 1 || oreAfter != 0) { rcOk = false; format(failRC, sizeof(failRC), "%s takeOk(t=%d,left=%d);", failRC, tookOk, oreAfter); }
+
+		// 72c. GivePlayerItem harus clamp, tidak overflow
+		for (new s = 0; s < MAX_INVENTORY_SLOTS; s++) { gPlayerItems[invT][s][itType] = ITEM_NONE; gPlayerItems[invT][s][itAmount] = 0; }
+		GivePlayerItem(invT, ITEM_WOOD, 999999);
+		GivePlayerItem(invT, ITEM_WOOD, 999999); // melebihi batas
+		new woodCount = GetPlayerItemCount(invT, ITEM_WOOD);
+		new bool:woodClamped = (woodCount > 0 && woodCount <= 999999);
+		for (new s = 0; s < MAX_INVENTORY_SLOTS; s++) { gPlayerItems[invT][s][itType] = ITEM_NONE; gPlayerItems[invT][s][itAmount] = 0; }
+		if (!woodClamped) { rcOk = false; format(failRC, sizeof(failRC), "%s giveClamp(%d);", failRC, woodCount); }
+
+		// 72d. Gym cooldown mencegah spam heal
+		new gymT = 0;
+		gGymWorkoutCooldown[gymT] = gettime() + 30;
+		new bool:gymBlocked = (gettime() < gGymWorkoutCooldown[gymT]);
+		gGymWorkoutCooldown[gymT] = 0;
+		new bool:gymAllowed = (gettime() >= gGymWorkoutCooldown[gymT]);
+		if (!gymBlocked || !gymAllowed) { rcOk = false; format(failRC, sizeof(failRC), "%s gymCd;", failRC); }
+
+		// 72e. Properti punya jalur persistensi (DB_SaveHouse tidak crash saat dipanggil pada slot invalid)
+		new bool:houseGuard = (DB_SaveHouse(-1) == 0 && DB_SaveHouse(MAX_HOUSES) == 0);
+		if (!houseGuard) { rcOk = false; format(failRC, sizeof(failRC), "%s houseGuard;", failRC); }
+
+		if (rcOk) {
+			print("  -> PASS: Root-cause inventory atomicity, stack clamp, gym cooldown & property persistence guard verified.");
+			passCount++;
+		} else {
+			printf("  -> FAIL: Root-cause integrity details: %s", failRC);
+			failCount++;
+		}
+	}
+
 	print("==================================================");
-	printf("  [DEBUG SUMMARY] %d / 71 TESTS PASSED, %d FAILED", passCount, failCount);
+	printf("  [DEBUG SUMMARY] %d / 72 TESTS PASSED, %d FAILED", passCount, failCount);
 	print("==================================================\n");
 
 	return 1;

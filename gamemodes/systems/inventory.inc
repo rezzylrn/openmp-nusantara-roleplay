@@ -100,10 +100,20 @@ stock GivePlayerItem(playerid, itemtype, amount)
 {
 	if (amount <= 0 || itemtype <= ITEM_NONE) return 0;
 
+	// [FIX] Batas atas stok per item: mencegah overflow int32 lewat penumpukan
+	// berulang (mis. loop reward/minigame) yang bisa membuat jumlah negatif.
+	#define MAX_ITEM_STACK 999999
+	new intAmount = amount;
+	if (intAmount > MAX_ITEM_STACK) intAmount = MAX_ITEM_STACK;
+
 	// Cek apakah item sudah ada di salah satu slot (stacking)
 	for (new s = 0; s < MAX_INVENTORY_SLOTS; s++) {
 		if (gPlayerItems[playerid][s][itType] == itemtype) {
-			gPlayerItems[playerid][s][itAmount] += amount;
+			if (gPlayerItems[playerid][s][itAmount] > MAX_ITEM_STACK - intAmount) {
+				gPlayerItems[playerid][s][itAmount] = MAX_ITEM_STACK; // clamp, jangan overflow
+			} else {
+				gPlayerItems[playerid][s][itAmount] += intAmount;
+			}
 			return 1;
 		}
 	}
@@ -112,7 +122,7 @@ stock GivePlayerItem(playerid, itemtype, amount)
 	for (new s = 0; s < MAX_INVENTORY_SLOTS; s++) {
 		if (gPlayerItems[playerid][s][itType] == ITEM_NONE) {
 			gPlayerItems[playerid][s][itType] = itemtype;
-			gPlayerItems[playerid][s][itAmount] = amount;
+			gPlayerItems[playerid][s][itAmount] = intAmount;
 			return 1;
 		}
 	}
@@ -124,23 +134,30 @@ stock GivePlayerItem(playerid, itemtype, amount)
 stock TakePlayerItem(playerid, itemtype, amount)
 {
 	if (amount <= 0 || itemtype <= ITEM_NONE) return 0;
+
+	// [FIX] Hitung dulu total yang dimiliki. Sebelumnya fungsi ini return 1
+	// walaupun item kurang (hanya menghapus sebagian) -> semua pemanggil yang
+	// mengandalkan return value (cek "berhasil ambil bahan") jadi tidak valid.
+	new total = 0;
 	for (new s = 0; s < MAX_INVENTORY_SLOTS; s++) {
+		if (gPlayerItems[playerid][s][itType] == itemtype) total += gPlayerItems[playerid][s][itAmount];
+	}
+	if (total < amount) return 0;
+
+	new remaining = amount;
+	for (new s = 0; s < MAX_INVENTORY_SLOTS && remaining > 0; s++) {
 		if (gPlayerItems[playerid][s][itType] == itemtype) {
-			if (gPlayerItems[playerid][s][itAmount] > amount) {
-				gPlayerItems[playerid][s][itAmount] -= amount;
-				return 1;
-			} else if (gPlayerItems[playerid][s][itAmount] == amount) {
-				gPlayerItems[playerid][s][itType] = ITEM_NONE;
-				gPlayerItems[playerid][s][itAmount] = 0;
-				return 1;
+			if (gPlayerItems[playerid][s][itAmount] > remaining) {
+				gPlayerItems[playerid][s][itAmount] -= remaining;
+				remaining = 0;
 			} else {
-				amount -= gPlayerItems[playerid][s][itAmount];
+				remaining -= gPlayerItems[playerid][s][itAmount];
 				gPlayerItems[playerid][s][itType] = ITEM_NONE;
 				gPlayerItems[playerid][s][itAmount] = 0;
 			}
 		}
 	}
-	return 1;
+	return (remaining == 0) ? 1 : 0;
 }
 
 stock ProcessGiveItem(playerid, targetid, itemtype, amount)
@@ -217,7 +234,7 @@ stock ShowPlayerInventory(playerid)
 		return 0;
 	}
 
-	ShowPlayerDialog(playerid, DIALOG_INVENTORY, DIALOG_STYLE_TABLIST_HEADERS,
+	RP_ShowPlayerDialog(playerid, DIALOG_INVENTORY, DIALOG_STYLE_TABLIST_HEADERS,
 		"INVENTARIS PRIBADI", str, "Pilih", "Tutup");
 	return 1;
 }

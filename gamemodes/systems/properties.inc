@@ -161,6 +161,7 @@ stock ProcessBuyHouse(playerid, houseid)
 	format(gHouseData[houseid][hOwnerName], 24, "%s", gPlayerData[playerid][pName]);
 	gHouseData[houseid][hLocked] = true;
 	House_RefreshDisplay(houseid);
+	DB_SaveHouse(houseid);  // persist agar rumah tidak hilang saat restart
 
 	new msg[144];
 	format(msg, sizeof(msg), "[SUKSES] Selamat! Anda resmi membeli rumah di %s seharga $%d.",
@@ -218,4 +219,54 @@ stock ProcessHouseInteraction(playerid)
 		return 1;
 	}
 	return 0;
+}
+
+// ---------------------------------------------------------------------------
+// Persistensi properti ke tabel `houses`. Sebelumnya sistem ini murni
+// in-memory: rumah yang dibeli hilang saat restart (uang pemain hangus).
+// ---------------------------------------------------------------------------
+
+forward OnHousesLoaded();
+public OnHousesLoaded()
+{
+	new rows = cache_num_rows();
+	if (rows > 0) {
+		for (new r = 0; r < rows; r++) {
+			new idx, ownerid, locked, storage;
+			new oname[24];
+
+			cache_get_value_name_int(r, "houseindex", idx);
+			cache_get_value_name_int(r, "ownerid", ownerid);
+			cache_get_value_name_int(r, "locked", locked);
+			cache_get_value_name_int(r, "storage_cash", storage);
+			cache_get_value_name(r, "ownername", oname, sizeof(oname));
+
+			if (idx < 0 || idx >= MAX_HOUSES || !gHouseData[idx][hUsed]) continue;
+
+			gHouseData[idx][hOwnerID] = ownerid;
+			gHouseData[idx][hLocked] = (locked != 0);
+			gHouseData[idx][hStorageCash] = storage;
+			format(gHouseData[idx][hOwnerName], 24, "%s", oname);
+			House_RefreshDisplay(idx);
+		}
+	}
+	printf("[PROPERTIES] Memuat %d entri properti rumah dari database.", rows);
+	return 1;
+}
+
+stock DB_SaveHouse(houseid)
+{
+	if (houseid < 0 || houseid >= MAX_HOUSES || !gHouseData[houseid][hUsed]) return 0;
+
+	new query[256];
+	mysql_format(gDB, query, sizeof(query),
+		"INSERT INTO houses (houseindex, ownerid, ownername, locked, storage_cash) \
+		 VALUES (%d, %d, '%e', %d, %d) \
+		 ON DUPLICATE KEY UPDATE ownerid=%d, ownername='%e', locked=%d, storage_cash=%d",
+		houseid, gHouseData[houseid][hOwnerID], gHouseData[houseid][hOwnerName],
+		_:gHouseData[houseid][hLocked], gHouseData[houseid][hStorageCash],
+		gHouseData[houseid][hOwnerID], gHouseData[houseid][hOwnerName],
+		_:gHouseData[houseid][hLocked], gHouseData[houseid][hStorageCash]);
+	mysql_tquery(gDB, query);
+	return 1;
 }

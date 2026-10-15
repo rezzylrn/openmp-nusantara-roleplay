@@ -129,11 +129,24 @@ stock DB_Init()
 		admin VARCHAR(24), \
 		created INT)");
 
+	// 4b. houses table — properti harus persisten, bukan in-memory saja.
+	// Tanpa ini rumah yang dibeli hilang setiap restart (uang pemain hangus).
+	mysql_tquery(gDB, "CREATE TABLE IF NOT EXISTS houses (\
+		id INT AUTO_INCREMENT PRIMARY KEY, \
+		houseindex INT NOT NULL UNIQUE, \
+		ownerid INT DEFAULT 0, \
+		ownername VARCHAR(24) DEFAULT 'Pemerintah', \
+		locked INT DEFAULT 1, \
+		storage_cash INT DEFAULT 0)");
+
 	// load vehicles
 	mysql_tquery(gDB, "SELECT * FROM vehicles", "OnVehiclesLoaded", "");
 
 	// load bans ke cache memori untuk pengecekan sinkron di OnPlayerConnect
 	mysql_tquery(gDB, "SELECT name, ip FROM bans", "OnBansLoaded", "");
+
+	// load properti rumah (owner, kunci, storage) — persisten
+	mysql_tquery(gDB, "SELECT houseindex, ownerid, ownername, locked, storage_cash FROM houses", "OnHousesLoaded", "");
 	return 1;
 }
 
