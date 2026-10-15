@@ -1518,7 +1518,7 @@ public RunAutomatedRPTests()
 	gPlayerData[secTester][pID] = 777001;
 	new vSlotTest = 0;
 	new prevOwner = gVehicleData[vSlotTest][vOwnerID];
-	new prevUsed = gVehicleData[vSlotTest][vUsed];
+	new bool:prevUsed = gVehicleData[vSlotTest][vUsed];
 	gVehicleData[vSlotTest][vUsed] = true;
 	gVehicleData[vSlotTest][vOwnerID] = 777002;   // dimiliki orang lain
 	gVehicleData[vSlotTest][vVehicleHandle] = 0;  // tidak ada handle valid
@@ -1529,11 +1529,11 @@ public RunAutomatedRPTests()
 	gVehicleData[vSlotTest][vUsed] = prevUsed;
 	gPlayerData[secTester][pID] = prevID;
 
-	if (!trunkDenied || !trunkAllowed) { hardenOk = false; format(failDetail, sizeof(failDetail), "%s trunkAccess(d=%d,a=%d);", failDetail, trunkDenied, trunkAllowed); }
+	if (!trunkDenied || !trunkAllowed) { hardenOk = false; format(failDetail, sizeof(failDetail), "%s trunkAccess(d=%d,a=%d);", failDetail, _:trunkDenied, _:trunkAllowed); }
 
 	// 70b. DB_SaveVehicle harus menolak slot dengan vDBID <= 0 (mencegah overwrite WHERE id=0)
 	new saveSlot = MAX_OWNED_VEHICLES - 1;
-	new sPrevUsed = gVehicleData[saveSlot][vUsed];
+	new bool:sPrevUsed = gVehicleData[saveSlot][vUsed];
 	new sPrevDBID = gVehicleData[saveSlot][vDBID];
 	gVehicleData[saveSlot][vUsed] = true;
 	gVehicleData[saveSlot][vDBID] = 0;
