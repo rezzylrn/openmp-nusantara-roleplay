@@ -29,23 +29,26 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		case DIALOG_CHAR_CREATE_DOB:    ProcessCharCreateDOB(playerid, inputtext);
 		case DIALOG_CHAR_CREATE_GENDER: ProcessCharCreateGender(playerid, listitem);
 		case DIALOG_INVENTORY: {
-			gSelectedInvSlot[playerid] = listitem;
+			if (listitem < 0 || listitem >= MAX_INVENTORY_SLOTS) return 1;
+			gSelectedInvSlot[playerid] = gInvSlotMap[playerid][listitem];
 			ShowPlayerDialog(playerid, DIALOG_ITEM_ACTION, DIALOG_STYLE_LIST,
 				"TINDAKAN BARANG", "1. Gunakan Barang\n2. Buang Barang", "Pilih", "Kembali");
 		}
 		case DIALOG_ITEM_ACTION: {
+			new slot = gSelectedInvSlot[playerid];
+			if (slot < 0 || slot >= MAX_INVENTORY_SLOTS) return 1;
 			if (listitem == 0) {
-				UsePlayerItemBySlot(playerid, gSelectedInvSlot[playerid]);
+				UsePlayerItemBySlot(playerid, slot);
 			} else if (listitem == 1) {
-				new slot = gSelectedInvSlot[playerid];
 				TakePlayerItem(playerid, gPlayerItems[playerid][slot][itType], 1);
 				SendInfo(playerid, "Barang telah dibuang dari kantong.");
 			}
 		}
 		case DIALOG_GIVE_PLAYER: {
+			new slot = gSelectedInvSlot[playerid];
+			if (slot < 0 || slot >= MAX_INVENTORY_SLOTS) return 1;
 			new targetid, amount;
 			if (!sscanf(inputtext, "ud", targetid, amount)) {
-				new slot = gSelectedInvSlot[playerid];
 				new itemType = gPlayerItems[playerid][slot][itType];
 				if (itemType != ITEM_NONE) {
 					ProcessGiveItem(playerid, targetid, itemType, amount);
@@ -116,6 +119,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		case DIALOG_MYVEH_ACTION:      OnMyVehActionResponse(playerid, listitem);
 		case DIALOG_TRUNK:             OnVehicleTrunkResponse(playerid, listitem);
 		case DIALOG_TRUNK_DEPOSIT:      OnTrunkDepositCashResponse(playerid, listitem);
+		case DIALOG_TRUNK_DEPOSIT_CASH: OnTrunkSaveCashInput(playerid, inputtext);
 		case DIALOG_TRUNK_WITHDRAW:     OnTrunkSaveCashInput(playerid, inputtext);
 		case DIALOG_TRUNK_TAKE_CASH:    OnTrunkTakeCashInput(playerid, inputtext);
 		case DIALOG_TRUNK_DEPOSIT_ITEM: OnTrunkDepositItemResponse(playerid, listitem);

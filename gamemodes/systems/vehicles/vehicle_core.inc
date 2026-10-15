@@ -72,6 +72,29 @@ stock Vehicle_IsLocked(vehicleid)
 	return gVehicleData[slot][vLocked];
 }
 
+// Hancurkan kendaraan sambil membersihkan state global.
+// Tanpa ini, slot vehicleid yang dipakai ulang mewarisi gVehicleEngineState lama,
+// sehingga kendaraan baru bisa terlihat "sudah menyala" (atau sebaliknya).
+stock Vehicle_SafeDestroy(&vehicleid)
+{
+	if (vehicleid <= 0 || vehicleid >= MAX_VEHICLES) {
+		vehicleid = -1;
+		return 0;
+	}
+	if (IsValidVehicle(vehicleid)) {
+		// Keluarkan semua penumpang agar tidak terjebak di kendaraan yang hilang
+		for (new p = 0; p < MAX_PLAYERS; p++) {
+			if (IsPlayerConnected(p) && IsPlayerInVehicle(p, vehicleid)) {
+				RemovePlayerFromVehicle(p);
+			}
+		}
+		DestroyVehicle(vehicleid);
+	}
+	gVehicleEngineState[vehicleid] = false;
+	vehicleid = -1;
+	return 1;
+}
+
 stock Vehicle_SetLocked(vehicleid, bool:locked)
 {
 	new slot = Vehicle_GetSlot(vehicleid);

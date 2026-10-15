@@ -45,9 +45,13 @@ if [ -f "$SRC_DIR/plugins/components/sscanf.so" ]; then
 fi
 
 # Sync compiled AMX and configuration
-echo "[3/4] Syncing main.amx and config.json..."
+echo "[3/4] Syncing main.amx, models, and config.json..."
 cp "$SRC_DIR/gamemodes/main.amx" "$RUN_DIR/gamemodes/main.amx"
 cp "$SRC_DIR/config.json" "$RUN_DIR/config.json"
+if [ -d "$SRC_DIR/models" ]; then
+    mkdir -p "$RUN_DIR/models"
+    cp -r "$SRC_DIR/models/"* "$RUN_DIR/models/" 2>/dev/null || true
+fi
 
 # Ensure config settings (disable public announce)
 sed -i 's/"announce": true/"announce": false/' "$RUN_DIR/config.json"

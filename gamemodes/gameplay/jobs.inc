@@ -493,15 +493,15 @@ stock ProcessJobComplete(playerid)
 	new totalEarned = gJobCash[playerid] + bonus;
 	DisablePlayerCheckpoint(playerid);
 
-	if (gPlayerJobVehicle[playerid] > 0 && IsValidVehicle(gPlayerJobVehicle[playerid])) {
-		DestroyVehicle(gPlayerJobVehicle[playerid]);
+	if (IsPlayerInAnyVehicle(playerid) && GetPlayerVehicleID(playerid) == gPlayerJobVehicle[playerid]) {
+		RemovePlayerFromVehicle(playerid);
 	}
-	gPlayerJobVehicle[playerid] = -1;
+	if (IsPlayerInAnyVehicle(playerid) && GetPlayerVehicleID(playerid) == gPlayerJobTrailer[playerid]) {
+		RemovePlayerFromVehicle(playerid);
+	}
 
-	if (gPlayerJobTrailer[playerid] > 0 && IsValidVehicle(gPlayerJobTrailer[playerid])) {
-		DestroyVehicle(gPlayerJobTrailer[playerid]);
-	}
-	gPlayerJobTrailer[playerid] = -1;
+	Vehicle_SafeDestroy(gPlayerJobVehicle[playerid]);
+	Vehicle_SafeDestroy(gPlayerJobTrailer[playerid]);
 
 	GivePlayerMoneyEx(playerid, totalEarned, "gaji rute kerja");
 	GivePlayerExp(playerid, EXP_JOB_DONE, "selesai rute pekerjaan");
@@ -528,19 +528,18 @@ stock ProcessJobQuit(playerid)
 
 	DisablePlayerCheckpoint(playerid);
 
-	if (gPlayerJobVehicle[playerid] > 0 && IsValidVehicle(gPlayerJobVehicle[playerid])) {
-		DestroyVehicle(gPlayerJobVehicle[playerid]);
+	if (IsPlayerInAnyVehicle(playerid) && GetPlayerVehicleID(playerid) == gPlayerJobVehicle[playerid]) {
+		RemovePlayerFromVehicle(playerid);
 	}
-	gPlayerJobVehicle[playerid] = -1;
+	if (IsPlayerInAnyVehicle(playerid) && GetPlayerVehicleID(playerid) == gPlayerJobTrailer[playerid]) {
+		RemovePlayerFromVehicle(playerid);
+	}
 
-	if (gPlayerJobTrailer[playerid] > 0 && IsValidVehicle(gPlayerJobTrailer[playerid])) {
-		DestroyVehicle(gPlayerJobTrailer[playerid]);
-	}
-	gPlayerJobTrailer[playerid] = -1;
+	Vehicle_SafeDestroy(gPlayerJobVehicle[playerid]);
+	Vehicle_SafeDestroy(gPlayerJobTrailer[playerid]);
 
 	if (gTrashDuty[playerid] && gTrashVeh[playerid] > 0 && IsValidVehicle(gTrashVeh[playerid])) {
-		DestroyVehicle(gTrashVeh[playerid]);
-		gTrashVeh[playerid] = 0;
+		Vehicle_SafeDestroy(gTrashVeh[playerid]);
 		gTrashDuty[playerid] = false;
 	}
 

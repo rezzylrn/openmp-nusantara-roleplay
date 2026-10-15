@@ -206,7 +206,8 @@ stock ShowPlayerInventory(playerid)
 	for (new s = 0; s < MAX_INVENTORY_SLOTS; s++) {
 		if (gPlayerItems[playerid][s][itType] != ITEM_NONE) {
 			GetItemName(gPlayerItems[playerid][s][itType], itemName, sizeof(itemName));
-			format(str, sizeof(str), "%s#%d\t%s\t%d buah\n", str, s + 1, itemName, gPlayerItems[playerid][s][itAmount]);
+			format(str, sizeof(str), "%s#%d	%s	%d buah\n", str, s + 1, itemName, gPlayerItems[playerid][s][itAmount]);
+			gInvSlotMap[playerid][count] = s; // mapping baris dialog -> slot asli
 			count++;
 		}
 	}

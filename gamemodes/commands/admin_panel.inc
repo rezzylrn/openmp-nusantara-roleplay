@@ -149,6 +149,7 @@ Dialog:DialogAdminTeleport(playerid, response, listitem, inputtext[])
 Dialog:DialogAdminGoto(playerid, response, listitem, inputtext[])
 {
 	if (!response) return 1;
+	if (gPlayerData[playerid][pAdmin] < 1) return 1;
 	new targetid = strval(inputtext);
 	if (!IsPlayerConnected(targetid) || targetid == playerid) {
 		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] ID pemain tidak valid.");
@@ -170,6 +171,7 @@ Dialog:DialogAdminGoto(playerid, response, listitem, inputtext[])
 Dialog:DialogAdminGet(playerid, response, listitem, inputtext[])
 {
 	if (!response) return 1;
+	if (gPlayerData[playerid][pAdmin] < 1) return 1;
 	new targetid = strval(inputtext);
 	if (!IsPlayerConnected(targetid) || targetid == playerid) {
 		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] ID pemain tidak valid.");
@@ -191,6 +193,7 @@ Dialog:DialogAdminGet(playerid, response, listitem, inputtext[])
 Dialog:DialogAdminHeal(playerid, response, listitem, inputtext[])
 {
 	if (!response) return 1;
+	if (gPlayerData[playerid][pAdmin] < 1) return 1;
 	new targetid = strval(inputtext);
 	if (!IsPlayerConnected(targetid)) {
 		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] ID pemain tidak valid.");
@@ -211,6 +214,7 @@ Dialog:DialogAdminHeal(playerid, response, listitem, inputtext[])
 Dialog:DialogAdminFreeze(playerid, response, listitem, inputtext[])
 {
 	if (!response) return 1;
+	if (gPlayerData[playerid][pAdmin] < 1) return 1;
 	new targetid = strval(inputtext);
 	if (!IsPlayerConnected(targetid)) return 1;
 

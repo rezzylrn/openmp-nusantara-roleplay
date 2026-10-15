@@ -176,10 +176,9 @@ CMD:unloaddump(playerid, params[])
 	}
 
 	DisablePlayerCheckpoint(playerid);
-	DestroyVehicle(gTrashVeh[playerid]);
+	Vehicle_SafeDestroy(gTrashVeh[playerid]);
 
 	gTrashDuty[playerid] = false;
-	gTrashVeh[playerid] = INVALID_VEHICLE_ID;
 	gTrashCollected[playerid] = 0;
 	gHoldingTrashBag[playerid] = false;
 

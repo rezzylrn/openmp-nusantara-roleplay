@@ -63,11 +63,8 @@ stock OnDealershipResponse(playerid, listitem)
 	new plate[16];
 	format(plate, sizeof(plate), "LS-%04d", 1000 + random(8999));
 
-	new dbid = DB_CreateVehicleRow(gPlayerData[playerid][pID], model, px + 2.5, py + 2.5, pz, pa,
-		gDealerStock[listitem][2], gDealerStock[listitem][3], plate);
-
 	gVehicleData[slot][vUsed] = true;
-	gVehicleData[slot][vDBID] = dbid;
+	gVehicleData[slot][vDBID] = 0;
 	gVehicleData[slot][vOwnerID] = gPlayerData[playerid][pID];
 	gVehicleData[slot][vModel] = model;
 	gVehicleData[slot][vPosX] = px + 2.5;
@@ -85,6 +82,10 @@ stock OnDealershipResponse(playerid, listitem)
 	gVehicleData[slot][vHood] = false;
 	gVehicleData[slot][vTrunkOpen] = false;
 	gVehicleData[slot][vTrunk] = 0;
+
+	// Simpan baris kendaraan baru; vDBID diisi asinkron dari AUTO_INCREMENT id
+	DB_CreateVehicleRow(gPlayerData[playerid][pID], model, px + 2.5, py + 2.5, pz, pa,
+		gDealerStock[listitem][2], gDealerStock[listitem][3], plate, slot);
 
 	Vehicle_Spawn(slot);
 

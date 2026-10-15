@@ -223,6 +223,11 @@ stock OnBankDialogResponse(playerid, listitem)
 
 stock OnBankDepositResponse(playerid, const inputtext[])
 {
+	// Guard anti dialog-spoofing: pemain HARUS benar-benar berada di depan bank
+	if (!IsPlayerNearPoint(playerid, BANK_X, BANK_Y, BANK_Z, RANGE_BANK)) {
+		SendErr(playerid, "Anda harus berada di depan Bank Nusantara untuk bertransaksi.");
+		return 0;
+	}
 	new amount = strval(inputtext);
 	if (amount < 1 || amount > 50000000) { SendErr(playerid, "Jumlah setoran tidak valid ($1 - $50.000.000)."); return 0; }
 	if (gPlayerData[playerid][pMoney] < amount) { SendErr(playerid, "Uang tunai tidak mencukupi."); return 0; }
@@ -236,6 +241,10 @@ stock OnBankDepositResponse(playerid, const inputtext[])
 
 stock OnBankWithdrawResponse(playerid, const inputtext[])
 {
+	if (!IsPlayerNearPoint(playerid, BANK_X, BANK_Y, BANK_Z, RANGE_BANK)) {
+		SendErr(playerid, "Anda harus berada di depan Bank Nusantara untuk bertransaksi.");
+		return 0;
+	}
 	new amount = strval(inputtext);
 	if (amount < 1 || amount > 50000000) { SendErr(playerid, "Jumlah penarikan tidak valid ($1 - $50.000.000)."); return 0; }
 	if (gPlayerData[playerid][pBank] < amount) { SendErr(playerid, "Saldo bank tidak mencukupi."); return 0; }
@@ -249,6 +258,10 @@ stock OnBankWithdrawResponse(playerid, const inputtext[])
 
 stock OnBankTransferResponse(playerid, const inputtext[])
 {
+	if (!IsPlayerNearPoint(playerid, BANK_X, BANK_Y, BANK_Z, RANGE_BANK)) {
+		SendErr(playerid, "Anda harus berada di depan Bank Nusantara untuk bertransaksi.");
+		return 0;
+	}
 	new targetid, amount;
 	if (sscanf(inputtext, "ud", targetid, amount)) {
 		SendSyntax(playerid, "[ID / Nama Pemain] [Jumlah Uang]");
@@ -315,6 +328,10 @@ stock OnATMMenuResponse(playerid, listitem)
 
 stock OnATMWithdrawResponse(playerid, const inputtext[])
 {
+	if (!IsPlayerNearPoint(playerid, ATM_X, ATM_Y, ATM_Z, RANGE_ATM) && !IsPlayerNearAnyATM(playerid)) {
+		SendErr(playerid, "Anda harus berada di depan mesin ATM untuk bertransaksi.");
+		return 0;
+	}
 	new amount = strval(inputtext);
 	if (amount < 1 || amount > 1000000) { SendErr(playerid, "Nominal penarikan $1 - $1.000.000."); return 0; }
 	if (gPlayerData[playerid][pBank] < amount) { SendErr(playerid, "Saldo bank tidak cukup."); return 0; }
@@ -328,6 +345,10 @@ stock OnATMWithdrawResponse(playerid, const inputtext[])
 
 stock OnATMDepositResponse(playerid, const inputtext[])
 {
+	if (!IsPlayerNearPoint(playerid, ATM_X, ATM_Y, ATM_Z, RANGE_ATM) && !IsPlayerNearAnyATM(playerid)) {
+		SendErr(playerid, "Anda harus berada di depan mesin ATM untuk bertransaksi.");
+		return 0;
+	}
 	new amount = strval(inputtext);
 	if (amount < 1 || amount > 1000000) { SendErr(playerid, "Nominal setoran $1 - $1.000.000."); return 0; }
 	if (gPlayerData[playerid][pMoney] < amount) { SendErr(playerid, "Cash tidak cukup."); return 0; }

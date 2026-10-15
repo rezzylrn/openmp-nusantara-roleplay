@@ -133,7 +133,7 @@ stock OnRentalDialogResponse(playerid, listitem)
 	// Opsi 4: Kembalikan kendaraan sewa
 	if (listitem == 4) {
 		if (gPlayerRentalVeh[playerid] != INVALID_VEHICLE_ID) {
-			DestroyVehicle(gPlayerRentalVeh[playerid]);
+			Vehicle_SafeDestroy(gPlayerRentalVeh[playerid]);
 			gPlayerRentalVeh[playerid] = INVALID_VEHICLE_ID;
 			if (gPlayerData[playerid][pLanguage] == LANG_EN) SendClientMessage(playerid, COLOR_SUCCESS, "SUKSES: Rented vehicle returned successfully.");
 			else SendClientMessage(playerid, COLOR_SUCCESS, "SUKSES: Kendaraan sewa berhasil dikembalikan.");
@@ -166,7 +166,7 @@ stock OnRentalDialogResponse(playerid, listitem)
 
 	// Hapus kendaraan sewa lama jika ada
 	if (gPlayerRentalVeh[playerid] != INVALID_VEHICLE_ID) {
-		DestroyVehicle(gPlayerRentalVeh[playerid]);
+		Vehicle_SafeDestroy(gPlayerRentalVeh[playerid]);
 		gPlayerRentalVeh[playerid] = INVALID_VEHICLE_ID;
 	}
 
@@ -201,7 +201,7 @@ stock OnRentalDialogResponse(playerid, listitem)
 stock ProcessRentalDisconnect(playerid)
 {
 	if (gPlayerRentalVeh[playerid] != INVALID_VEHICLE_ID) {
-		DestroyVehicle(gPlayerRentalVeh[playerid]);
+		Vehicle_SafeDestroy(gPlayerRentalVeh[playerid]);
 		gPlayerRentalVeh[playerid] = INVALID_VEHICLE_ID;
 	}
 	return 1;

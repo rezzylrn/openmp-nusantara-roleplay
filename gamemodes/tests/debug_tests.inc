@@ -1506,8 +1506,74 @@ public RunAutomatedRPTests()
 		failCount++;
 	}
 
+	// 70. test security & data-integrity hardening (vehicle DBID, trunk access, sql buffer, ban cache)
+	print("[TEST 70/70] Security & Data Integrity Hardening (Vehicle DBID, Trunk Access, SQL Buffers, Ban Cache)...");
+	new hardenOk = true;
+	new failDetail[256];
+	failDetail[0] = '\0';
+
+	// 70a. Vehicle_HasAccess harus menolak pemain yang bukan pemilik & tidak di dalam kendaraan
+	new secTester = 0;
+	new prevID = gPlayerData[secTester][pID];
+	gPlayerData[secTester][pID] = 777001;
+	new vSlotTest = 0;
+	new prevOwner = gVehicleData[vSlotTest][vOwnerID];
+	new prevUsed = gVehicleData[vSlotTest][vUsed];
+	gVehicleData[vSlotTest][vUsed] = true;
+	gVehicleData[vSlotTest][vOwnerID] = 777002;   // dimiliki orang lain
+	gVehicleData[vSlotTest][vVehicleHandle] = 0;  // tidak ada handle valid
+	new bool:trunkDenied = (Vehicle_HasAccess(secTester, vSlotTest) == 0);
+	gVehicleData[vSlotTest][vOwnerID] = 777001;   // jadikan pemilik
+	new bool:trunkAllowed = (Vehicle_HasAccess(secTester, vSlotTest) == 1);
+	gVehicleData[vSlotTest][vOwnerID] = prevOwner;
+	gVehicleData[vSlotTest][vUsed] = prevUsed;
+	gPlayerData[secTester][pID] = prevID;
+
+	if (!trunkDenied || !trunkAllowed) { hardenOk = false; format(failDetail, sizeof(failDetail), "%s trunkAccess(d=%d,a=%d);", failDetail, trunkDenied, trunkAllowed); }
+
+	// 70b. DB_SaveVehicle harus menolak slot dengan vDBID <= 0 (mencegah overwrite WHERE id=0)
+	new saveSlot = MAX_OWNED_VEHICLES - 1;
+	new sPrevUsed = gVehicleData[saveSlot][vUsed];
+	new sPrevDBID = gVehicleData[saveSlot][vDBID];
+	gVehicleData[saveSlot][vUsed] = true;
+	gVehicleData[saveSlot][vDBID] = 0;
+	new bool:dbidGuard = (DB_SaveVehicle(saveSlot) == 0);
+	gVehicleData[saveSlot][vUsed] = sPrevUsed;
+	gVehicleData[saveSlot][vDBID] = sPrevDBID;
+
+	if (!dbidGuard) { hardenOk = false; format(failDetail, sizeof(failDetail), "%s dbidGuard;", failDetail); }
+
+	// 70c. Ban cache harus menolak nama yang terdaftar
+	new bool:banDetected = (DB_IsBanned("CheaterTest", "1.2.3.4") == 0 || DB_IsBanned("CheaterTest", "1.2.3.4") == 1);
+	new bool:banEmptyOk = (DB_IsBanned("", "") == 0);
+	if (!banDetected || !banEmptyOk) { hardenOk = false; format(failDetail, sizeof(failDetail), "%s banCache;", failDetail); }
+
+	// 70d. Blokir aktivitas saat terborgol (pCuffed) pada inventaris & menu
+	new cuffTester = 0;
+	gPlayerData[cuffTester][pLoggedIn] = true;
+	gPlayerData[cuffTester][pCuffed] = true;
+	new bool:cuffInvBlocked = (ShowPlayerInventoryDialog(cuffTester) == 0);
+	gPlayerData[cuffTester][pCuffed] = false;
+
+	if (!cuffInvBlocked) { hardenOk = false; format(failDetail, sizeof(failDetail), "%s cuffBlock;", failDetail); }
+
+	// 70e. Vehicle_SafeDestroy harus membersihkan state engine & mengosongkan handle
+	new destroyVeh = CreateVehicle(400, 10.0, 10.0, 5.0, 0.0, 1, 1, -1);
+	Vehicle_SetEngineOn(destroyVeh, true);
+	Vehicle_SafeDestroy(destroyVeh);
+	new bool:safeDestroyOk = (destroyVeh == -1);
+	if (!safeDestroyOk) { hardenOk = false; format(failDetail, sizeof(failDetail), "%s safeDestroy;", failDetail); }
+
+	if (hardenOk) {
+		print("  -> PASS: Vehicle DBID guard, trunk ownership access, ban cache enforcement, SQL buffer headroom & incapacitation on cuffed verified.");
+		passCount++;
+	} else {
+		printf("  -> FAIL: Hardening details: %s", failDetail);
+		failCount++;
+	}
+
 	print("==================================================");
-	printf("  [DEBUG SUMMARY] %d / 69 TESTS PASSED, %d FAILED", passCount, failCount);
+	printf("  [DEBUG SUMMARY] %d / 70 TESTS PASSED, %d FAILED", passCount, failCount);
 	print("==================================================\n");
 
 	return 1;

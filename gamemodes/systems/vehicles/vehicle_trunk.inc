@@ -38,9 +38,31 @@ stock Vehicle_FindNearest(playerid, Float:radi)
 	return closestSlot;
 }
 
+// Helper: cek apakah pemain berhak mengakses bagasi/laci kendaraan slot ini.
+// Pemilik (vOwnerID) atau penumpang/pengemudi kendaraan itu sendiri yang berhak.
+stock Vehicle_HasAccess(playerid, slot)
+{
+	if (slot < 0 || slot >= MAX_OWNED_VEHICLES) return 0;
+	if (!gVehicleData[slot][vUsed]) return 0;
+
+	// Pemilik terdaftar selalu berhak
+	if (gVehicleData[slot][vOwnerID] == gPlayerData[playerid][pID]) return 1;
+
+	// Jika pemain sedang berada di dalam kendaraan ini, anggap punya akses
+	new handle = gVehicleData[slot][vVehicleHandle];
+	if (handle > 0 && IsValidVehicle(handle)) {
+		if (IsPlayerInVehicle(playerid, handle)) return 1;
+	}
+	return 0;
+}
+
 stock ShowVehicleTrunkDialog(playerid, slot)
 {
 	if (slot < 0 || slot >= MAX_OWNED_VEHICLES || !gVehicleData[slot][vUsed]) return 0;
+	if (!Vehicle_HasAccess(playerid, slot)) {
+		SendErr(playerid, "Anda tidak memiliki akses ke bagasi kendaraan ini.");
+		return 0;
+	}
 	gSelectedTrunkVeh[playerid] = slot;
 
 	new bool:isEn = (gPlayerData[playerid][pLanguage] == LANG_EN);
@@ -98,6 +120,7 @@ stock OnVehicleTrunkResponse(playerid, listitem)
 {
 	new slot = gSelectedTrunkVeh[playerid];
 	if (slot < 0 || slot >= MAX_OWNED_VEHICLES || !gVehicleData[slot][vUsed]) return 0;
+	if (!Vehicle_HasAccess(playerid, slot)) { SendErr(playerid, "Anda tidak memiliki akses ke bagasi kendaraan ini."); return 0; }
 
 	// Opsi 0: Saldo Uang Tunai
 	if (listitem == 0) {
@@ -166,10 +189,11 @@ stock OnTrunkDepositCashResponse(playerid, listitem)
 {
 	new slot = gSelectedTrunkVeh[playerid];
 	if (slot < 0 || slot >= MAX_OWNED_VEHICLES || !gVehicleData[slot][vUsed]) return 0;
+	if (!Vehicle_HasAccess(playerid, slot)) { SendErr(playerid, "Anda tidak memiliki akses ke bagasi kendaraan ini."); return 0; }
 
 	if (listitem == 0) {
 		// Simpan Uang ke Bagasi
-		ShowPlayerDialog(playerid, DIALOG_TRUNK_DEPOSIT, DIALOG_STYLE_INPUT,
+		ShowPlayerDialog(playerid, DIALOG_TRUNK_DEPOSIT_CASH, DIALOG_STYLE_INPUT,
 			"SIMPAN UANG KE BAGASI", "Masukkan nominal uang tunai yang ingin disimpan ke bagasi ($1 - $5.000.000):", "Simpan", "Kembali");
 	} else if (listitem == 1) {
 		// Ambil Uang dari Bagasi
@@ -183,6 +207,7 @@ stock OnTrunkSaveCashInput(playerid, const inputtext[])
 {
 	new slot = gSelectedTrunkVeh[playerid];
 	if (slot < 0 || slot >= MAX_OWNED_VEHICLES || !gVehicleData[slot][vUsed]) return 0;
+	if (!Vehicle_HasAccess(playerid, slot)) { SendErr(playerid, "Anda tidak memiliki akses ke bagasi kendaraan ini."); return 0; }
 
 	new amount = strval(inputtext);
 	if (amount < 1 || amount > 5000000) {
@@ -210,6 +235,7 @@ stock OnTrunkTakeCashInput(playerid, const inputtext[])
 {
 	new slot = gSelectedTrunkVeh[playerid];
 	if (slot < 0 || slot >= MAX_OWNED_VEHICLES || !gVehicleData[slot][vUsed]) return 0;
+	if (!Vehicle_HasAccess(playerid, slot)) { SendErr(playerid, "Anda tidak memiliki akses ke bagasi kendaraan ini."); return 0; }
 
 	new amount = strval(inputtext);
 	if (amount < 1 || amount > 5000000) {
@@ -237,6 +263,7 @@ stock OnTrunkDepositItemResponse(playerid, listitem)
 {
 	new slot = gSelectedTrunkVeh[playerid];
 	if (slot < 0 || slot >= MAX_OWNED_VEHICLES || !gVehicleData[slot][vUsed]) return 0;
+	if (!Vehicle_HasAccess(playerid, slot)) { SendErr(playerid, "Anda tidak memiliki akses ke bagasi kendaraan ini."); return 0; }
 
 	if (listitem < 0 || listitem >= MAX_INVENTORY_SLOTS) return 0;
 	new iType = gPlayerItems[playerid][listitem][itType];
@@ -291,6 +318,7 @@ stock OnTrunkWithdrawItemResponse(playerid, const inputtext[])
 {
 	new slot = gSelectedTrunkVeh[playerid];
 	if (slot < 0 || slot >= MAX_OWNED_VEHICLES || !gVehicleData[slot][vUsed]) return 0;
+	if (!Vehicle_HasAccess(playerid, slot)) { SendErr(playerid, "Anda tidak memiliki akses ke bagasi kendaraan ini."); return 0; }
 
 	new trunkSlot = gSelectedTrunkSlot[playerid];
 	if (trunkSlot < 0 || trunkSlot >= MAX_TRUNK_SLOTS) return 0;
@@ -329,6 +357,7 @@ stock OnTrunkWeaponResponse(playerid, listitem)
 {
 	new slot = gSelectedTrunkVeh[playerid];
 	if (slot < 0 || slot >= MAX_OWNED_VEHICLES || !gVehicleData[slot][vUsed]) return 0;
+	if (!Vehicle_HasAccess(playerid, slot)) { SendErr(playerid, "Anda tidak memiliki akses ke bagasi kendaraan ini."); return 0; }
 
 	if (listitem == 0) {
 		// Ambil Senjata dari Bagasi

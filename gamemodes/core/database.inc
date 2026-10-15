@@ -77,6 +77,12 @@ stock DB_Init()
 		radiofreq INT DEFAULT 0, \
 		radiostatus INT DEFAULT 0, \
 		injured INT DEFAULT 0, \
+		language INT DEFAULT 1, \
+		tickets INT DEFAULT 0, \
+		ticket_amount INT DEFAULT 0, \
+		drive_lic INT DEFAULT 0, \
+		gun_lic INT DEFAULT 0, \
+		fight_style INT DEFAULT 4, \
 		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, \
 		INDEX (ucp_id))");
 
@@ -96,7 +102,23 @@ stock DB_Init()
 		plate VARCHAR(16) DEFAULT '', \
 		engine INT DEFAULT 0, \
 		locked INT DEFAULT 0, \
-		trunk INT DEFAULT 0)");
+		trunk INT DEFAULT 0, \
+		trunk_items VARCHAR(128) DEFAULT '', \
+		trunk_gun INT DEFAULT 0, \
+		trunk_ammo INT DEFAULT 0, \
+		impounded INT DEFAULT 0)");
+
+	// 3b. Migrasi kolom untuk database lama (ALTER gagal jika kolom sudah ada — abaikan).
+	mysql_tquery(gDB, "ALTER TABLE characters ADD COLUMN language INT DEFAULT 1", "", "");
+	mysql_tquery(gDB, "ALTER TABLE characters ADD COLUMN tickets INT DEFAULT 0", "", "");
+	mysql_tquery(gDB, "ALTER TABLE characters ADD COLUMN ticket_amount INT DEFAULT 0", "", "");
+	mysql_tquery(gDB, "ALTER TABLE characters ADD COLUMN drive_lic INT DEFAULT 0", "", "");
+	mysql_tquery(gDB, "ALTER TABLE characters ADD COLUMN gun_lic INT DEFAULT 0", "", "");
+	mysql_tquery(gDB, "ALTER TABLE characters ADD COLUMN fight_style INT DEFAULT 4", "", "");
+	mysql_tquery(gDB, "ALTER TABLE vehicles ADD COLUMN trunk_items VARCHAR(128) DEFAULT ''", "", "");
+	mysql_tquery(gDB, "ALTER TABLE vehicles ADD COLUMN trunk_gun INT DEFAULT 0", "", "");
+	mysql_tquery(gDB, "ALTER TABLE vehicles ADD COLUMN trunk_ammo INT DEFAULT 0", "", "");
+	mysql_tquery(gDB, "ALTER TABLE vehicles ADD COLUMN impounded INT DEFAULT 0", "", "");
 
 	// 4. bans table
 	mysql_tquery(gDB, "CREATE TABLE IF NOT EXISTS bans (\
@@ -109,6 +131,9 @@ stock DB_Init()
 
 	// load vehicles
 	mysql_tquery(gDB, "SELECT * FROM vehicles", "OnVehiclesLoaded", "");
+
+	// load bans ke cache memori untuk pengecekan sinkron di OnPlayerConnect
+	mysql_tquery(gDB, "SELECT name, ip FROM bans", "OnBansLoaded", "");
 	return 1;
 }
 
@@ -437,6 +462,13 @@ public OnCharacterLoaded(playerid)
 	gPlayerData[playerid][pLoggedIn] = true;
 	gPlayerData[playerid][pSpawned] = false;
 
+	// PENTING: pInjured/pInjuredTime tidak disimpan permanen ke DB.
+	// Status pingsan adalah state sesi — timer penyembuh (OnEmergencyHospitalRespawn)
+	// dan TogglePlayerControllable(false) hilang saat disconnect, sehingga menyimpan
+	// pInjured=1 akan membuat pemain terkunci permanen tanpa jalan sembuh setelah relog.
+	gPlayerData[playerid][pInjured] = false;
+	gPlayerData[playerid][pInjuredTime] = 0;
+
 	new Float:sx = gPlayerData[playerid][pLastX];
 	new Float:sy = gPlayerData[playerid][pLastY];
 	new Float:sz = gPlayerData[playerid][pLastZ];
@@ -462,7 +494,7 @@ stock DB_SavePlayerData(playerid)
 	GetPlayerPos(playerid, px, py, pz);
 	GetPlayerFacingAngle(playerid, pa);
 
-	new query[650];
+	new query[1200];
 	mysql_format(gDB, query, sizeof(query),
 		"UPDATE characters SET money=%d, bank=%d, level=%d, exp=%d, admin=%d, \
 		faction=%d, factionrank=%d, duty=%d, job=%d, hunger=%.2f, thirst=%.2f, \
@@ -491,6 +523,8 @@ stock DB_SavePlayerData(playerid)
 	mysql_tquery(gDB, query, "", "");
 	return 1;
 }
+
+forward OnVehicleRowCreated(ownerid, slot, const plate[]);
 
 // vehicles loader & saver
 public OnVehiclesLoaded()
@@ -592,11 +626,14 @@ stock DeserializeTrunkItems(slot, const input[])
 stock DB_SaveVehicle(slot)
 {
 	if (!gDBReady || slot < 0 || slot >= MAX_OWNED_VEHICLES || !gVehicleData[slot][vUsed]) return 0;
+	// vDBID <= 0 berarti baris DB belum terbentuk (insert belum selesai).
+	// Jangan menyimpan pakai WHERE id=0 / id=1 — itu menimpa baris kendaraan lain.
+	if (gVehicleData[slot][vDBID] <= 0) return 0;
 
 	new trunkItemStr[128];
 	SerializeTrunkItems(slot, trunkItemStr, sizeof(trunkItemStr));
 
-	new query[512];
+	new query[1024];
 	mysql_format(gDB, query, sizeof(query),
 		"UPDATE vehicles SET posx=%.2f, posy=%.2f, posz=%.2f, posa=%.2f, \
 		color1=%d, color2=%d, fuel=%.2f, health=%.2f, plate='%e', engine=%d, locked=%d, trunk=%d, trunk_items='%e', \
@@ -614,23 +651,92 @@ stock DB_SaveVehicle(slot)
 	return 1;
 }
 
-stock DB_CreateVehicleRow(ownerid, model, Float:x, Float:y, Float:z, Float:a, color1, color2, const plate[])
+stock DB_CreateVehicleRow(ownerid, model, Float:x, Float:y, Float:z, Float:a, color1, color2, const plate[], slot = -1)
 {
-	if (!gDBReady) return -1;
+	if (!gDBReady) return 0;
 	new query[320];
 	mysql_format(gDB, query, sizeof(query),
 		"INSERT INTO vehicles (ownerid, model, posx, posy, posz, posa, color1, color2, fuel, health, plate) \
 		VALUES (%d, %d, %.2f, %.2f, %.2f, %.2f, %d, %d, 100.0, 1000.0, '%e')",
 		ownerid, model, x, y, z, a, color1, color2, plate);
-	mysql_tquery(gDB, query, "", "");
+	// Ambil AUTO_INCREMENT id yang sebenarnya; jika slot disertakan, set vDBID
+	// setelah insert supaya semua mobil TIDAK menunjuk ke id yang sama.
+	mysql_tquery(gDB, query, "OnVehicleRowCreated", "iis", ownerid, slot, plate);
 	return 1;
 }
 
+public OnVehicleRowCreated(ownerid, slot, const plate[])
+{
+	if (slot < 0 || slot >= MAX_OWNED_VEHICLES) return 0;
+
+	// Pastikan slot masih dipakai dan pemiliknya sama (mencegah race saat slot dipakai ulang)
+	if (!gVehicleData[slot][vUsed] || gVehicleData[slot][vOwnerID] != ownerid) return 0;
+
+	gVehicleData[slot][vDBID] = cache_insert_id();
+
+	// Verifikasi plat nomor tetap sama (kalau slot sudah dipakai pemain lain, jangan timpa)
+	if (strcmp(gVehicleData[slot][vPlate], plate) != 0) return 0;
+
+	DB_SaveVehicle(slot);
+	return 1;
+}
+
+forward OnBansLoaded();
+
 // bans
+// Cache ban dimuat sekali saat init; pengecekan di OnPlayerConnect harus sinkron,
+// jadi kita tidak bisa query DB di dalamnya. Data di-refresh saat server start.
+#define MAX_BAN_CACHE 500
+new gBanName[MAX_BAN_CACHE][MAX_PLAYER_NAME];
+new gBanIP[MAX_BAN_CACHE][20];
+new gBanCount = 0;
+
+public OnBansLoaded()
+{
+	new rows = cache_num_rows();
+	gBanCount = 0;
+	new nameBuf[MAX_PLAYER_NAME], ipBuf[20];
+	for (new i = 0; i < rows && i < MAX_BAN_CACHE; i++) {
+		cache_get_value_name(i, "name", nameBuf, sizeof(nameBuf));
+		cache_get_value_name(i, "ip", ipBuf, sizeof(ipBuf));
+		format(gBanName[gBanCount], MAX_PLAYER_NAME, "%s", nameBuf);
+		format(gBanIP[gBanCount], 20, "%s", ipBuf);
+		gBanCount++;
+	}
+	printf("[BANS] Memuat %d entri ban ke cache memori.", gBanCount);
+	return 1;
+}
+
+// Pengecekan sinkron: nama (case-insensitive) ATAU IP harus cocok.
 stock DB_IsBanned(const name[], const ip[])
 {
-	#pragma unused name, ip
+	if (name[0] == '\0' && ip[0] == '\0') return 0;
+	for (new i = 0; i < gBanCount; i++) {
+		if (name[0] != '\0' && gBanName[i][0] != '\0' && strcmp(gBanName[i], name, true) == 0) return 1;
+		if (ip[0] != '\0' && gBanIP[i][0] != '\0' && strcmp(gBanIP[i], ip, true) == 0) return 1;
+	}
 	return 0;
+}
+
+stock DB_RemoveBan(const name[])
+{
+	if (!gDBReady || name[0] == '\0') return 0;
+	new query[160];
+	mysql_format(gDB, query, sizeof(query), "DELETE FROM bans WHERE name = '%e'", name);
+	mysql_tquery(gDB, query, "", "");
+
+	// Sinkronkan cache memori
+	for (new i = 0; i < gBanCount; i++) {
+		if (strcmp(gBanName[i], name, true) == 0) {
+			for (new j = i; j < gBanCount - 1; j++) {
+				format(gBanName[j], MAX_PLAYER_NAME, "%s", gBanName[j + 1]);
+				format(gBanIP[j], 20, "%s", gBanIP[j + 1]);
+			}
+			gBanCount--;
+			i--;
+		}
+	}
+	return 1;
 }
 
 stock DB_AddBan(const name[], const ip[], const reason[], const admin[])
@@ -641,5 +747,12 @@ stock DB_AddBan(const name[], const ip[], const reason[], const admin[])
 		"INSERT INTO bans (name, ip, reason, admin, created) VALUES ('%e', '%e', '%e', '%e', %d)",
 		name, ip, reason, admin, gettime());
 	mysql_tquery(gDB, query, "", "");
+
+	// Tambahkan ke cache memori agar langsung berlaku tanpa restart
+	if (gBanCount < MAX_BAN_CACHE) {
+		format(gBanName[gBanCount], MAX_PLAYER_NAME, "%s", name);
+		format(gBanIP[gBanCount], 20, "%s", ip);
+		gBanCount++;
+	}
 	return 1;
 }

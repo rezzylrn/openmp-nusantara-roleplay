@@ -261,6 +261,7 @@ enum {
 	DIALOG_MYVEH_ACTION,
 	DIALOG_TRUNK,
 	DIALOG_TRUNK_DEPOSIT,
+	DIALOG_TRUNK_DEPOSIT_CASH,
 	DIALOG_TRUNK_WITHDRAW,
 	DIALOG_REFUEL,
 	DIALOG_SAPD_ACTIONS,
@@ -705,6 +706,7 @@ new gJobType[MAX_PLAYERS];
 // selection states
 new gPlayerVehicleSlot[MAX_PLAYERS];
 new gSelectedInvSlot[MAX_PLAYERS];
+new gInvSlotMap[MAX_PLAYERS][MAX_INVENTORY_SLOTS]; // listitem dialog -> index slot asli
 new gGiveTarget[MAX_PLAYERS];
 new gGiveItemType[MAX_PLAYERS];
 new bool:gPhoneOpen[MAX_PLAYERS];

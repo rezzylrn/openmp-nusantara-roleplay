@@ -18,17 +18,21 @@ enum E_GRAFFITI_SPOT {
 	Float:gfZ,
 	gfName[32],
 	gfText[48],
+	bool:gfTagged,
 	Text3D:gfLabel
 };
 
 new gGraffitiSpots[MAX_GRAFFITI_TAGS][E_GRAFFITI_SPOT] = {
-	{2485.0, -1665.0, 13.5, "Ganton Alleyway",       "GROVE STREET FAMILIES", Text3D:INVALID_3DTEXT_ID},
-	{2040.0, -1700.0, 13.5, "Idlewood Motel Corner",  "ROLLIN HEIGHTS BALLAS", Text3D:INVALID_3DTEXT_ID},
-	{2420.0, -1220.0, 24.5, "East LS Barrio",         "VAGOS NORTENOS",        Text3D:INVALID_3DTEXT_ID},
-	{1980.0, -1190.0, 20.0, "Glen Park Overpass",     "KLAUS UNDERGROUND",     Text3D:INVALID_3DTEXT_ID},
-	{830.0,  -1960.0, 12.8, "Verona Boardwalk Wall",  "NUSANTARA STREET RP",   Text3D:INVALID_3DTEXT_ID},
-	{1760.0, -2040.0, 13.5, "El Corona Rail Siding",  "AZTECAS CALLE SUR",     Text3D:INVALID_3DTEXT_ID}
+	{2485.0, -1665.0, 13.5, "Ganton Alleyway",       "GROVE STREET FAMILIES", true, Text3D:INVALID_3DTEXT_ID},
+	{2040.0, -1700.0, 13.5, "Idlewood Motel Corner",  "ROLLIN HEIGHTS BALLAS", true, Text3D:INVALID_3DTEXT_ID},
+	{2420.0, -1220.0, 24.5, "East LS Barrio",         "VAGOS NORTENOS",        true, Text3D:INVALID_3DTEXT_ID},
+	{1980.0, -1190.0, 20.0, "Glen Park Overpass",     "KLAUS UNDERGROUND",     true, Text3D:INVALID_3DTEXT_ID},
+	{830.0,  -1960.0, 12.8, "Verona Boardwalk Wall",  "NUSANTARA STREET RP",   true, Text3D:INVALID_3DTEXT_ID},
+	{1760.0, -2040.0, 13.5, "El Corona Rail Siding",  "AZTECAS CALLE SUR",     true, Text3D:INVALID_3DTEXT_ID}
 };
+
+// Cooldown upah kebersihan per pemain (anti money-printer /cleantag)
+new gGraffitiCleanCooldown[MAX_PLAYERS];
 
 stock Graffiti_Init()
 {
@@ -76,6 +80,7 @@ stock ProcessTagGraffiti(playerid, const tagText[])
 
 	// Perbarui grafiti
 	format(gGraffitiSpots[spot][gfText], 48, "%s", tagText);
+	gGraffitiSpots[spot][gfTagged] = true;
 
 	if (gGraffitiSpots[spot][gfLabel] != Text3D:INVALID_3DTEXT_ID) {
 		Delete3DTextLabel(gGraffitiSpots[spot][gfLabel]);
@@ -119,7 +124,21 @@ stock ProcessCleanGraffiti(playerid)
 		return 0;
 	}
 
+	// Anti money-printer: hanya dinding yang BENAR-BENAR ada grafiti yang bisa dibersihkan
+	if (!gGraffitiSpots[spot][gfTagged]) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Dinding ini sudah bersih, tidak ada grafiti untuk dibersihkan.");
+		return 0;
+	}
+
+	// Cooldown upah kebersihan (3 menit) supaya tidak bisa dispam
+	if (gGraffitiCleanCooldown[playerid] > gettime()) {
+		new wait = gGraffitiCleanCooldown[playerid] - gettime();
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda baru saja dibayar. Tunggu %d detik lagi untuk membersihkan ulang.", wait);
+		return 0;
+	}
+
 	format(gGraffitiSpots[spot][gfText], 48, "DINDING BERSIH");
+	gGraffitiSpots[spot][gfTagged] = false;
 
 	if (gGraffitiSpots[spot][gfLabel] != Text3D:INVALID_3DTEXT_ID) {
 		Delete3DTextLabel(gGraffitiSpots[spot][gfLabel]);
@@ -136,6 +155,7 @@ stock ProcessCleanGraffiti(playerid)
 
 	// Hadiah upah kebersihan dinas kota
 	GivePlayerMoneyEx(playerid, 75, "upah membersihkan grafiti liar");
+	gGraffitiCleanCooldown[playerid] = gettime() + 180; // cooldown 3 menit
 	PlayerPlaySound(playerid, 1058, 0.0, 0.0, 0.0);
 
 	SendClientMessage(playerid, COLOR_SUCCESS,

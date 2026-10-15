@@ -15,6 +15,10 @@ public OnPlayerConnect(playerid)
 	ResetPlayerData(playerid);
 	AC_ResetPlayer(playerid);
 
+	// Tandai slot ini sebagai sesi baru: membatalkan semua callback bcrypt
+	// yang masih tertunda dari pemain sebelumnya di slot yang sama.
+	gPlayerSession[playerid]++;
+
 	new name[MAX_PLAYER_NAME], ip[20];
 	GetPlayerName(playerid, name, sizeof(name));
 	GetPlayerIp(playerid, ip, sizeof(ip));

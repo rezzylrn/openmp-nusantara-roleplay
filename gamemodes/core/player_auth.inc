@@ -6,11 +6,20 @@
 // pending buffers
 new gPendingUCPOtp[MAX_PLAYERS][16];
 
+// Token sesi: bertambah setiap kali slot playerid dipakai ulang (OnPlayerConnect).
+// Callback bcrypt bersifat ASINKRON; tanpa token ini, player yang keluar saat verifikasi
+// berjalan bisa membuat callback-nya mengeksekusi aksi (load karakter / update hash)
+// terhadap pemain LAIN yang sudah menempati slot yang sama.
+new gPlayerSession[MAX_PLAYERS];
+
 // bcrypt callbacks
-forward OnPlayerPasswordHashed(playerid);
-public OnPlayerPasswordHashed(playerid)
+forward OnPlayerPasswordHashed(playerid, session);
+public OnPlayerPasswordHashed(playerid, session)
 {
 	if (!IsPlayerConnected(playerid)) return 0;
+	if (session != gPlayerSession[playerid]) return 0; // slot sudah dipakai pemain lain
+	if (gPlayerData[playerid][pUCPID] <= 0) return 0;
+
 	new hash[BCRYPT_HASH_LENGTH];
 	bcrypt_get_hash(hash, sizeof(hash));
 
@@ -21,10 +30,12 @@ public OnPlayerPasswordHashed(playerid)
 	return 1;
 }
 
-forward OnPlayerPasswordVerified(playerid, bool:success);
-public OnPlayerPasswordVerified(playerid, bool:success)
+forward OnPlayerPasswordVerified(playerid, session, bool:success);
+public OnPlayerPasswordVerified(playerid, session, bool:success)
 {
 	if (!IsPlayerConnected(playerid)) return 0;
+	if (session != gPlayerSession[playerid]) return 0; // slot sudah dipakai pemain lain
+	if (gPlayerData[playerid][pLoggedIn]) return 0;    // sudah login, jangan load dua kali
 
 	if (!success) {
 		SendErr(playerid, "Kata sandi salah.");
@@ -151,7 +162,7 @@ stock ProcessUCPLogin(playerid, const password[])
 		ShowUCPLoginDialog(playerid);
 		return 0;
 	}
-	bcrypt_verify(playerid, "OnPlayerPasswordVerified", password, gPlayerData[playerid][pPassword]);
+	bcrypt_verify(playerid, "OnPlayerPasswordVerified", password, gPlayerData[playerid][pPassword], gPlayerSession[playerid]);
 	return 1;
 }
 
@@ -197,7 +208,7 @@ stock ProcessUCPRegisterPass(playerid, const password[])
 		return 0;
 	}
 
-	bcrypt_hash(playerid, "OnPlayerPasswordHashed", password, BCRYPT_COST);
+	bcrypt_hash(playerid, "OnPlayerPasswordHashed", password, BCRYPT_COST, gPlayerSession[playerid]);
 	return 1;
 }
 
