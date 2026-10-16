@@ -74,6 +74,18 @@ stock ShowFastFoodMenu(playerid)
 stock OnFastFoodDialogResponse(playerid, listitem)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 1;
+
+	if (IsPlayerConnected(playerid)) {
+		new slot = -1;
+		for (new i = 0; i < MAX_FASTFOOD_OUTLETS; i++) {
+			if (IsPlayerNearPoint(playerid, gFastFoodSpots[i][0], gFastFoodSpots[i][1], gFastFoodSpots[i][2], 5.0)) {
+				slot = i;
+				break;
+			}
+		}
+		if (slot == -1) return 1;
+	}
 
 	new cost = 0;
 	new Float:hungerAdd = 0.0, Float:hpAdd = 0.0;
@@ -91,7 +103,10 @@ stock OnFastFoodDialogResponse(playerid, listitem)
 		return 1;
 	}
 
-	TakePlayerMoneyEx(playerid, cost, "pesan makanan cepat saji");
+	if (!TakePlayerMoneyEx(playerid, cost, "pesan makanan cepat saji")) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Pembayaran pesanan makanan gagal diproses.");
+		return 1;
+	}
 
 	gPlayerData[playerid][pHunger] += hungerAdd;
 	if (gPlayerData[playerid][pHunger] > 100.0) gPlayerData[playerid][pHunger] = 100.0;

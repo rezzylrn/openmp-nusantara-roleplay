@@ -57,6 +57,9 @@ stock ShowAmmuNationMenu(playerid)
 stock OnAmmuNationDialogResponse(playerid, listitem)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 1;
+	if (IsPlayerConnected(playerid) && !IsPlayerNearPoint(playerid, AMMU_NATION_X, AMMU_NATION_Y, AMMU_NATION_Z, 4.0)) return 1;
+	if (!gPlayerData[playerid][pGunLic]) return 1;
 
 	new cost = 0;
 	switch (listitem) {
@@ -73,7 +76,10 @@ stock OnAmmuNationDialogResponse(playerid, listitem)
 		return 1;
 	}
 
-	TakePlayerMoneyEx(playerid, cost, "beli senjata legal ammunation");
+	if (!TakePlayerMoneyEx(playerid, cost, "beli senjata legal ammunation")) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Pembayaran ammunation gagal diproses.");
+		return 1;
+	}
 
 	switch (listitem) {
 		case 0: {

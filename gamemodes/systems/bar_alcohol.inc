@@ -62,6 +62,18 @@ stock ShowBarDrinksMenu(playerid)
 stock OnBarMenuDialogResponse(playerid, listitem)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 1;
+
+	if (IsPlayerConnected(playerid)) {
+		new bool:isNear = false;
+		for (new i = 0; i < MAX_BAR_LOCATIONS; i++) {
+			if (IsPlayerNearPoint(playerid, gBarSpots[i][0], gBarSpots[i][1], gBarSpots[i][2], 4.0)) {
+				isNear = true;
+				break;
+			}
+		}
+		if (!isNear) return 1;
+	}
 
 	new cost = 0, drunkAdd = 0;
 	new drinkName[24];
@@ -78,7 +90,10 @@ stock OnBarMenuDialogResponse(playerid, listitem)
 		return 1;
 	}
 
-	TakePlayerMoneyEx(playerid, cost, "beli minuman bar");
+	if (!TakePlayerMoneyEx(playerid, cost, "beli minuman bar")) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Pembayaran minuman bar gagal diproses.");
+		return 1;
+	}
 
 	gPlayerData[playerid][pDrunkLevel] += drunkAdd;
 	if (gPlayerData[playerid][pDrunkLevel] > 10000) gPlayerData[playerid][pDrunkLevel] = 10000;

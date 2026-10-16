@@ -26,6 +26,14 @@ stock GymFitness_Init()
 	return 1;
 }
 
+stock GymFitness_ResetPlayer(playerid)
+{
+	if (playerid >= 0 && playerid < MAX_PLAYERS) {
+		gGymWorkoutCooldown[playerid] = 0;
+	}
+	return 1;
+}
+
 stock ShowGymStyleDialog(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
@@ -37,12 +45,12 @@ stock ShowGymStyleDialog(playerid)
 
 	new dialogContent[380];
 	format(dialogContent, sizeof(dialogContent),
-		"Gaya Bela Diri\tBiaya\tKarakteristik Bertarung\n\
-{FFFFFF}1. Gaya Standar Biasa\t{4CD964}Gratis\tPukulan jalanan dasar\n\
-{FFFFFF}2. Tinju Klasik (Boxing)\t{4CD964}$150\tKombinasi jab & hook cepat\n\
-{FFFFFF}3. Seni Bela Diri Kung Fu\t{4CD964}$150\tTendangan akrobatik & tangkisan\n\
-{FFFFFF}4. Kickboxing (Muay Thai)\t{4CD964}$150\tSerangan lutut & siku keras\n\
-{FFFFFF}5. Grab Kick (Elbow Striking)\t{4CD964}$150\tKuncian bantingan jarak dekat");
+		"Gaya Bela Diri	Biaya	Karakteristik Bertarung\n\
+{FFFFFF}1. Gaya Standar Biasa	{4CD964}Gratis	Pukulan jalanan dasar\n\
+{FFFFFF}2. Tinju Klasik (Boxing)	{4CD964}$150	Kombinasi jab & hook cepat\n\
+{FFFFFF}3. Seni Bela Diri Kung Fu	{4CD964}$150	Tendangan akrobatik & tangkisan\n\
+{FFFFFF}4. Kickboxing (Muay Thai)	{4CD964}$150	Serangan lutut & siku keras\n\
+{FFFFFF}5. Grab Kick (Elbow Striking)	{4CD964}$150	Kuncian bantingan jarak dekat");
 
 	RP_ShowPlayerDialog(playerid, DIALOG_GYM_STYLES, DIALOG_STYLE_TABLIST_HEADERS,
 		"PELATIHAN GAYA BERTARUNG GYM", dialogContent, "Pilih", "Batal");
@@ -52,6 +60,11 @@ stock ShowGymStyleDialog(playerid)
 stock OnGymStyleDialogResponse(playerid, listitem)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 1;
+	if (IsPlayerConnected(playerid) && !IsPlayerNearPoint(playerid, BEACH_GYM_X, BEACH_GYM_Y, BEACH_GYM_Z, 12.0)) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda terlalu jauh dari lokasi Gym.");
+		return 1;
+	}
 
 	new newStyle = 4;
 	new styleName[32];
@@ -72,7 +85,10 @@ stock OnGymStyleDialogResponse(playerid, listitem)
 	}
 
 	if (cost > 0) {
-		TakePlayerMoneyEx(playerid, cost, "biaya kursus fight style gym");
+		if (!TakePlayerMoneyEx(playerid, cost, "biaya kursus fight style gym")) {
+			SendClientMessage(playerid, COLOR_ERROR, "ERROR: Pembayaran kursus gaya bertarung gagal.");
+			return 1;
+		}
 	}
 
 	gPlayerData[playerid][pFightStyle] = newStyle;
@@ -93,6 +109,7 @@ stock OnGymStyleDialogResponse(playerid, listitem)
 stock ProcessGymWorkout(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 
 	if (!IsPlayerNearPoint(playerid, BEACH_GYM_X, BEACH_GYM_Y, BEACH_GYM_Z, 12.0)) {
 		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda harus berada di area gym untuk berolahraga.");

@@ -240,6 +240,11 @@ stock Doors_Delete(slot)
 stock ProcessDoorEnter(playerid)
 {
 	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
+	if (IsPlayerInAnyVehicle(playerid)) return 0;
+	if (gPlayerData[playerid][pCuffed]) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda sedang diborgol oleh petugas kepolisian.");
+		return 0;
+	}
 
 	new pVW = GetPlayerVirtualWorld(playerid);
 	new pInt = GetPlayerInterior(playerid);
@@ -278,6 +283,11 @@ stock ProcessDoorEnter(playerid)
 stock ProcessDoorExit(playerid)
 {
 	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
+	if (IsPlayerInAnyVehicle(playerid)) return 0;
+	if (gPlayerData[playerid][pCuffed]) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda sedang diborgol oleh petugas kepolisian.");
+		return 0;
+	}
 
 	new pVW = GetPlayerVirtualWorld(playerid);
 	new pInt = GetPlayerInterior(playerid);

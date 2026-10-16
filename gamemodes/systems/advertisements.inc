@@ -24,9 +24,18 @@ stock Advertisements_Init()
 	return 1;
 }
 
+stock Advertisements_ResetPlayer(playerid)
+{
+	if (playerid >= 0 && playerid < MAX_PLAYERS) {
+		gPlayerAdCooldown[playerid] = 0;
+	}
+	return 1;
+}
+
 stock ProcessSendAdvertisement(playerid, const adText[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 
 	if (gPlayerData[playerid][pPhone] <= 0) {
 		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda harus memiliki ponsel untuk mencantumkan kontak iklan.");
@@ -52,10 +61,16 @@ stock ProcessSendAdvertisement(playerid, const adText[])
 		return 0;
 	}
 
+	new bool:paid = false;
 	if (gPlayerData[playerid][pMoney] >= AD_COST) {
-		TakePlayerMoneyEx(playerid, AD_COST, "biaya iklan baris SANews");
-	} else {
-		TakePlayerBankEx(playerid, AD_COST, "biaya iklan baris SANews");
+		paid = (TakePlayerMoneyEx(playerid, AD_COST, "biaya iklan baris SANews") == 1);
+	}
+	if (!paid && gPlayerData[playerid][pBank] >= AD_COST) {
+		paid = (TakePlayerBankEx(playerid, AD_COST, "biaya iklan baris SANews") == 1);
+	}
+	if (!paid) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Pembayaran biaya publikasi iklan baris SANews gagal.");
+		return 0;
 	}
 
 	gPlayerAdCooldown[playerid] = now + AD_COOLDOWN;
@@ -72,6 +87,6 @@ stock ProcessSendAdvertisement(playerid, const adText[])
 	}
 
 	PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
-	SendClientMessage(playerid, COLOR_SUCCESS, "SUKSES: Ikan baris Anda berhasil dipublikasikan ke seluruh penjuru kota ($50).");
+	SendClientMessage(playerid, COLOR_SUCCESS, "SUKSES: Iklan baris Anda berhasil dipublikasikan ke seluruh penjuru kota ($50).");
 	return 1;
 }

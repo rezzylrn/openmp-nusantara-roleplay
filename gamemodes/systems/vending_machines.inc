@@ -93,6 +93,11 @@ stock ShowVendingDialog(playerid)
 stock OnVendingDialogResponse(playerid, listitem)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 1;
+	if (IsPlayerConnected(playerid) && IsPlayerNearVendingMachine(playerid) == -1) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda terlalu jauh dari mesin vending.");
+		return 1;
+	}
 
 	if (listitem == 0) {
 		// Beli Minuman Sprunk ($3)
@@ -100,7 +105,10 @@ stock OnVendingDialogResponse(playerid, listitem)
 			SendClientMessage(playerid, COLOR_ERROR, "ERROR: Uang tunai tidak cukup ($3).");
 			return 1;
 		}
-		TakePlayerMoneyEx(playerid, 3, "beli sprunk mesin vending");
+		if (!TakePlayerMoneyEx(playerid, 3, "beli sprunk mesin vending")) {
+			SendClientMessage(playerid, COLOR_ERROR, "ERROR: Pembayaran mesin vending gagal.");
+			return 1;
+		}
 		gPlayerData[playerid][pThirst] += 40.0;
 		if (gPlayerData[playerid][pThirst] > 100.0) gPlayerData[playerid][pThirst] = 100.0;
 		UpdatePlayerHUD(playerid);
@@ -114,7 +122,10 @@ stock OnVendingDialogResponse(playerid, listitem)
 			SendClientMessage(playerid, COLOR_ERROR, "ERROR: Uang tunai tidak cukup ($4).");
 			return 1;
 		}
-		TakePlayerMoneyEx(playerid, 4, "beli snack mesin vending");
+		if (!TakePlayerMoneyEx(playerid, 4, "beli snack mesin vending")) {
+			SendClientMessage(playerid, COLOR_ERROR, "ERROR: Pembayaran mesin vending gagal.");
+			return 1;
+		}
 		gPlayerData[playerid][pHunger] += 35.0;
 		if (gPlayerData[playerid][pHunger] > 100.0) gPlayerData[playerid][pHunger] = 100.0;
 		UpdatePlayerHUD(playerid);

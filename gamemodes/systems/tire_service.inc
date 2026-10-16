@@ -19,6 +19,7 @@ stock TireService_Init()
 stock ProcessRepairTire(playerid)
 {
 	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 
 	if (IsPlayerInAnyVehicle(playerid)) {
 		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda harus keluar dan berdiri di dekat roda kendaraan untuk menambal ban.");
@@ -37,6 +38,7 @@ stock ProcessRepairTire(playerid)
 	new Float:minDist = 999.0;
 
 	for (new v = 1; v < MAX_VEHICLES; v++) {
+		if (!IsValidVehicle(v)) continue;
 		new Float:vx, Float:vy, Float:vz;
 		GetVehiclePos(v, vx, vy, vz);
 		new Float:dist = VectorSize(px - vx, py - vy, pz - vz);
@@ -51,6 +53,11 @@ stock ProcessRepairTire(playerid)
 		return 0;
 	}
 
+	if (!TakePlayerItem(playerid, ITEM_REPAIRKIT, 1)) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Gagal menggunakan Repairkit dari inventaris.");
+		return 0;
+	}
+
 	new VEHICLE_PANEL_STATUS:panels, VEHICLE_DOOR_STATUS:doors, VEHICLE_LIGHT_STATUS:lights, VEHICLE_TYRE_STATUS:tires;
 	GetVehicleDamageStatus(targetVeh, panels, doors, lights, tires);
 
@@ -61,8 +68,6 @@ stock ProcessRepairTire(playerid)
 	ApplyAnimation(playerid, "CAR_CHAT", "car_talkm_loop", 4.1, false, false, false, false, 0);
 	PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
 
-	TakePlayerItem(playerid, ITEM_REPAIRKIT, 1);
-
 	SendClientMessage(playerid, COLOR_SUCCESS,
 		"SUKSES: Ban kempes kendaraan berhasil ditambal dan tekanan angin terisi normal!");
 	return 1;
@@ -71,6 +76,7 @@ stock ProcessRepairTire(playerid)
 stock ProcessPourFuelCanister(playerid)
 {
 	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 
 	if (IsPlayerInAnyVehicle(playerid)) {
 		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda harus berdiri di samping lubang tangki bensin mobil.");
@@ -110,12 +116,15 @@ stock ProcessPourFuelCanister(playerid)
 		return 0;
 	}
 
+	if (!TakePlayerItem(playerid, ITEM_JERRYCAN, 1)) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Gagal menggunakan Jerigen Bensin dari inventaris.");
+		return 0;
+	}
+
 	// Tuang 20 liter bensin
 	gVehicleData[targetSlot][vFuel] += 20.0;
 	if (gVehicleData[targetSlot][vFuel] > 100.0) gVehicleData[targetSlot][vFuel] = 100.0;
 	DB_SaveVehicle(targetSlot);
-
-	TakePlayerItem(playerid, ITEM_JERRYCAN, 1);
 
 	ApplyAnimation(playerid, "BOMBER", "BOM_Plant", 4.1, false, false, false, false, 0);
 	PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);

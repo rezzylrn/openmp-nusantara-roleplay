@@ -55,6 +55,15 @@ public OnPlayerDisconnect(playerid, reason)
 		ProcessRentalDisconnect(playerid);
 		SavePlayerOnDisconnect(playerid);
 	}
+	ClearHospitalTimer(playerid);
+	ProcessTrashDisconnect(playerid);
+	HouseSharing_ResetPlayer(playerid);
+	TaxiMeter_ResetPlayer(playerid);
+	MetalDetector_ResetPlayer(playerid);
+	TrafficCamera_ResetPlayer(playerid);
+	Advertisements_ResetPlayer(playerid);
+	GymFitness_ResetPlayer(playerid);
+	Graffiti_ResetPlayer(playerid);
 	TextdrawDestroyAll(playerid);
 	return 1;
 }

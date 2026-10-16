@@ -51,6 +51,13 @@ Dadu Kasino Jalanan\t$15\tBermain dadu taruhan peran (/dice)");
 stock ProcessStorePurchase(playerid, listitem)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
+
+	if (!IsPlayerInRangeOfPoint(playerid, RANGE_STORE, STORE_IDLEWOOD_X, STORE_IDLEWOOD_Y, STORE_IDLEWOOD_Z) &&
+	    !IsPlayerInRangeOfPoint(playerid, RANGE_STORE, 1352.0, -1758.0, 13.5)) {
+		SendErr(playerid, "Anda tidak berada di kasir toko 24/7. Gunakan /gps untuk mencari toko.");
+		return 0;
+	}
 
 	new itemType = ITEM_NONE;
 	new price = 0;
@@ -82,12 +89,18 @@ stock ProcessStorePurchase(playerid, listitem)
 		return 0;
 	}
 
-	if (!GivePlayerItem(playerid, itemType, 1)) {
-		// Inventaris penuh
+	if (!TakePlayerMoneyEx(playerid, price, "beli barang toko 24/7")) {
+		SendErr(playerid, "Pembayaran gagal. Uang tunai Anda tidak mencukupi.");
 		return 0;
 	}
 
-	TakePlayerMoneyEx(playerid, price);
+	if (!GivePlayerItem(playerid, itemType, 1)) {
+		// Inventaris penuh: kembalikan uang
+		GivePlayerMoneyEx(playerid, price, "refund toko 24/7 inventaris penuh");
+		SendErr(playerid, "Kantung inventaris Anda penuh. Uang telah dikembalikan.");
+		return 0;
+	}
+
 	SendSucc(playerid, "Anda membeli 1x %s seharga $%d. Barang masuk ke inventaris (/inv).", itemName, price);
 
 	// Jika membeli ponsel untuk pertama kali dan belum ada nomor

@@ -250,6 +250,14 @@ stock ProcessTrafficCameraTick(playerid)
 	return 0;
 }
 
+stock TrafficCamera_ResetPlayer(playerid)
+{
+	if (playerid >= 0 && playerid < MAX_PLAYERS) {
+		gPlayerCameraCooldown[playerid] = 0;
+	}
+	return 1;
+}
+
 stock ProcessPayTrafficTickets(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
@@ -269,10 +277,19 @@ stock ProcessPayTrafficTickets(playerid)
 		return 0;
 	}
 
+	new bool:paid = false;
 	if (gPlayerData[playerid][pBank] >= total) {
-		TakePlayerBankEx(playerid, total, "pelunasan tilang ETLE");
-	} else {
-		TakePlayerMoneyEx(playerid, total, "pelunasan tilang ETLE");
+		paid = (TakePlayerBankEx(playerid, total, "pelunasan tilang ETLE") == 1);
+	}
+	if (!paid && gPlayerData[playerid][pMoney] >= total) {
+		paid = (TakePlayerMoneyEx(playerid, total, "pelunasan tilang ETLE") == 1);
+	}
+	if (!paid) {
+		new errStr[128];
+		if (gPlayerData[playerid][pLanguage] == LANG_EN) format(errStr, sizeof(errStr), "ERROR: Failed to process citation payment. Insufficient funds.");
+		else format(errStr, sizeof(errStr), "ERROR: Pembayaran tilang gagal diproses. Dana tidak mencukupi.");
+		SendClientMessage(playerid, COLOR_ERROR, errStr);
+		return 0;
 	}
 
 	new count = gPlayerData[playerid][pTickets];

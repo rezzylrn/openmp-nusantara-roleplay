@@ -70,6 +70,14 @@ stock ProcessShareHouseKey(playerid, targetid)
 	return 1;
 }
 
+stock HouseSharing_ResetPlayer(playerid)
+{
+	if (playerid >= 0 && playerid < MAX_PLAYERS) {
+		gPlayerSharedHouse[playerid] = -1;
+	}
+	return 1;
+}
+
 stock ProcessRevokeHouseKey(playerid, targetid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
@@ -80,6 +88,18 @@ stock ProcessRevokeHouseKey(playerid, targetid)
 
 	if (gPlayerSharedHouse[targetid] == -1) {
 		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Pemain tersebut tidak sedang memegang kunci rumah Anda.");
+		return 0;
+	}
+
+	new hSlot = gPlayerSharedHouse[targetid];
+	if (hSlot < 0 || hSlot >= MAX_HOUSES || !gHouseData[hSlot][hUsed]) {
+		gPlayerSharedHouse[targetid] = -1;
+		return 1;
+	}
+
+	// [SECURITY] Hanya pemilik sah rumah atau pemegang kunci itu sendiri yang dapat mencabut/mengembalikan kunci
+	if (gHouseData[hSlot][hOwnerID] != gPlayerData[playerid][pID] && targetid != playerid) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda bukan pemilik rumah yang kuncinya dipegang oleh pemain ini.");
 		return 0;
 	}
 

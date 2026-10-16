@@ -90,6 +90,7 @@ stock ProgressBar_Destroy(playerid)
 stock ApplyProgressBar(playerid, const title[], durationSeconds, const callbackFunc[], extraParam = 0)
 {
 	if (playerid < 0 || playerid >= MAX_PLAYERS) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 	if (durationSeconds <= 0) durationSeconds = 1;
 
 	if (gProgressActive[playerid]) {
@@ -128,6 +129,12 @@ public RP_ProgressBarTick(playerid)
 			KillTimer(gProgressTimer[playerid]);
 			gProgressTimer[playerid] = 0;
 		}
+		return 0;
+	}
+
+	// [SECURITY] Batalkan otomatis bila pemain pingsan atau terborgol selama aktivitas
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		StopProgressBar(playerid, false);
 		return 0;
 	}
 

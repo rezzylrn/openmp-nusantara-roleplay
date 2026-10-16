@@ -39,8 +39,32 @@ forward RP_OnFinishThrowTrashBag(playerid, veh);
 
 stock TrashJob_Init()
 {
+	for (new i = 0; i < MAX_PLAYERS; i++) {
+		gTrashDuty[i] = false;
+		gTrashVeh[i] = 0;
+		gTrashCurrentStop[i] = 0;
+		gTrashCollected[i] = 0;
+		gHoldingTrashBag[i] = false;
+	}
 	Create3DTextLabel("{2ECC71}[ DINAS KEBERSIHAN KOTA ]\n{FFFFFF}Gunakan {FFFF00}/starttrash {FFFFFF}untuk mengambil rute truk sampah",
 		0xFFFFFFFF, TRASH_DEPOT_X, TRASH_DEPOT_Y, TRASH_DEPOT_Z + 0.5, 15.0, 0, false);
+	return 1;
+}
+
+stock ProcessTrashDisconnect(playerid)
+{
+	if (playerid >= 0 && playerid < MAX_PLAYERS) {
+		if (gTrashDuty[playerid]) {
+			if (gTrashVeh[playerid] > 0 && IsValidVehicle(gTrashVeh[playerid])) {
+				Vehicle_SafeDestroy(gTrashVeh[playerid]);
+			}
+			gTrashDuty[playerid] = false;
+			gTrashVeh[playerid] = 0;
+			gTrashCollected[playerid] = 0;
+			gHoldingTrashBag[playerid] = false;
+			gTrashCurrentStop[playerid] = 0;
+		}
+	}
 	return 1;
 }
 

@@ -32,6 +32,13 @@ stock ShowDealershipDialog(playerid)
 
 stock OnDealershipResponse(playerid, listitem)
 {
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
+	if (!IsPlayerNearPoint(playerid, DEALER_X, DEALER_Y, DEALER_Z, RANGE_DEALER)) {
+		SendErr(playerid, "Anda harus berada di showroom Dealership (/gps).");
+		return 0;
+	}
+
 	if (listitem < 0 || listitem >= MAX_DEALER_STOCK) return 0;
 	new price = gDealerStock[listitem][1];
 	new model = gDealerStock[listitem][0];
@@ -53,7 +60,10 @@ stock OnDealershipResponse(playerid, listitem)
 		return 0;
 	}
 
-	TakePlayerMoneyEx(playerid, price, "beli kendaraan");
+	if (!TakePlayerMoneyEx(playerid, price, "beli kendaraan")) {
+		SendErr(playerid, "Pembayaran gagal. Uang tunai Anda tidak mencukupi.");
+		return 0;
+	}
 
 	new Float:px, Float:py, Float:pz, Float:pa;
 	GetPlayerPos(playerid, px, py, pz);

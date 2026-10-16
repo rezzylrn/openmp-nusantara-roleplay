@@ -29,6 +29,7 @@ stock Cooking_Init()
 {
 	for (new i = 0; i < MAX_CAMPFIRES; i++) {
 		gCampfires[i][cfUsed] = false;
+		gCampfires[i][cfExpire] = 0;
 		gCampfires[i][cfObject] = INVALID_OBJECT_ID;
 		gCampfires[i][cfLabel] = Text3D:INVALID_3DTEXT_ID;
 	}
@@ -36,9 +37,37 @@ stock Cooking_Init()
 	return 1;
 }
 
+stock Campfire_DestroySlot(i)
+{
+	if (i < 0 || i >= MAX_CAMPFIRES || !gCampfires[i][cfUsed]) return 0;
+	if (gCampfires[i][cfObject] != INVALID_OBJECT_ID) {
+		DestroyObject(gCampfires[i][cfObject]);
+		gCampfires[i][cfObject] = INVALID_OBJECT_ID;
+	}
+	if (gCampfires[i][cfLabel] != Text3D:INVALID_3DTEXT_ID) {
+		Delete3DTextLabel(gCampfires[i][cfLabel]);
+		gCampfires[i][cfLabel] = Text3D:INVALID_3DTEXT_ID;
+	}
+	gCampfires[i][cfUsed] = false;
+	gCampfires[i][cfExpire] = 0;
+	return 1;
+}
+
+stock Campfire_CheckExpiry()
+{
+	new now = gettime();
+	for (new i = 0; i < MAX_CAMPFIRES; i++) {
+		if (gCampfires[i][cfUsed] && gCampfires[i][cfExpire] > 0 && now >= gCampfires[i][cfExpire]) {
+			Campfire_DestroySlot(i);
+		}
+	}
+	return 1;
+}
+
 stock ProcessCreateCampfire(playerid)
 {
 	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 
 	if (IsPlayerInAnyVehicle(playerid)) {
 		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda harus berjalan kaki untuk menyalakan api unggun.");
@@ -54,6 +83,8 @@ stock ProcessCreateCampfire(playerid)
 		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda memerlukan Korek Api (Lighter) untuk menyulut api. Beli di toko 24/7.");
 		return 0;
 	}
+
+	Campfire_CheckExpiry();
 
 	new slot = -1;
 	for (new i = 0; i < MAX_CAMPFIRES; i++) {
@@ -75,8 +106,11 @@ stock ProcessCreateCampfire(playerid)
 	new Float:fx = px + (1.2 * floatsin(-pa, degrees));
 	new Float:fy = py + (1.2 * floatcos(-pa, degrees));
 
-	// Gunakan 1 balok kayu
-	TakePlayerItem(playerid, ITEM_WOOD, 1);
+	// Gunakan 1 balok kayu secara atomic
+	if (!TakePlayerItem(playerid, ITEM_WOOD, 1)) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Gagal mengambil Balok Kayu dari inventaris.");
+		return 0;
+	}
 
 	gCampfires[slot][cfUsed] = true;
 	gCampfires[slot][cfX] = fx;
@@ -105,6 +139,9 @@ stock ProcessCreateCampfire(playerid)
 stock ProcessCookFish(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
+
+	Campfire_CheckExpiry();
 
 	new fireSlot = -1;
 	for (new i = 0; i < MAX_CAMPFIRES; i++) {
@@ -145,13 +182,17 @@ stock ProcessCookFish(playerid)
 stock ProcessEatCookedFish(playerid)
 {
 	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 
 	if (GetPlayerItemCount(playerid, ITEM_COOKEDFISH) <= 0) {
 		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda tidak memiliki Ikan Bakar di inventaris (/inv). Masak via /cook.");
 		return 0;
 	}
 
-	TakePlayerItem(playerid, ITEM_COOKEDFISH, 1);
+	if (!TakePlayerItem(playerid, ITEM_COOKEDFISH, 1)) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Gagal menggunakan Ikan Bakar dari inventaris.");
+		return 0;
+	}
 
 	// Pulihkan lapar +60% dan darah HP +25%
 	gPlayerData[playerid][pHunger] += 60.0;

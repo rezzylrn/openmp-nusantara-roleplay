@@ -84,8 +84,19 @@ Dialog:DialogVehicleSTNKView(playerid, response, listitem, inputtext[])
 Dialog:DialogGloveboxDeposit(playerid, response, listitem, inputtext[])
 {
 	if (!response) return 1;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 1;
+
 	new slot = gPlayerGloveboxVeh[playerid];
 	if (slot < 0 || slot >= MAX_OWNED_VEHICLES || !gVehicleData[slot][vUsed]) return 1;
+
+	new vehHandle = gVehicleData[slot][vVehicleHandle];
+	if (vehHandle <= 0 || !IsValidVehicle(vehHandle)) return 1;
+	new Float:vx, Float:vy, Float:vz;
+	GetVehiclePos(vehHandle, vx, vy, vz);
+	if (GetPlayerDistanceFromPoint(playerid, vx, vy, vz) > 6.0) {
+		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Anda terlalu jauh dari kendaraan.");
+		return 1;
+	}
 
 	new amount = strval(inputtext);
 	if (amount <= 0 || amount > 500) {
@@ -103,7 +114,10 @@ Dialog:DialogGloveboxDeposit(playerid, response, listitem, inputtext[])
 		return 1;
 	}
 
-	TakePlayerMoneyEx(playerid, amount, "simpan di glovebox");
+	if (!TakePlayerMoneyEx(playerid, amount, "simpan di glovebox")) {
+		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Gagal memproses penyimpanan uang.");
+		return 1;
+	}
 	gVehicleData[slot][vTrunk] += amount;
 	DB_SaveVehicle(slot);
 
@@ -117,8 +131,19 @@ Dialog:DialogGloveboxDeposit(playerid, response, listitem, inputtext[])
 Dialog:DialogGloveboxWithdraw(playerid, response, listitem, inputtext[])
 {
 	if (!response) return 1;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 1;
+
 	new slot = gPlayerGloveboxVeh[playerid];
 	if (slot < 0 || slot >= MAX_OWNED_VEHICLES || !gVehicleData[slot][vUsed]) return 1;
+
+	new vehHandle = gVehicleData[slot][vVehicleHandle];
+	if (vehHandle <= 0 || !IsValidVehicle(vehHandle)) return 1;
+	new Float:vx, Float:vy, Float:vz;
+	GetVehiclePos(vehHandle, vx, vy, vz);
+	if (GetPlayerDistanceFromPoint(playerid, vx, vy, vz) > 6.0) {
+		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Anda terlalu jauh dari kendaraan.");
+		return 1;
+	}
 
 	new amount = strval(inputtext);
 	if (amount <= 0) {

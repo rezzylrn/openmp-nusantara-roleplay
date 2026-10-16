@@ -29,9 +29,21 @@ stock TaxiMeter_Init()
 	return 1;
 }
 
+stock TaxiMeter_ResetPlayer(playerid)
+{
+	if (playerid >= 0 && playerid < MAX_PLAYERS) {
+		gTaxiMeterActive[playerid] = false;
+		gTaxiFareRate[playerid] = DEFAULT_TAXI_FARE;
+		gTaxiPassenger[playerid] = INVALID_PLAYER_ID;
+		gTaxiTotalFare[playerid] = 0;
+	}
+	return 1;
+}
+
 stock ProcessToggleTaxiMeter(playerid, fare)
 {
 	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 
 	if (!IsPlayerInAnyVehicle(playerid) || GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
 		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda harus menjadi pengemudi armada Taksi.");
@@ -70,6 +82,7 @@ stock ProcessToggleTaxiMeter(playerid, fare)
 stock ProcessCallTaxi(playerid)
 {
 	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 
 	new Float:px, Float:py, Float:pz;
 	GetPlayerPos(playerid, px, py, pz);

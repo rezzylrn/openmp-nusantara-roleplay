@@ -53,6 +53,7 @@ stock ApplyVehicleUpgrade(vehid, componentid)
 stock OnWorkshopMenuResponse(playerid, listitem)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 	if (!IsPlayerNearWorkshop(playerid)) {
 		SendErr(playerid, "Anda harus berada di Bengkel Modifikasi Idlewood.");
 		return 0;
@@ -76,6 +77,11 @@ stock OnWorkshopMenuResponse(playerid, listitem)
 		return 0;
 	}
 
+	if (!TakePlayerMoneyEx(playerid, cost, "modifikasi workshop")) {
+		SendErr(playerid, "Pembayaran modifikasi gagal. Uang tunai tidak mencukupi.");
+		return 0;
+	}
+
 	if (listitem == 5) {
 		// Cat ulang bodi: warna acak
 		ChangeVehicleColor(veh, random(126), random(126));
@@ -84,7 +90,6 @@ stock OnWorkshopMenuResponse(playerid, listitem)
 		AddVehicleComponent(veh, wsComp[listitem]);
 	}
 
-	TakePlayerMoneyEx(playerid, cost, "modifikasi workshop");
 	PlayerPlaySound(playerid, 1133, 0.0, 0.0, 0.0);
 	SendSucc(playerid, "Modifikasi berhasil dipasang! Biaya: $%d.", cost);
 

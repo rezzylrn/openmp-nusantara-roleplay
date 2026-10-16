@@ -36,6 +36,10 @@ new gGraffitiCleanCooldown[MAX_PLAYERS];
 
 stock Graffiti_Init()
 {
+	for (new i = 0; i < MAX_PLAYERS; i++) {
+		gGraffitiCleanCooldown[i] = 0;
+	}
+
 	for (new i = 0; i < MAX_GRAFFITI_TAGS; i++) {
 		new lbl[160];
 		format(lbl, sizeof(lbl),
@@ -51,9 +55,18 @@ stock Graffiti_Init()
 	return 1;
 }
 
+stock Graffiti_ResetPlayer(playerid)
+{
+	if (playerid >= 0 && playerid < MAX_PLAYERS) {
+		gGraffitiCleanCooldown[playerid] = 0;
+	}
+	return 1;
+}
+
 stock ProcessTagGraffiti(playerid, const tagText[])
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 
 	if (GetPlayerItemCount(playerid, ITEM_SPRAYCAN) <= 0) {
 		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda memerlukan Kaleng Cat Semprot (Spraycan) di inventaris. Beli di toko 24/7.");
@@ -110,6 +123,7 @@ stock ProcessTagGraffiti(playerid, const tagText[])
 stock ProcessCleanGraffiti(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 
 	new spot = -1;
 	for (new i = 0; i < MAX_GRAFFITI_TAGS; i++) {

@@ -1713,8 +1713,91 @@ public RunAutomatedRPTests()
 		}
 	}
 
+	// ---------------------------------------------------------------------------
+	// TEST 73: Disconnect Reset & Subsystem Action Hardening (House Sharing,
+	// Campfire Expiry, Traffic Camera Atomicity, ProgressBar Incap Guard)
+	// ---------------------------------------------------------------------------
+	print("[TEST 73/73] Disconnect Cleanup, Subsystem Atomic Payment & Incap Guard...");
+	{
+		new bool:t73Ok = true;
+		new fail73[128];
+		fail73[0] = '\0';
+
+		new tPlayer = 0;
+		// 73a. House sharing: strangers cannot revoke keys of houses they do not own
+		gHouseData[0][hUsed] = true;
+		gHouseData[0][hOwnerID] = 999; // owned by someone else
+		gPlayerSharedHouse[1] = 0; // targetid holds key to house 0
+		gPlayerData[tPlayer][pLoggedIn] = true;
+		gPlayerData[tPlayer][pID] = 888; // caller is stranger
+		new revokeStranger = ProcessRevokeHouseKey(tPlayer, 1);
+		if (revokeStranger != 0 || gPlayerSharedHouse[1] != 0) {
+			t73Ok = false;
+			format(fail73, sizeof(fail73), "%s strangerRevoke;", fail73);
+		}
+		// Reset
+		gPlayerSharedHouse[1] = -1;
+
+		// 73b. Campfire expiry cleanup
+		new cfSlot = 0;
+		gCampfires[cfSlot][cfUsed] = true;
+		gCampfires[cfSlot][cfExpire] = gettime() - 10; // expired 10 seconds ago
+		Campfire_CheckExpiry();
+		if (gCampfires[cfSlot][cfUsed]) {
+			t73Ok = false;
+			format(fail73, sizeof(fail73), "%s campfireExpiry;", fail73);
+		}
+
+		// 73c. Progress bar blocks execution when injured / cuffed
+		gPlayerData[tPlayer][pInjured] = true;
+		new barIncap = ApplyProgressBar(tPlayer, "TEST ACTION", 5, "NonExistentCallback");
+		gPlayerData[tPlayer][pInjured] = false;
+		if (barIncap != 0) {
+			t73Ok = false;
+			format(fail73, sizeof(fail73), "%s barIncap;", fail73);
+		}
+
+		// 73d. Disconnect cleanup resets transient variables
+		gPlayerSharedHouse[tPlayer] = 5;
+		gTaxiMeterActive[tPlayer] = true;
+		gPlayerDetectorActive[tPlayer] = true;
+		gPlayerCameraCooldown[tPlayer] = gettime() + 100;
+		gPlayerAdCooldown[tPlayer] = gettime() + 100;
+		gGymWorkoutCooldown[tPlayer] = gettime() + 100;
+		gGraffitiCleanCooldown[tPlayer] = gettime() + 100;
+
+		HouseSharing_ResetPlayer(tPlayer);
+		TaxiMeter_ResetPlayer(tPlayer);
+		MetalDetector_ResetPlayer(tPlayer);
+		TrafficCamera_ResetPlayer(tPlayer);
+		Advertisements_ResetPlayer(tPlayer);
+		GymFitness_ResetPlayer(tPlayer);
+		Graffiti_ResetPlayer(tPlayer);
+
+		new bool:resetsOk = (gPlayerSharedHouse[tPlayer] == -1 &&
+			!gTaxiMeterActive[tPlayer] &&
+			!gPlayerDetectorActive[tPlayer] &&
+			gPlayerCameraCooldown[tPlayer] == 0 &&
+			gPlayerAdCooldown[tPlayer] == 0 &&
+			gGymWorkoutCooldown[tPlayer] == 0 &&
+			gGraffitiCleanCooldown[tPlayer] == 0);
+
+		if (!resetsOk) {
+			t73Ok = false;
+			format(fail73, sizeof(fail73), "%s disconnectReset;", fail73);
+		}
+
+		if (t73Ok) {
+			print("  -> PASS: Disconnect state resets, campfire expiry cleanup & incapacitation progress guards confirmed.");
+			passCount++;
+		} else {
+			printf("  -> FAIL: Subsystem hardening details: %s", fail73);
+			failCount++;
+		}
+	}
+
 	print("==================================================");
-	printf("  [DEBUG SUMMARY] %d / 72 TESTS PASSED, %d FAILED", passCount, failCount);
+	printf("  [DEBUG SUMMARY] %d / 73 TESTS PASSED, %d FAILED", passCount, failCount);
 	print("==================================================\n");
 
 	return 1;

@@ -15,6 +15,7 @@
 stock ProcessCustomPlate(playerid, const newPlate[])
 {
 	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 
 	if (!IsPlayerInAnyVehicle(playerid) || GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
 		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda harus duduk di kursi pengemudi kendaraan pribadi milik Anda.");
@@ -63,10 +64,16 @@ stock ProcessCustomPlate(playerid, const newPlate[])
 		return 0;
 	}
 
+	new bool:paid = false;
 	if (gPlayerData[playerid][pMoney] >= PLATE_REGISTRATION_FEE) {
-		TakePlayerMoneyEx(playerid, PLATE_REGISTRATION_FEE, "biaya plat kustom kendaraan");
-	} else {
-		TakePlayerBankEx(playerid, PLATE_REGISTRATION_FEE, "biaya plat kustom kendaraan");
+		paid = (TakePlayerMoneyEx(playerid, PLATE_REGISTRATION_FEE, "biaya plat kustom kendaraan") == 1);
+	}
+	if (!paid && gPlayerData[playerid][pBank] >= PLATE_REGISTRATION_FEE) {
+		paid = (TakePlayerBankEx(playerid, PLATE_REGISTRATION_FEE, "biaya plat kustom kendaraan") == 1);
+	}
+	if (!paid) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Pembayaran pendaftaran plat kustom gagal diproses.");
+		return 0;
 	}
 
 	format(gVehicleData[slot][vPlate], 16, "%s", newPlate);

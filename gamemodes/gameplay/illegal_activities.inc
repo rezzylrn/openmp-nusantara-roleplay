@@ -407,6 +407,11 @@ stock ShowBlackMarketDialog(playerid)
 stock OnBlackMarketBuyResponse(playerid, listitem)
 {
 	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
+	if (!IsPlayerNearPoint(playerid, BLACKMARKET_X, BLACKMARKET_Y, BLACKMARKET_Z, 4.0)) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda terlalu jauh dari lokasi Black Market.");
+		return 0;
+	}
 
 	// Opsi 5: Beralih ke menu Jual
 	if (listitem == 5) {
@@ -448,40 +453,59 @@ stock OnBlackMarketBuyResponse(playerid, listitem)
 
 	switch (listitem) {
 		case 0: {
-			if (!GivePlayerItem(playerid, ITEM_LOCKPICK, 1)) {
-				SendClientMessage(playerid, COLOR_ERROR, "ERROR: Kantung inventaris Anda penuh.");
+			if (!TakePlayerMoneyEx(playerid, cost, "beli lockpick pasar gelap")) {
+				SendClientMessage(playerid, COLOR_ERROR, "ERROR: Pembayaran pasar gelap gagal.");
 				return 1;
 			}
-			TakePlayerMoneyEx(playerid, cost, "beli lockpick pasar gelap");
+			if (!GivePlayerItem(playerid, ITEM_LOCKPICK, 1)) {
+				GivePlayerMoneyEx(playerid, cost, "refund lockpick pasar gelap");
+				SendClientMessage(playerid, COLOR_ERROR, "ERROR: Kantung inventaris Anda penuh. Uang dikembalikan.");
+				return 1;
+			}
 			SendClientMessage(playerid, COLOR_SUCCESS, "SUKSES: Membeli 1x Obeng Lockpick seharga $150.");
 		}
 		case 1: {
-			if (!GivePlayerItem(playerid, ITEM_CROWBAR, 1)) {
-				SendClientMessage(playerid, COLOR_ERROR, "ERROR: Kantung inventaris Anda penuh.");
+			if (!TakePlayerMoneyEx(playerid, cost, "beli linggis pasar gelap")) {
+				SendClientMessage(playerid, COLOR_ERROR, "ERROR: Pembayaran pasar gelap gagal.");
 				return 1;
 			}
-			TakePlayerMoneyEx(playerid, cost, "beli linggis pasar gelap");
+			if (!GivePlayerItem(playerid, ITEM_CROWBAR, 1)) {
+				GivePlayerMoneyEx(playerid, cost, "refund linggis pasar gelap");
+				SendClientMessage(playerid, COLOR_ERROR, "ERROR: Kantung inventaris Anda penuh. Uang dikembalikan.");
+				return 1;
+			}
 			SendClientMessage(playerid, COLOR_SUCCESS, "SUKSES: Membeli 1x Linggis Baja seharga $100.");
 		}
 		case 2: {
-			TakePlayerMoneyEx(playerid, cost, "beli senjata pasar gelap");
+			if (!TakePlayerMoneyEx(playerid, cost, "beli senjata pasar gelap")) {
+				SendClientMessage(playerid, COLOR_ERROR, "ERROR: Pembayaran pasar gelap gagal.");
+				return 1;
+			}
 			AC_GiveWeapon(playerid, WEAPON_COLT45, 50);
 			SendClientMessage(playerid, COLOR_SUCCESS, "SUKSES: Membeli 1x Pistol Rakitan Colt .45 (50 Peluru) seharga $1,200.");
 		}
 		case 3: {
-			if (!GivePlayerItem(playerid, ITEM_CONTRABAND, 1)) {
-				SendClientMessage(playerid, COLOR_ERROR, "ERROR: Kantung inventaris Anda penuh.");
+			if (!TakePlayerMoneyEx(playerid, cost, "beli kontraband pasar gelap")) {
+				SendClientMessage(playerid, COLOR_ERROR, "ERROR: Pembayaran pasar gelap gagal.");
 				return 1;
 			}
-			TakePlayerMoneyEx(playerid, cost, "beli kontraband pasar gelap");
+			if (!GivePlayerItem(playerid, ITEM_CONTRABAND, 1)) {
+				GivePlayerMoneyEx(playerid, cost, "refund kontraband pasar gelap");
+				SendClientMessage(playerid, COLOR_ERROR, "ERROR: Kantung inventaris Anda penuh. Uang dikembalikan.");
+				return 1;
+			}
 			SendClientMessage(playerid, COLOR_SUCCESS, "SUKSES: Membeli 1x Paket Kontraband Mentah seharga $250.");
 		}
 		case 4: {
-			if (!GivePlayerItem(playerid, ITEM_WEEDSEED, 3)) {
-				SendClientMessage(playerid, COLOR_ERROR, "ERROR: Kantung inventaris Anda penuh.");
+			if (!TakePlayerMoneyEx(playerid, cost, "beli benih ganja")) {
+				SendClientMessage(playerid, COLOR_ERROR, "ERROR: Pembayaran pasar gelap gagal.");
 				return 1;
 			}
-			TakePlayerMoneyEx(playerid, cost, "beli benih ganja");
+			if (!GivePlayerItem(playerid, ITEM_WEEDSEED, 3)) {
+				GivePlayerMoneyEx(playerid, cost, "refund benih ganja");
+				SendClientMessage(playerid, COLOR_ERROR, "ERROR: Kantung inventaris Anda penuh. Uang dikembalikan.");
+				return 1;
+			}
 			SendClientMessage(playerid, COLOR_SUCCESS, "SUKSES: Membeli 3x Benih Tanaman Ganja seharga $120.");
 		}
 	}
@@ -492,6 +516,11 @@ stock OnBlackMarketBuyResponse(playerid, listitem)
 stock OnBlackMarketSellResponse(playerid, listitem)
 {
 	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
+	if (!IsPlayerNearPoint(playerid, BLACKMARKET_X, BLACKMARKET_Y, BLACKMARKET_Z, 4.0)) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda terlalu jauh dari lokasi Black Market.");
+		return 0;
+	}
 
 	switch (listitem) {
 		case 0: {

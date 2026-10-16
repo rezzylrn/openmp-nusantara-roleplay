@@ -226,17 +226,8 @@ Dialog:DialogMDCCitizenInput(playerid, response, listitem, inputtext[])
 		return 1;
 	}
 
-	new targetid = strval(inputtext);
-	if (!IsPlayerConnected(targetid) && strlen(inputtext) > 0) {
-		for (new p = 0; p < MAX_PLAYERS; p++) {
-			if (IsPlayerConnected(p) && strfind(gPlayerData[p][pName], inputtext, true) != -1) {
-				targetid = p;
-				break;
-			}
-		}
-	}
-
-	if (!IsPlayerConnected(targetid) || !gPlayerData[targetid][pLoggedIn]) {
+	new targetid = INVALID_PLAYER_ID;
+	if (sscanf(inputtext, "u", targetid) || targetid == INVALID_PLAYER_ID || !IsPlayerConnected(targetid) || !gPlayerData[targetid][pLoggedIn]) {
 		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Data warga tidak ditemukan dalam basis data kota.");
 		return 1;
 	}

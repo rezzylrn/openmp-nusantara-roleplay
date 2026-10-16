@@ -34,9 +34,19 @@ stock MetalDetector_Init()
 	return 1;
 }
 
+stock MetalDetector_ResetPlayer(playerid)
+{
+	if (playerid >= 0 && playerid < MAX_PLAYERS) {
+		gPlayerDetectorActive[playerid] = false;
+		gPlayerDigCooldown[playerid] = 0;
+	}
+	return 1;
+}
+
 stock ProcessMetalDetect(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 
 	if (IsPlayerConnected(playerid) && IsPlayerInAnyVehicle(playerid)) {
 		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda harus berjalan kaki untuk menggunakan detektor logam!");
@@ -95,6 +105,7 @@ stock ProcessMetalDetect(playerid)
 stock ProcessDigTreasure(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 
 	if (IsPlayerConnected(playerid) && IsPlayerInAnyVehicle(playerid)) {
 		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda harus berjalan kaki untuk menggali tanah!");
