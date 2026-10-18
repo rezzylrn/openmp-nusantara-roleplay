@@ -70,6 +70,7 @@ CMD:lockhouse(playerid, params[])
 	}
 	gHouseData[h][hLocked] = !gHouseData[h][hLocked];
 	House_RefreshDisplay(h);
+	DB_SaveHouse(h);
 	if (gHouseData[h][hLocked]) {
 		SendSucc(playerid, "Pintu rumah telah dikunci.");
 	} else {

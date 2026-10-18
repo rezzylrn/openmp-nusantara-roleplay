@@ -41,6 +41,10 @@ stock RemovePlayerFaction(playerid)
 stock ProcessFactionDuty(playerid, bool:duty)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendErr(playerid, "Anda tidak dapat mengubah status tugas saat pingsan atau terborgol.");
+		return 0;
+	}
 	if (gPlayerData[playerid][pFaction] == FACTION_NONE) {
 		SendErr(playerid, "Anda tidak terdaftar dalam faksi apapun.");
 		return 0;
@@ -100,6 +104,7 @@ stock ProcessCuff(playerid, targetid)
 		SendErr(playerid, "Perintah ini khusus petugas Kepolisian (SAPD) yang sedang bertugas.");
 		return 0;
 	}
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 	if (targetid == -1 || !IsPlayerConnected(targetid) || !gPlayerData[targetid][pLoggedIn]) {
 		SendErr(playerid, "Target tidak valid atau offline.");
 		return 0;
@@ -137,6 +142,7 @@ stock ProcessUncuff(playerid, targetid)
 		SendErr(playerid, "Perintah ini khusus petugas Kepolisian (SAPD) yang sedang bertugas.");
 		return 0;
 	}
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 	if (targetid == -1 || !IsPlayerConnected(targetid) || !gPlayerData[targetid][pLoggedIn]) {
 		SendErr(playerid, "Target tidak valid atau offline.");
 		return 0;
@@ -166,6 +172,7 @@ stock ProcessFrisk(playerid, targetid)
 		SendErr(playerid, "Perintah ini khusus petugas Kepolisian (SAPD) yang sedang bertugas.");
 		return 0;
 	}
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 	if (targetid == -1 || !IsPlayerConnected(targetid) || !gPlayerData[targetid][pLoggedIn]) {
 		SendErr(playerid, "Target tidak valid atau offline.");
 		return 0;
@@ -211,6 +218,7 @@ stock ProcessTicket(playerid, targetid, amount, const reason[])
 		SendErr(playerid, "Perintah ini khusus petugas Kepolisian (SAPD) yang sedang bertugas.");
 		return 0;
 	}
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 	if (targetid == -1 || !IsPlayerConnected(targetid) || !gPlayerData[targetid][pLoggedIn]) {
 		SendErr(playerid, "Target tidak valid atau offline.");
 		return 0;
@@ -243,6 +251,7 @@ stock ProcessArrest(playerid, targetid, timeMinutes, fineAmount)
 		SendErr(playerid, "Perintah ini khusus petugas Kepolisian (SAPD) yang sedang bertugas.");
 		return 0;
 	}
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 	if (targetid == -1 || !IsPlayerConnected(targetid) || !gPlayerData[targetid][pLoggedIn]) {
 		SendErr(playerid, "Target tidak valid.");
 		return 0;
@@ -309,6 +318,7 @@ stock ProcessHeal(playerid, targetid)
 		SendErr(playerid, "Perintah ini khusus petugas Medis (SAMD) yang sedang bertugas.");
 		return 0;
 	}
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 	if (targetid == -1 || !IsPlayerConnected(targetid) || !gPlayerData[targetid][pLoggedIn]) {
 		SendErr(playerid, "Pasien tidak valid.");
 		return 0;
@@ -335,6 +345,7 @@ stock ProcessRevive(playerid, targetid)
 		SendErr(playerid, "Perintah ini khusus petugas Medis (SAMD) yang sedang bertugas.");
 		return 0;
 	}
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 	if (targetid == -1 || !IsPlayerConnected(targetid) || !gPlayerData[targetid][pLoggedIn]) {
 		SendErr(playerid, "Target tidak valid.");
 		return 0;
@@ -369,6 +380,7 @@ stock ProcessGovBroadcast(playerid, const text[])
 		SendErr(playerid, "Perintah ini khusus pejabat Pemerintah (SAGOV) bertugas.");
 		return 0;
 	}
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 	if (text[0] == '\0') {
 		SendSyntax(playerid, "/gov [pengumuman resmi pemerintah]");
 		return 0;
@@ -386,6 +398,7 @@ stock ProcessSetTax(playerid, taxRate)
 		SendErr(playerid, "Perintah ini khusus pejabat Pemerintah (SAGOV) bertugas.");
 		return 0;
 	}
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 	if (taxRate < 0 || taxRate > 25) {
 		SendErr(playerid, "Besaran pajak daerah harus antara 0% - 25%.");
 		return 0;

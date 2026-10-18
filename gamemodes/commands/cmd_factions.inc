@@ -107,6 +107,9 @@ CMD:dispatches(playerid, params[])
 
 CMD:treat(playerid, params[])
 {
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return SendErr(playerid, "Anda tidak dapat memberikan perawatan saat pingsan atau terborgol.");
+
 	new targetid;
 	if (sscanf(params, "u", targetid)) return SendSyntax(playerid, "/treat [ID / Nama Pemain]");
 	if (!IsPlayerConnected(targetid) || !gPlayerData[targetid][pLoggedIn]) return SendErr(playerid, "Pemain tidak ditemukan.");
@@ -124,7 +127,10 @@ CMD:treat(playerid, params[])
 	new Float:dist = floatsqroot((px-tx)*(px-tx) + (py-ty)*(py-ty) + (pz-tz)*(pz-tz));
 	if (dist > 3.5) return SendErr(playerid, "Anda terlalu jauh dari target (maks. 3.5 meter).");
 
-	TakePlayerItem(playerid, ITEM_BANDAGE, 1);
+	if (!TakePlayerItem(playerid, ITEM_BANDAGE, 1)) {
+		SendErr(playerid, "Gagal menggunakan perban dari inventaris.");
+		return 1;
+	}
 	ApplyAnimation(playerid, "BOMBER", "BOM_Plant", 4.1, false, false, false, false, 2000);
 
 	if (gPlayerData[targetid][pInjured]) {
@@ -154,6 +160,9 @@ CMD:treat(playerid, params[])
 
 CMD:revive(playerid, params[])
 {
+	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return SendErr(playerid, "Anda tidak dapat melakukan resusitasi saat pingsan atau terborgol.");
+
 	if (!IsPlayerAdminEx(playerid, 1) && (!gPlayerData[playerid][pDuty] || gPlayerData[playerid][pFaction] != FACTION_MEDIC)) {
 		SendErr(playerid, "Perintah ini khusus untuk petugas medis SAMD atau Admin.");
 		return 1;
@@ -180,7 +189,10 @@ CMD:revive(playerid, params[])
 			SendErr(playerid, "Anda membutuhkan Kotak P3K (Medkit).");
 			return 1;
 		}
-		TakePlayerItem(playerid, ITEM_MEDKIT, 1);
+		if (!TakePlayerItem(playerid, ITEM_MEDKIT, 1)) {
+			SendErr(playerid, "Gagal menggunakan medkit dari inventaris.");
+			return 1;
+		}
 	}
 
 	ApplyAnimation(playerid, "MEDIC", "CPR", 4.1, false, false, false, false, 3000);

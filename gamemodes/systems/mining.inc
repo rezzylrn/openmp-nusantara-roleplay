@@ -57,6 +57,8 @@ stock Mining_Init()
 stock ProcessBuyPickaxe(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
+
 	if (!IsPlayerNearPoint(playerid, MINING_SHOP_X, MINING_SHOP_Y, MINING_SHOP_Z, 4.0)) {
 		SendErr(playerid, "Anda harus berada di Toko Alat Tambang Hunter Quarry.");
 		return 0;
@@ -67,8 +69,15 @@ stock ProcessBuyPickaxe(playerid)
 		return 0;
 	}
 
-	TakePlayerMoneyEx(playerid, 45, "beli beliung tambang");
-	GivePlayerItem(playerid, ITEM_PICKAXE, 1);
+	if (!TakePlayerMoneyEx(playerid, 45, "beli beliung tambang")) {
+		SendErr(playerid, "Pembayaran beliung tambang gagal.");
+		return 0;
+	}
+	if (!GivePlayerItem(playerid, ITEM_PICKAXE, 1)) {
+		GivePlayerMoneyEx(playerid, 45, "refund beliung tambang");
+		SendErr(playerid, "Kantung inventaris Anda penuh. Uang telah dikembalikan.");
+		return 0;
+	}
 	SendSucc(playerid, "Anda berhasil membeli 1x Beliung Tambang (Pickaxe) seharga $45.");
 	PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
 	return 1;
@@ -113,6 +122,8 @@ Dialog:DialogMiningStrike(playerid, response, listitem, inputtext[])
 		SendInfo(playerid, "Anda menghentikan proses penambangan batu.");
 		return 1;
 	}
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 1;
+	if (gPlayerData[playerid][pJob] != JOB_MINER) return 1;
 
 	if (listitem == gMiningTargetCrack[playerid]) {
 		// Pukulan presisi sempurna
@@ -168,6 +179,7 @@ public OnPlayerFinishSmelting(playerid, extra)
 {
 	#pragma unused extra
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 
 	if (IsPlayerConnected(playerid)) {
 		ClearAnimations(playerid);
@@ -182,9 +194,18 @@ public OnPlayerFinishSmelting(playerid, extra)
 		return 0;
 	}
 
-	TakePlayerItem(playerid, ITEM_IRON_ORE, 2);
-	TakePlayerItem(playerid, ITEM_COAL, 1);
-	GivePlayerItem(playerid, ITEM_IRON_BAR, 1);
+	if (!TakePlayerItem(playerid, ITEM_IRON_ORE, 2)) return 0;
+	if (!TakePlayerItem(playerid, ITEM_COAL, 1)) {
+		GivePlayerItem(playerid, ITEM_IRON_ORE, 2);
+		return 0;
+	}
+
+	if (!GivePlayerItem(playerid, ITEM_IRON_BAR, 1)) {
+		GivePlayerItem(playerid, ITEM_IRON_ORE, 2);
+		GivePlayerItem(playerid, ITEM_COAL, 1);
+		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Kantung inventaris Anda penuh.");
+		return 0;
+	}
 	GivePlayerExp(playerid, 15, "melebur logam");
 
 	SendClientMessage(playerid, COLOR_SUCCESS, "[SUKSES] Proses peleburan selesai! 1x Batangan Besi Murni berhasil dicetak ke inventaris.");
@@ -243,16 +264,24 @@ stock ProcessSellOre(playerid)
 
 	new totalCash = 0;
 	if (ironCount > 0) {
-		TakePlayerItem(playerid, ITEM_IRON_ORE, ironCount);
-		totalCash += (ironCount * 45);
+		if (TakePlayerItem(playerid, ITEM_IRON_ORE, ironCount)) {
+			totalCash += (ironCount * 45);
+		}
 	}
 	if (coalCount > 0) {
-		TakePlayerItem(playerid, ITEM_COAL, coalCount);
-		totalCash += (coalCount * 30);
+		if (TakePlayerItem(playerid, ITEM_COAL, coalCount)) {
+			totalCash += (coalCount * 30);
+		}
 	}
 	if (barCount > 0) {
-		TakePlayerItem(playerid, ITEM_IRON_BAR, barCount);
-		totalCash += (barCount * 140);
+		if (TakePlayerItem(playerid, ITEM_IRON_BAR, barCount)) {
+			totalCash += (barCount * 140);
+		}
+	}
+
+	if (totalCash <= 0) {
+		SendErr(playerid, "Gagal menjual hasil tambang.");
+		return 0;
 	}
 
 	GivePlayerMoneyEx(playerid, totalCash, "penjualan hasil tambang");

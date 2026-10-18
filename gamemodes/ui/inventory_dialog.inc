@@ -153,7 +153,7 @@ stock ProcessUseInventoryItem(playerid, slot)
 			ApplyAnimation(playerid, "BOMBER", "BOM_Plant", 4.1, false, false, false, false, 0, 1);
 		}
 		case ITEM_BURGER: {
-			TakePlayerItem(playerid, ITEM_BURGER, 1);
+			if (!TakePlayerItem(playerid, ITEM_BURGER, 1)) return 0;
 			gPlayerData[playerid][pHunger] += 50.0;
 			if (gPlayerData[playerid][pHunger] > 100.0) gPlayerData[playerid][pHunger] = 100.0;
 			new Float:hp;
@@ -162,7 +162,7 @@ stock ProcessUseInventoryItem(playerid, slot)
 			SendClientMessage(playerid, COLOR_SUCCESS, "[SUKSES] Anda telah menyantap Burger Shot (+50 Lapar, +15 HP).");
 		}
 		case ITEM_PIZZA: {
-			TakePlayerItem(playerid, ITEM_PIZZA, 1);
+			if (!TakePlayerItem(playerid, ITEM_PIZZA, 1)) return 0;
 			gPlayerData[playerid][pHunger] += 55.0;
 			if (gPlayerData[playerid][pHunger] > 100.0) gPlayerData[playerid][pHunger] = 100.0;
 			new Float:hp;
@@ -171,7 +171,7 @@ stock ProcessUseInventoryItem(playerid, slot)
 			SendClientMessage(playerid, COLOR_SUCCESS, "[SUKSES] Anda telah menyantap Pizza Stack (+55 Lapar, +15 HP).");
 		}
 		case ITEM_BEER: {
-			TakePlayerItem(playerid, ITEM_BEER, 1);
+			if (!TakePlayerItem(playerid, ITEM_BEER, 1)) return 0;
 			gPlayerData[playerid][pThirst] += 20.0;
 			if (gPlayerData[playerid][pThirst] > 100.0) gPlayerData[playerid][pThirst] = 100.0;
 			gPlayerData[playerid][pDrunkLevel] += 1500;
@@ -179,7 +179,7 @@ stock ProcessUseInventoryItem(playerid, slot)
 			SendClientMessage(playerid, COLOR_SUCCESS, "[SUKSES] Anda meminum sekaleng Bir dingin.");
 		}
 		case ITEM_VODKA: {
-			TakePlayerItem(playerid, ITEM_VODKA, 1);
+			if (!TakePlayerItem(playerid, ITEM_VODKA, 1)) return 0;
 			gPlayerData[playerid][pThirst] += 30.0;
 			if (gPlayerData[playerid][pThirst] > 100.0) gPlayerData[playerid][pThirst] = 100.0;
 			gPlayerData[playerid][pDrunkLevel] += 3000;
@@ -190,7 +190,7 @@ stock ProcessUseInventoryItem(playerid, slot)
 			ProcessEatCookedFish(playerid);
 		}
 		case ITEM_WEED: {
-			TakePlayerItem(playerid, ITEM_WEED, 1);
+			if (!TakePlayerItem(playerid, ITEM_WEED, 1)) return 0;
 			new Float:arm;
 			GetPlayerArmour(playerid, arm);
 			arm += 30.0;
@@ -334,6 +334,7 @@ Dialog:DialogInvGiveAmount(playerid, response, listitem, inputtext[])
 		ShowPlayerInventoryDialog(playerid);
 		return 1;
 	}
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 1;
 
 	new targetid = gGiveTarget[playerid];
 	if (!IsPlayerConnected(targetid) || !IsPlayerNear(playerid, targetid, 4.0)) {
@@ -353,12 +354,17 @@ Dialog:DialogInvGiveAmount(playerid, response, listitem, inputtext[])
 		return 1;
 	}
 
-	// [FIX] Pastikan pengambilan sukses sebelum memberi ke target (atomic).
+	// [FIX] Pastikan pengambilan sukses sebelum memberi ke target (atomic),
+	// dan jika inventaris target penuh, kembalikan barang ke pengirim.
 	if (!TakePlayerItem(playerid, itemType, amount)) {
 		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Gagal memberikan barang: stok tidak mencukupi.");
 		return 1;
 	}
-	GivePlayerItem(targetid, itemType, amount);
+	if (!GivePlayerItem(targetid, itemType, amount)) {
+		GivePlayerItem(playerid, itemType, amount);
+		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Gagal memberikan barang: kantung inventaris warga tujuan penuh.");
+		return 1;
+	}
 
 	new itemName[48];
 	GetItemName(itemType, itemName, sizeof(itemName));
@@ -379,6 +385,7 @@ Dialog:DialogInvDropAmount(playerid, response, listitem, inputtext[])
 		ShowPlayerInventoryDialog(playerid);
 		return 1;
 	}
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 1;
 
 	new amount = strval(inputtext);
 	new slot = gSelectedInvSlot[playerid];

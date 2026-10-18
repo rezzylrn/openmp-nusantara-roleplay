@@ -205,9 +205,25 @@ stock OnTrunkDepositCashResponse(playerid, listitem)
 
 stock OnTrunkSaveCashInput(playerid, const inputtext[])
 {
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
+
 	new slot = gSelectedTrunkVeh[playerid];
 	if (slot < 0 || slot >= MAX_OWNED_VEHICLES || !gVehicleData[slot][vUsed]) return 0;
 	if (!Vehicle_HasAccess(playerid, slot)) { SendErr(playerid, "Anda tidak memiliki akses ke bagasi kendaraan ini."); return 0; }
+
+	new vehHandle = gVehicleData[slot][vVehicleHandle];
+	if (vehHandle <= 0 || !IsValidVehicle(vehHandle)) return 0;
+	new Float:vx, Float:vy, Float:vz;
+	GetVehiclePos(vehHandle, vx, vy, vz);
+	if (GetPlayerDistanceFromPoint(playerid, vx, vy, vz) > 6.0) {
+		SendErr(playerid, "Anda terlalu jauh dari kendaraan.");
+		return 0;
+	}
+	if (!gVehicleData[slot][vTrunkOpen]) {
+		SendErr(playerid, "Pintu bagasi kendaraan tertutup.");
+		return 0;
+	}
 
 	new amount = strval(inputtext);
 	if (amount < 1 || amount > 5000000) {
@@ -221,7 +237,11 @@ stock OnTrunkSaveCashInput(playerid, const inputtext[])
 		return 0;
 	}
 
-	TakePlayerMoneyEx(playerid, amount, "simpan bagasi");
+	if (!TakePlayerMoneyEx(playerid, amount, "simpan bagasi")) {
+		SendErr(playerid, "Gagal memproses penyimpanan uang ke bagasi.");
+		ShowVehicleTrunkDialog(playerid, slot);
+		return 0;
+	}
 	gVehicleData[slot][vTrunk] += amount;
 	DB_SaveVehicle(slot);
 
@@ -233,9 +253,25 @@ stock OnTrunkSaveCashInput(playerid, const inputtext[])
 
 stock OnTrunkTakeCashInput(playerid, const inputtext[])
 {
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
+
 	new slot = gSelectedTrunkVeh[playerid];
 	if (slot < 0 || slot >= MAX_OWNED_VEHICLES || !gVehicleData[slot][vUsed]) return 0;
 	if (!Vehicle_HasAccess(playerid, slot)) { SendErr(playerid, "Anda tidak memiliki akses ke bagasi kendaraan ini."); return 0; }
+
+	new vehHandle = gVehicleData[slot][vVehicleHandle];
+	if (vehHandle <= 0 || !IsValidVehicle(vehHandle)) return 0;
+	new Float:vx, Float:vy, Float:vz;
+	GetVehiclePos(vehHandle, vx, vy, vz);
+	if (GetPlayerDistanceFromPoint(playerid, vx, vy, vz) > 6.0) {
+		SendErr(playerid, "Anda terlalu jauh dari kendaraan.");
+		return 0;
+	}
+	if (!gVehicleData[slot][vTrunkOpen]) {
+		SendErr(playerid, "Pintu bagasi kendaraan tertutup.");
+		return 0;
+	}
 
 	new amount = strval(inputtext);
 	if (amount < 1 || amount > 5000000) {
@@ -261,8 +297,25 @@ stock OnTrunkTakeCashInput(playerid, const inputtext[])
 
 stock OnTrunkDepositItemResponse(playerid, listitem)
 {
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
+
 	new slot = gSelectedTrunkVeh[playerid];
 	if (slot < 0 || slot >= MAX_OWNED_VEHICLES || !gVehicleData[slot][vUsed]) return 0;
+	if (!Vehicle_HasAccess(playerid, slot)) { SendErr(playerid, "Anda tidak memiliki akses ke bagasi kendaraan ini."); return 0; }
+
+	new vehHandle = gVehicleData[slot][vVehicleHandle];
+	if (vehHandle <= 0 || !IsValidVehicle(vehHandle)) return 0;
+	new Float:vx, Float:vy, Float:vz;
+	GetVehiclePos(vehHandle, vx, vy, vz);
+	if (GetPlayerDistanceFromPoint(playerid, vx, vy, vz) > 6.0) {
+		SendErr(playerid, "Anda terlalu jauh dari kendaraan.");
+		return 0;
+	}
+	if (!gVehicleData[slot][vTrunkOpen]) {
+		SendErr(playerid, "Pintu bagasi kendaraan tertutup.");
+		return 0;
+	}
 	if (!Vehicle_HasAccess(playerid, slot)) { SendErr(playerid, "Anda tidak memiliki akses ke bagasi kendaraan ini."); return 0; }
 
 	if (listitem < 0 || listitem >= MAX_INVENTORY_SLOTS) return 0;
@@ -324,9 +377,25 @@ stock OnTrunkDepositItemResponse(playerid, listitem)
 
 stock OnTrunkWithdrawItemResponse(playerid, const inputtext[])
 {
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
+
 	new slot = gSelectedTrunkVeh[playerid];
 	if (slot < 0 || slot >= MAX_OWNED_VEHICLES || !gVehicleData[slot][vUsed]) return 0;
 	if (!Vehicle_HasAccess(playerid, slot)) { SendErr(playerid, "Anda tidak memiliki akses ke bagasi kendaraan ini."); return 0; }
+
+	new vehHandle = gVehicleData[slot][vVehicleHandle];
+	if (vehHandle <= 0 || !IsValidVehicle(vehHandle)) return 0;
+	new Float:vx, Float:vy, Float:vz;
+	GetVehiclePos(vehHandle, vx, vy, vz);
+	if (GetPlayerDistanceFromPoint(playerid, vx, vy, vz) > 6.0) {
+		SendErr(playerid, "Anda terlalu jauh dari kendaraan.");
+		return 0;
+	}
+	if (!gVehicleData[slot][vTrunkOpen]) {
+		SendErr(playerid, "Pintu bagasi kendaraan tertutup.");
+		return 0;
+	}
 
 	new trunkSlot = gSelectedTrunkSlot[playerid];
 	if (trunkSlot < 0 || trunkSlot >= MAX_TRUNK_SLOTS) return 0;
@@ -344,13 +413,17 @@ stock OnTrunkWithdrawItemResponse(playerid, const inputtext[])
 	if (takeAmt <= 0) takeAmt = 1;
 	if (takeAmt > iAmt) takeAmt = iAmt;
 
+	if (!GivePlayerItem(playerid, iType, takeAmt)) {
+		SendErr(playerid, "Kantung inventaris Anda penuh.");
+		ShowVehicleTrunkDialog(playerid, slot);
+		return 1;
+	}
+
 	gVehicleData[slot][vTrunkItemAmount][trunkSlot] -= takeAmt;
 	if (gVehicleData[slot][vTrunkItemAmount][trunkSlot] <= 0) {
 		gVehicleData[slot][vTrunkItemType][trunkSlot] = ITEM_NONE;
 		gVehicleData[slot][vTrunkItemAmount][trunkSlot] = 0;
 	}
-
-	GivePlayerItem(playerid, iType, takeAmt);
 	DB_SaveVehicle(slot);
 
 	new itemName[32];
@@ -363,9 +436,25 @@ stock OnTrunkWithdrawItemResponse(playerid, const inputtext[])
 
 stock OnTrunkWeaponResponse(playerid, listitem)
 {
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
+
 	new slot = gSelectedTrunkVeh[playerid];
 	if (slot < 0 || slot >= MAX_OWNED_VEHICLES || !gVehicleData[slot][vUsed]) return 0;
 	if (!Vehicle_HasAccess(playerid, slot)) { SendErr(playerid, "Anda tidak memiliki akses ke bagasi kendaraan ini."); return 0; }
+
+	new vehHandle = gVehicleData[slot][vVehicleHandle];
+	if (vehHandle <= 0 || !IsValidVehicle(vehHandle)) return 0;
+	new Float:vx, Float:vy, Float:vz;
+	GetVehiclePos(vehHandle, vx, vy, vz);
+	if (GetPlayerDistanceFromPoint(playerid, vx, vy, vz) > 6.0) {
+		SendErr(playerid, "Anda terlalu jauh dari kendaraan.");
+		return 0;
+	}
+	if (!gVehicleData[slot][vTrunkOpen]) {
+		SendErr(playerid, "Pintu bagasi kendaraan tertutup.");
+		return 0;
+	}
 
 	if (listitem == 0) {
 		// Ambil Senjata dari Bagasi

@@ -92,6 +92,7 @@ stock OnDMVDialogResponse(playerid, listitem)
 stock ProcessCheckDriverLicense(playerid, targetid)
 {
 	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 
 	if (gPlayerData[playerid][pFaction] != FACTION_POLICE || !gPlayerData[playerid][pDuty]) {
 		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Pemeriksaan surat kelayakan berkendara khusus petugas Kepolisian SAPD!");

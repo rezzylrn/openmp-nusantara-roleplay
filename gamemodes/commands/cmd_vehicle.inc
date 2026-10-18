@@ -294,6 +294,7 @@ CMD:unrentveh(playerid, params[])
 	if (!gPlayerData[playerid][pLoggedIn]) return SendErr(playerid, "Anda belum login.");
 	if (gPlayerRentalVeh[playerid] != INVALID_VEHICLE_ID) {
 		Vehicle_SafeDestroy(gPlayerRentalVeh[playerid]);
+		gPlayerRentalVeh[playerid] = INVALID_VEHICLE_ID;
 		if (gPlayerData[playerid][pLanguage] == LANG_EN) SendClientMessage(playerid, COLOR_SUCCESS, "SUKSES: Rented vehicle returned successfully.");
 		else SendClientMessage(playerid, COLOR_SUCCESS, "SUKSES: Kendaraan sewa berhasil dikembalikan.");
 	} else {

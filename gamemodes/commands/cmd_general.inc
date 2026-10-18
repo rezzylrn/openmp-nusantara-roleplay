@@ -234,8 +234,10 @@ CMD:give(playerid, params[])
 		if (gPlayerData[playerid][pMoney] < amount) {
 			return SendErr(playerid, "Uang tunai Anda tidak mencukupi.");
 		}
-		TakePlayerMoneyEx(playerid, amount);
-		GivePlayerMoneyEx(targetid, amount);
+		if (!TakePlayerMoneyEx(playerid, amount, "memberikan uang")) {
+			return SendErr(playerid, "Gagal memotong uang tunai.");
+		}
+		GivePlayerMoneyEx(targetid, amount, "menerima uang");
 
 		SendRP(playerid, COLOR_SUCCESS, "Anda memberikan uang $%d kepada %s.", amount, gPlayerData[targetid][pName]);
 		SendRP(targetid, COLOR_SUCCESS, "%s memberikan uang $%d kepada Anda.", gPlayerData[playerid][pName], amount);
@@ -259,7 +261,10 @@ CMD:give(playerid, params[])
 	if (!TakePlayerItem(playerid, itemType, amount)) {
 		return SendErr(playerid, "Gagal memberikan barang: stok tidak mencukupi.");
 	}
-	GivePlayerItem(targetid, itemType, amount);
+	if (!GivePlayerItem(targetid, itemType, amount)) {
+		GivePlayerItem(playerid, itemType, amount);
+		return SendErr(playerid, "Kantung inventaris pemain tujuan penuh.");
+	}
 
 	new itemName[32];
 	GetItemName(itemType, itemName, sizeof(itemName));

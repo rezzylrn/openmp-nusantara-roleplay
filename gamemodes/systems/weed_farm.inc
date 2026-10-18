@@ -115,6 +115,11 @@ stock WeedFarm_CreateVisuals(slot)
 stock ProcessPlantWeed(playerid)
 {
 	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
+	if (IsPlayerInAnyVehicle(playerid)) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda harus turun dari kendaraan untuk menanam ganja.");
+		return 0;
+	}
 
 	if (GetPlayerItemCount(playerid, ITEM_WEEDSEED) <= 0) {
 		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda tidak memiliki Benih Ganja di inventaris. Beli di Black Market.");
@@ -159,8 +164,11 @@ stock ProcessPlantWeed(playerid)
 		return 0;
 	}
 
-	// Gunakan 1 benih
-	TakePlayerItem(playerid, ITEM_WEEDSEED, 1);
+	// Gunakan 1 benih secara atomic
+	if (!TakePlayerItem(playerid, ITEM_WEEDSEED, 1)) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Gagal menggunakan benih ganja dari inventaris.");
+		return 0;
+	}
 
 	gWeedPlants[slot][wpUsed] = true;
 	gWeedPlants[slot][wpOwnerID] = gPlayerData[playerid][pID];
@@ -205,6 +213,7 @@ public OnWeedPlantCreated(slot)
 stock ProcessHarvestWeed(playerid)
 {
 	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 
 	new plantSlot = -1;
 	for (new i = 0; i < MAX_WEED_PLANTS; i++) {
@@ -245,6 +254,7 @@ stock ProcessHarvestWeed(playerid)
 stock ProcessBurnWeed(playerid)
 {
 	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 
 	if (gPlayerData[playerid][pFaction] != FACTION_POLICE || !gPlayerData[playerid][pDuty]) {
 		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Perintah ini khusus untuk petugas kepolisian SAPD yang bertugas!");

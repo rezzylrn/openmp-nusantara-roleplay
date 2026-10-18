@@ -192,8 +192,15 @@ stock ProcessGiveItem(playerid, targetid, itemtype, amount)
 		return 0;
 	}
 
-	TakePlayerItem(playerid, itemtype, amount);
-	GivePlayerItem(targetid, itemtype, amount);
+	if (!TakePlayerItem(playerid, itemtype, amount)) {
+		SendErr(playerid, "Gagal memberikan barang: stok tidak mencukupi.");
+		return 0;
+	}
+	if (!GivePlayerItem(targetid, itemtype, amount)) {
+		GivePlayerItem(playerid, itemtype, amount);
+		SendErr(playerid, "Kantung inventaris pemain tujuan penuh.");
+		return 0;
+	}
 
 	new itemName[32];
 	GetItemName(itemtype, itemName, sizeof(itemName));

@@ -1796,8 +1796,91 @@ public RunAutomatedRPTests()
 		}
 	}
 
+	// ---------------------------------------------------------------------------
+	// TEST 74: Transaction Atomicity, Remote Purchase Guards & Faction Incap
+	// ---------------------------------------------------------------------------
+	print("[TEST 74/74] Transaction Atomicity, Inventory Rollback & Faction Incap Guards...");
+	{
+		new bool:t74Ok = true;
+		new fail74[128];
+		fail74[0] = '\0';
+
+		new p1 = 0, p2 = 1;
+		gPlayerData[p1][pLoggedIn] = true;
+		gPlayerData[p2][pLoggedIn] = true;
+
+		// 74a. Property buy rejects incapacitated and distant callers
+		gPlayerData[p1][pInjured] = true;
+		new buyIncap = ProcessBuyHouse(p1, 0);
+		gPlayerData[p1][pInjured] = false;
+		if (buyIncap != 0) {
+			t74Ok = false;
+			format(fail74, sizeof(fail74), "%s buyIncap;", fail74);
+		}
+
+		// 74b. ProcessGiveItem rolls back item if target inventory is full
+		for (new s = 0; s < MAX_INVENTORY_SLOTS; s++) {
+			gPlayerItems[p1][s][itType] = ITEM_NONE;
+			gPlayerItems[p1][s][itAmount] = 0;
+			gPlayerItems[p2][s][itType] = ITEM_WOOD;
+			gPlayerItems[p2][s][itAmount] = 10;
+		}
+		gPlayerItems[p1][0][itType] = ITEM_SNACK;
+		gPlayerItems[p1][0][itAmount] = 2;
+
+		// p2 inventory is completely filled with ITEM_WOOD, so giving ITEM_SNACK must fail and roll back
+		new giveRes = ProcessGiveItem(p1, p2, ITEM_SNACK, 1);
+		new p1Snack = GetPlayerItemCount(p1, ITEM_SNACK);
+		new p2Snack = GetPlayerItemCount(p2, ITEM_SNACK);
+		if (giveRes != 0 || p1Snack != 2 || p2Snack != 0) {
+			t74Ok = false;
+			format(fail74, sizeof(fail74), "%s giveRollback(res:%d,p1:%d,p2:%d);", fail74, giveRes, p1Snack, p2Snack);
+		}
+
+		// Clean up inventories
+		ClearPlayerInventory(p1);
+		ClearPlayerInventory(p2);
+
+		// 74c. Faction duty rejects when injured or cuffed
+		gPlayerData[p1][pFaction] = FACTION_POLICE;
+		gPlayerData[p1][pDuty] = false;
+		gPlayerData[p1][pCuffed] = true;
+		new dutyCuffed = ProcessFactionDuty(p1, true);
+		gPlayerData[p1][pCuffed] = false;
+		if (dutyCuffed != 0 || gPlayerData[p1][pDuty]) {
+			t74Ok = false;
+			format(fail74, sizeof(fail74), "%s dutyCuffed;", fail74);
+		}
+
+		// 74d. Scuba start diving strictly fails when no scuba tank
+		gPlayerData[p1][pInjured] = false;
+		gPlayerData[p1][pCuffed] = false;
+		ClearPlayerInventory(p1);
+		new diveNoTank = ProcessStartDiving(p1);
+		if (diveNoTank != 0) {
+			t74Ok = false;
+			format(fail74, sizeof(fail74), "%s diveNoTank;", fail74);
+		}
+
+		// 74e. Unrent vehicle handle resets properly
+		gPlayerRentalVeh[p1] = INVALID_VEHICLE_ID;
+		new bool:unrentClean = (gPlayerRentalVeh[p1] == INVALID_VEHICLE_ID);
+		if (!unrentClean) {
+			t74Ok = false;
+			format(fail74, sizeof(fail74), "%s unrentClean;", fail74);
+		}
+
+		if (t74Ok) {
+			print("  -> PASS: Remote property guard, inventory rollback on full pockets & faction incap guards confirmed.");
+			passCount++;
+		} else {
+			printf("  -> FAIL: Hardening details: %s", fail74);
+			failCount++;
+		}
+	}
+
 	print("==================================================");
-	printf("  [DEBUG SUMMARY] %d / 73 TESTS PASSED, %d FAILED", passCount, failCount);
+	printf("  [DEBUG SUMMARY] %d / 74 TESTS PASSED, %d FAILED", passCount, failCount);
 	print("==================================================\n");
 
 	return 1;

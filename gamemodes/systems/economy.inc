@@ -223,6 +223,9 @@ stock OnBankDialogResponse(playerid, listitem)
 
 stock OnBankDepositResponse(playerid, const inputtext[])
 {
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
+
 	// Guard anti dialog-spoofing: pemain HARUS benar-benar berada di depan bank
 	if (!IsPlayerNearPoint(playerid, BANK_X, BANK_Y, BANK_Z, RANGE_BANK)) {
 		SendErr(playerid, "Anda harus berada di depan Bank Nusantara untuk bertransaksi.");
@@ -231,7 +234,11 @@ stock OnBankDepositResponse(playerid, const inputtext[])
 	new amount = strval(inputtext);
 	if (amount < 1 || amount > 50000000) { SendErr(playerid, "Jumlah setoran tidak valid ($1 - $50.000.000)."); return 0; }
 	if (gPlayerData[playerid][pMoney] < amount) { SendErr(playerid, "Uang tunai tidak mencukupi."); return 0; }
-	TakePlayerMoneyEx(playerid, amount, "setoran bank");
+
+	if (!TakePlayerMoneyEx(playerid, amount, "setoran bank")) {
+		SendErr(playerid, "Gagal memproses setoran uang tunai.");
+		return 0;
+	}
 	GivePlayerBankEx(playerid, amount, "setoran bank");
 	new depmsg[64]; format(depmsg, sizeof(depmsg), "Menyimpan $%d ke bank.", amount);
 	ShowPlayerAlert(playerid, depmsg);
@@ -241,6 +248,9 @@ stock OnBankDepositResponse(playerid, const inputtext[])
 
 stock OnBankWithdrawResponse(playerid, const inputtext[])
 {
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
+
 	if (!IsPlayerNearPoint(playerid, BANK_X, BANK_Y, BANK_Z, RANGE_BANK)) {
 		SendErr(playerid, "Anda harus berada di depan Bank Nusantara untuk bertransaksi.");
 		return 0;
@@ -248,7 +258,11 @@ stock OnBankWithdrawResponse(playerid, const inputtext[])
 	new amount = strval(inputtext);
 	if (amount < 1 || amount > 50000000) { SendErr(playerid, "Jumlah penarikan tidak valid ($1 - $50.000.000)."); return 0; }
 	if (gPlayerData[playerid][pBank] < amount) { SendErr(playerid, "Saldo bank tidak mencukupi."); return 0; }
-	TakePlayerBankEx(playerid, amount, "penarikan bank");
+
+	if (!TakePlayerBankEx(playerid, amount, "penarikan bank")) {
+		SendErr(playerid, "Gagal memproses penarikan bank.");
+		return 0;
+	}
 	GivePlayerMoneyEx(playerid, amount, "penarikan bank");
 	new wmsg[64]; format(wmsg, sizeof(wmsg), "Menarik $%d dari bank.", amount);
 	ShowPlayerAlert(playerid, wmsg);
@@ -258,6 +272,9 @@ stock OnBankWithdrawResponse(playerid, const inputtext[])
 
 stock OnBankTransferResponse(playerid, const inputtext[])
 {
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
+
 	if (!IsPlayerNearPoint(playerid, BANK_X, BANK_Y, BANK_Z, RANGE_BANK)) {
 		SendErr(playerid, "Anda harus berada di depan Bank Nusantara untuk bertransaksi.");
 		return 0;
@@ -290,7 +307,10 @@ stock OnBankTransferResponse(playerid, const inputtext[])
 		return 0;
 	}
 
-	TakePlayerBankEx(playerid, amount + TRANSFER_FEE, "transfer bank");
+	if (!TakePlayerBankEx(playerid, amount + TRANSFER_FEE, "transfer bank")) {
+		SendErr(playerid, "Gagal memproses transfer bank.");
+		return 0;
+	}
 	GivePlayerBankEx(targetid, amount, "terima transfer");
 
 	SendRP(targetid, COLOR_SUCCESS, "[BANK] Anda menerima transfer dana $%d dari %s.", amount, gPlayerData[playerid][pName]);
@@ -307,6 +327,9 @@ stock OnBankTransferResponse(playerid, const inputtext[])
 // Handler dialog ATM
 stock OnATMMenuResponse(playerid, listitem)
 {
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
+
 	if (listitem == 0) {
 		RP_ShowPlayerDialog(playerid, DIALOG_ATM_WITHDRAW, DIALOG_STYLE_INPUT,
 			"ATM - TARIK TUNAI", "Masukkan jumlah penarikan tunai ATM ($1 - $1.000.000):",
@@ -328,6 +351,9 @@ stock OnATMMenuResponse(playerid, listitem)
 
 stock OnATMWithdrawResponse(playerid, const inputtext[])
 {
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
+
 	if (!IsPlayerNearPoint(playerid, ATM_X, ATM_Y, ATM_Z, RANGE_ATM) && !IsPlayerNearAnyATM(playerid)) {
 		SendErr(playerid, "Anda harus berada di depan mesin ATM untuk bertransaksi.");
 		return 0;
@@ -335,7 +361,11 @@ stock OnATMWithdrawResponse(playerid, const inputtext[])
 	new amount = strval(inputtext);
 	if (amount < 1 || amount > 1000000) { SendErr(playerid, "Nominal penarikan $1 - $1.000.000."); return 0; }
 	if (gPlayerData[playerid][pBank] < amount) { SendErr(playerid, "Saldo bank tidak cukup."); return 0; }
-	TakePlayerBankEx(playerid, amount, "tarik ATM");
+
+	if (!TakePlayerBankEx(playerid, amount, "tarik ATM")) {
+		SendErr(playerid, "Gagal memproses penarikan saldo ATM.");
+		return 0;
+	}
 	GivePlayerMoneyEx(playerid, amount, "tarik tunai ATM");
 	new awmsg[64]; format(awmsg, sizeof(awmsg), "ATM: $%d ditarik tunai.", amount);
 	ShowPlayerAlert(playerid, awmsg);
@@ -345,6 +375,9 @@ stock OnATMWithdrawResponse(playerid, const inputtext[])
 
 stock OnATMDepositResponse(playerid, const inputtext[])
 {
+	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
+
 	if (!IsPlayerNearPoint(playerid, ATM_X, ATM_Y, ATM_Z, RANGE_ATM) && !IsPlayerNearAnyATM(playerid)) {
 		SendErr(playerid, "Anda harus berada di depan mesin ATM untuk bertransaksi.");
 		return 0;
@@ -352,7 +385,11 @@ stock OnATMDepositResponse(playerid, const inputtext[])
 	new amount = strval(inputtext);
 	if (amount < 1 || amount > 1000000) { SendErr(playerid, "Nominal setoran $1 - $1.000.000."); return 0; }
 	if (gPlayerData[playerid][pMoney] < amount) { SendErr(playerid, "Cash tidak cukup."); return 0; }
-	TakePlayerMoneyEx(playerid, amount, "setor ATM");
+
+	if (!TakePlayerMoneyEx(playerid, amount, "setor ATM")) {
+		SendErr(playerid, "Gagal memproses setoran tunai ATM.");
+		return 0;
+	}
 	GivePlayerBankEx(playerid, amount, "setor tunai ATM");
 	new admsg[64]; format(admsg, sizeof(admsg), "ATM: $%d disimpan ke bank.", amount);
 	ShowPlayerAlert(playerid, admsg);

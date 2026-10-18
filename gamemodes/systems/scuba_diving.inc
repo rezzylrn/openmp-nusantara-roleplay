@@ -41,6 +41,8 @@ stock Scuba_Init()
 stock ProcessRentScuba(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
+
 	if (!IsPlayerNearPoint(playerid, SCUBA_SHOP_X, SCUBA_SHOP_Y, SCUBA_SHOP_Z, 4.0)) {
 		SendErr(playerid, "Anda harus berada di Pos Penyewaan Scuba Dermaga Santa Maria.");
 		return 0;
@@ -51,8 +53,15 @@ stock ProcessRentScuba(playerid)
 		return 0;
 	}
 
-	TakePlayerMoneyEx(playerid, 75, "sewa tabung selam scuba");
-	GivePlayerItem(playerid, ITEM_SCUBA, 1);
+	if (!TakePlayerMoneyEx(playerid, 75, "sewa tabung selam scuba")) {
+		SendErr(playerid, "Pembayaran sewa tabung scuba gagal.");
+		return 0;
+	}
+	if (!GivePlayerItem(playerid, ITEM_SCUBA, 1)) {
+		GivePlayerMoneyEx(playerid, 75, "refund sewa scuba");
+		SendErr(playerid, "Kantung inventaris Anda penuh. Uang telah dikembalikan.");
+		return 0;
+	}
 	SendSucc(playerid, "Anda menyewa 1x Tabung Selam Scuba seharga $75. Pergi ke laut Santa Maria untuk /dive.");
 	PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
 	return 1;
@@ -63,6 +72,7 @@ public OnPlayerFinishDiving(playerid, extra)
 {
 	#pragma unused extra
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 
 	if (IsPlayerConnected(playerid)) {
 		ClearAnimations(playerid);
@@ -89,6 +99,7 @@ Dialog:DialogScubaSearch(playerid, response, listitem, inputtext[])
 		SendInfo(playerid, "Anda naik kembali ke permukaan tanpa mengambil tiram.");
 		return 1;
 	}
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 1;
 
 	if (listitem == gScubaTargetReef[playerid]) {
 		new pearlGain = 1 + random(2);
@@ -126,7 +137,10 @@ stock ProcessStartDiving(playerid)
 	// [SECURITY] Tabung sekali-pakai: habis setelah satu penyelaman. Tanpa ini
 	// satu tabung $75 bisa dipakai menyelam tanpa batas -> panen mutiara liar.
 	// (Pemain menyewa tabung baru di /rentscuba setiap kali menyelam.)
-	TakePlayerItem(playerid, ITEM_SCUBA, 1);
+	if (!TakePlayerItem(playerid, ITEM_SCUBA, 1)) {
+		SendErr(playerid, "Anda tidak memiliki Tabung Selam Scuba.");
+		return 0;
+	}
 
 	ApplyAnimation(playerid, "SWIM", "SWIM_under", 4.1, true, false, false, false, 0);
 	ApplyProgressBar(playerid, "MENELUSURI DASAR TERUMBU LAUT...", 6, "OnPlayerFinishDiving", 0);
@@ -137,6 +151,8 @@ stock ProcessStartDiving(playerid)
 stock ProcessSellPearls(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
+
 	if (!IsPlayerNearPoint(playerid, SCUBA_SHOP_X, SCUBA_SHOP_Y, SCUBA_SHOP_Z, 5.0)) {
 		SendErr(playerid, "Anda harus berada di Pos Dermaga Santa Maria.");
 		return 0;
@@ -148,7 +164,10 @@ stock ProcessSellPearls(playerid)
 		return 0;
 	}
 
-	TakePlayerItem(playerid, ITEM_PEARL, count);
+	if (!TakePlayerItem(playerid, ITEM_PEARL, count)) {
+		SendErr(playerid, "Gagal menjual mutiara.");
+		return 0;
+	}
 	new payout = count * 175;
 	GivePlayerMoneyEx(playerid, payout, "jual mutiara laut");
 

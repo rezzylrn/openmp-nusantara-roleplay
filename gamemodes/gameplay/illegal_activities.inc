@@ -604,6 +604,7 @@ stock OnBlackMarketSellResponse(playerid, listitem)
 stock ProcessConfiscateIllicitItems(playerid, targetid)
 {
 	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 	if (gPlayerData[playerid][pFaction] != FACTION_POLICE || !gPlayerData[playerid][pDuty]) {
 		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Perintah ini khusus untuk petugas Kepolisian SAPD yang bertugas!");
 		return 0;

@@ -144,7 +144,13 @@ new gSelectedHouse[MAX_PLAYERS];
 stock ProcessBuyHouse(playerid, houseid)
 {
 	if (playerid < 0 || playerid >= MAX_PLAYERS || !gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 	if (houseid < 0 || houseid >= MAX_HOUSES || !gHouseData[houseid][hUsed]) return 0;
+
+	if (IsPlayerConnected(playerid) && !IsPlayerInRangeOfPoint(playerid, 4.0, gHouseData[houseid][hEnterX], gHouseData[houseid][hEnterY], gHouseData[houseid][hEnterZ])) {
+		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Anda terlalu jauh dari properti rumah.");
+		return 0;
+	}
 
 	if (gHouseData[houseid][hOwnerID] != 0) {
 		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Rumah ini sudah dimiliki oleh warga lain.");
@@ -156,7 +162,10 @@ stock ProcessBuyHouse(playerid, houseid)
 		return 0;
 	}
 
-	TakePlayerMoneyEx(playerid, gHouseData[houseid][hPrice], "beli properti rumah");
+	if (!TakePlayerMoneyEx(playerid, gHouseData[houseid][hPrice], "beli properti rumah")) {
+		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Pembayaran gagal. Uang tunai Anda tidak mencukupi.");
+		return 0;
+	}
 	gHouseData[houseid][hOwnerID] = gPlayerData[playerid][pID];
 	format(gHouseData[houseid][hOwnerName], 24, "%s", gPlayerData[playerid][pName]);
 	gHouseData[houseid][hLocked] = true;
@@ -181,6 +190,13 @@ Dialog:DialogBuyHouseConfirm(playerid, response, listitem, inputtext[])
 
 stock ProcessHouseInteraction(playerid)
 {
+	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
+	if (IsPlayerInAnyVehicle(playerid)) return 0;
+	if (gPlayerData[playerid][pCuffed]) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda sedang diborgol oleh petugas kepolisian.");
+		return 0;
+	}
+
 	new hEnter = House_CheckNearby(playerid);
 	if (hEnter != -1) {
 		// Pemain berada di depan pintu masuk rumah

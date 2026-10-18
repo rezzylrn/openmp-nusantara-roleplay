@@ -111,6 +111,7 @@ stock OnAmmuNationDialogResponse(playerid, listitem)
 stock ProcessIssueGunLicense(playerid, targetid)
 {
 	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 
 	if (gPlayerData[playerid][pFaction] != FACTION_POLICE || !gPlayerData[playerid][pDuty]) {
 		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Penerbitan lisensi senjata api khusus untuk petugas Kepolisian SAPD!");
