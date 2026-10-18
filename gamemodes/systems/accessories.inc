@@ -40,6 +40,7 @@ stock ShowAccessoriesMenu(playerid)
 stock OnAccessoriesDialogResponse(playerid, listitem)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 1;
 
 	switch (listitem) {
 		case 0: {

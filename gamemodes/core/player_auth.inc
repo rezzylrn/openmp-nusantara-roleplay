@@ -333,7 +333,7 @@ stock SpawnPlayerEx(playerid)
 	SetCameraBehindPlayer(playerid);
 
 	TogglePlayerControllable(playerid, false);
-	SetTimerEx("RP_UnfreezeAfterSpawn", 750, false, "i", playerid);
+	SetTimerEx("RP_UnfreezeAfterSpawn", 750, false, "ii", playerid, gPlayerSession[playerid]);
 
 	SetPlayerHealth(playerid, 100.0);
 	SetPlayerArmour(playerid, 0.0);
@@ -348,10 +348,11 @@ stock SpawnPlayerEx(playerid)
 	return 1;
 }
 
-forward RP_UnfreezeAfterSpawn(playerid);
-public RP_UnfreezeAfterSpawn(playerid)
+forward RP_UnfreezeAfterSpawn(playerid, session);
+public RP_UnfreezeAfterSpawn(playerid, session)
 {
-	if (!IsPlayerConnected(playerid)) return 0;
+	if (!IsPlayerConnected(playerid) || gPlayerSession[playerid] != session) return 0;
+	if (gPlayerData[playerid][pFrozen] || gPlayerData[playerid][pCuffed] || gPlayerData[playerid][pInjured]) return 0;
 	TogglePlayerControllable(playerid, true);
 	SetCameraBehindPlayer(playerid);
 	return 1;
@@ -387,8 +388,24 @@ stock SavePlayerOnDisconnect(playerid)
 		gPlayerData[playerid][pLastA] = pa;
 	}
 
+	// [SECURITY] Cegah softlock akun: bila pemain disconnect saat pingsan/sekarat
+	// (combat log / crash), pindahkan titik spawn ke UGD RS All Saints, kenakan
+	// denda rawat darurat $50, dan pulihkan status pInjured agar karakter tidak
+	// beku permanen tanpa timer di sesi berikutnya.
+	if (gPlayerData[playerid][pInjured]) {
+		gPlayerData[playerid][pInjured] = false;
+		gPlayerData[playerid][pLastX] = HOSPITAL_X;
+		gPlayerData[playerid][pLastY] = HOSPITAL_Y;
+		gPlayerData[playerid][pLastZ] = HOSPITAL_Z;
+		gPlayerData[playerid][pLastA] = HOSPITAL_A;
+		gPlayerData[playerid][pInterior] = 0;
+		gPlayerData[playerid][pVirtualWorld] = 0;
+		TakePlayerMoneyEx(playerid, 50, "biaya perawatan darurat relog");
+	}
+
 	Vehicle_SavePlayerVehicles(playerid);
-	gPlayerData[playerid][pPlayHours] += 1;
+	// [FIX] pPlayHours hanya bertambah saat 1 jam bermain penuh (ProcessPaycheck),
+	// bukan setiap kali pemain disconnect.
 	DB_SavePlayerData(playerid);
 	return 1;
 }

@@ -49,6 +49,14 @@ CMD:boombox(playerid, params[])
 stock ProcessBoombox(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Anda belum login.");
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Anda tidak dapat menggunakan Boombox saat pingsan atau terborgol.");
+		return 1;
+	}
+	if (IsPlayerInAnyVehicle(playerid)) {
+		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Anda harus turun dari kendaraan untuk meletakkan Boombox.");
+		return 1;
+	}
 
 	// Cek jika pemain berada di dekat boombox miliknya untuk mengambilnya
 	for (new i = 0; i < MAX_BOOMBOXES; i++) {
@@ -184,6 +192,10 @@ CMD:pickupboombox(playerid, params[])
 stock ProcessPickupBoombox(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Anda belum login.");
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Anda tidak dapat mengambil Boombox saat pingsan atau terborgol.");
+		return 1;
+	}
 
 	new foundSlot = -1;
 	for (new i = 0; i < MAX_BOOMBOXES; i++) {
@@ -197,6 +209,13 @@ stock ProcessPickupBoombox(playerid)
 
 	if (foundSlot == -1) {
 		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Anda tidak berada di dekat Boombox milik Anda.");
+		return 1;
+	}
+
+	// [FIX] Cek kapasitas inventaris sebelum mematikan & menghancurkan boombox
+	// agar boombox tidak terhapus ke void bila kantong pemain penuh.
+	if (!GivePlayerItem(playerid, ITEM_BOOMBOX, 1)) {
+		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Kantung inventaris Anda penuh! Kosongkan slot terlebih dahulu.");
 		return 1;
 	}
 
@@ -221,7 +240,6 @@ stock ProcessPickupBoombox(playerid)
 	}
 	gBoomboxes[foundSlot][bbUsed] = false;
 
-	GivePlayerItem(playerid, ITEM_BOOMBOX, 1);
 	SendClientMessage(playerid, COLOR_SUCCESS, "[SUKSES] Speaker Boombox berhasil dimatikan dan dimasukkan kembali ke tas Anda.");
 	return 1;
 }

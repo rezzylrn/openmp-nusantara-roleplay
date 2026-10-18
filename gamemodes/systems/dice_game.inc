@@ -22,9 +22,18 @@ stock Dice_Init()
 stock ProcessPlayDice(playerid, targetid, betAmount)
 {
 	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda tidak dapat bertaruh dadu saat pingsan atau terborgol.");
+		return 0;
+	}
 
 	if (!IsPlayerConnected(targetid) || !gPlayerData[targetid][pLoggedIn]) {
 		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Pemain sasaran tidak terhubung.");
+		return 0;
+	}
+
+	if (gPlayerData[targetid][pInjured] || gPlayerData[targetid][pCuffed]) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Lawan tidak sadarkan diri atau sedang terborgol.");
 		return 0;
 	}
 

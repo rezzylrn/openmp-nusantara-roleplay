@@ -64,6 +64,14 @@ stock Trash_Init()
 	return 1;
 }
 
+stock Trash_ResetPlayer(playerid)
+{
+	if (playerid >= 0 && playerid < MAX_PLAYERS) {
+		gPlayerScavengeCooldown[playerid] = 0;
+	}
+	return 1;
+}
+
 public OnTrashLoaded()
 {
 	new rows = cache_num_rows();

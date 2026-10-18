@@ -160,6 +160,7 @@ stock ProcessPlayerKnockout(playerid, const reason[])
 public OnEmergencyHospitalRespawn(playerid, session)
 {
 	gHospitalTimer[playerid] = -1;
+	gACData[playerid][acIsDead] = false;
 	// [SECURITY] Cek session token + kondisi pingsan masih aktif. Mencegah
 	// tagihan ganda / respawn nyasar ke pemain baru di slot playerid sama.
 	if (!IsPlayerConnected(playerid) || gPlayerSession[playerid] != session) return 0;
@@ -188,11 +189,16 @@ public OnEmergencyHospitalRespawn(playerid, session)
 // Batalkan timer UGD bila pemain di-revive lebih awal oleh staf medis/admin
 // atau pulih dengan cara lain. Tanpa ini timer 90 detik tetap berjalan dan
 // menagih $50 / memindahkan pemain setelah dia sudah sadar.
+// [FIX] Reset juga acIsDead = false agar pemain yang sudah sadar tidak
+// menjadi immortal / kebal terhadap OnPlayerDeath di kemudian hari.
 stock ClearHospitalTimer(playerid)
 {
-	if (gHospitalTimer[playerid] != -1) {
-		KillTimer(gHospitalTimer[playerid]);
-		gHospitalTimer[playerid] = -1;
+	if (playerid >= 0 && playerid < MAX_PLAYERS) {
+		if (gHospitalTimer[playerid] != -1) {
+			KillTimer(gHospitalTimer[playerid]);
+			gHospitalTimer[playerid] = -1;
+		}
+		gACData[playerid][acIsDead] = false;
 	}
 	return 1;
 }

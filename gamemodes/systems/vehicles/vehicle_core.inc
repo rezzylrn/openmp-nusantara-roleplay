@@ -307,12 +307,13 @@ stock ProcessRefuel(playerid)
 	}
 
 	new cost = floatround(needed * FUEL_PRICE);
+	if (cost < 1) cost = 1;
 	if (gPlayerData[playerid][pMoney] < cost) {
 		SendErr(playerid, "Uang tunai Anda tidak cukup ($%d diperlukan untuk %.0f Liter).", cost, needed);
 		return 0;
 	}
 
-	TakePlayerMoneyEx(playerid, cost, "pengisian bensin");
+	if (!TakePlayerMoneyEx(playerid, cost, "pengisian bensin")) return 0;
 	gVehicleData[slot][vFuel] = 100.0;
 	DB_SaveVehicle(slot);
 

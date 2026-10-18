@@ -1945,8 +1945,75 @@ public RunAutomatedRPTests()
 		}
 	}
 
+	// ---------------------------------------------------------------------------
+	// TEST 76: Disconnect Resets, Death Immunity Safeguards & Dice/Robbery Incap
+	// ---------------------------------------------------------------------------
+	print("[TEST 76/76] Complete Disconnect Resets, Death Anti-Immunity & Activity Incap Guards...");
+	{
+		new bool:t76Ok = true;
+		new fail76[128];
+		fail76[0] = '\0';
+
+		new tP = 0, targetP = 1;
+		gPlayerData[tP][pLoggedIn] = true;
+		gPlayerData[targetP][pLoggedIn] = true;
+
+		// 76a. Disconnect resets: Impound, Trash, StoreRobbery, IllegalActivities
+		gPlayerTowedVeh[tP] = 99;
+		Impound_ResetPlayer(tP);
+		gPlayerScavengeCooldown[tP] = gettime() + 50;
+		Trash_ResetPlayer(tP);
+		gActiveRobber = tP;
+		StoreRobbery_ResetPlayer(tP);
+		gPlayerSmuggleActive[tP] = true;
+		IllegalActivities_ResetPlayer(tP);
+
+		new bool:subsystemResets = (gPlayerTowedVeh[tP] == INVALID_VEHICLE_ID &&
+			gPlayerScavengeCooldown[tP] == 0 &&
+			gActiveRobber == INVALID_PLAYER_ID &&
+			!gPlayerSmuggleActive[tP]);
+		if (!subsystemResets) {
+			t76Ok = false;
+			format(fail76, sizeof(fail76), "%s subsystemResets;", fail76);
+		}
+
+		// 76b. ClearHospitalTimer restores acIsDead to false (prevents immortal player on revive)
+		gACData[tP][acIsDead] = true;
+		ClearHospitalTimer(tP);
+		if (gACData[tP][acIsDead]) {
+			t76Ok = false;
+			format(fail76, sizeof(fail76), "%s acIsDeadClear;", fail76);
+		}
+
+		// 76c. Dice game rejects when either player or opponent is cuffed/injured
+		gPlayerData[targetP][pCuffed] = true;
+		new diceCuffed = ProcessPlayDice(tP, targetP, 50);
+		gPlayerData[targetP][pCuffed] = false;
+		if (diceCuffed != 0) {
+			t76Ok = false;
+			format(fail76, sizeof(fail76), "%s diceCuffed;", fail76);
+		}
+
+		// 76d. DMV Exam dialog response rejects when already licensed
+		gPlayerData[tP][pDriveLic] = true;
+		new dmvHasLic = OnDMVDialogResponse(tP, 1);
+		gPlayerData[tP][pDriveLic] = false;
+		if (dmvHasLic != 1) { // returns 1 (handled/blocked)
+			t76Ok = false;
+			format(fail76, sizeof(fail76), "%s dmvHasLic;", fail76);
+		}
+
+		if (t76Ok) {
+			print("  -> PASS: Tow/trash/robbery disconnect resets, death immunity clearance & dice/DMV guards confirmed.");
+			passCount++;
+		} else {
+			printf("  -> FAIL: Details: %s", fail76);
+			failCount++;
+		}
+	}
+
 	print("==================================================");
-	printf("  [DEBUG SUMMARY] %d / 75 TESTS PASSED, %d FAILED", passCount, failCount);
+	printf("  [DEBUG SUMMARY] %d / 76 TESTS PASSED, %d FAILED", passCount, failCount);
 	print("==================================================\n");
 
 	return 1;

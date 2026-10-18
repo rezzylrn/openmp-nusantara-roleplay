@@ -64,6 +64,11 @@ public OnPlayerDisconnect(playerid, reason)
 	Advertisements_ResetPlayer(playerid);
 	GymFitness_ResetPlayer(playerid);
 	Graffiti_ResetPlayer(playerid);
+	Impound_ResetPlayer(playerid);
+	Trash_ResetPlayer(playerid);
+	StoreRobbery_ResetPlayer(playerid);
+	IllegalActivities_ResetPlayer(playerid);
+	AC_ResetPlayer(playerid);
 	TextdrawDestroyAll(playerid);
 	return 1;
 }

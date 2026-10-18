@@ -47,9 +47,31 @@ stock StoreRobbery_Init()
 	return 1;
 }
 
+stock StoreRobbery_ResetPlayer(playerid)
+{
+	if (gActiveRobber == playerid) {
+		if (gActiveRobTimer != 0) {
+			KillTimer(gActiveRobTimer);
+			gActiveRobTimer = 0;
+		}
+		gActiveRobber = INVALID_PLAYER_ID;
+		gActiveRobStore = -1;
+		gActiveRobSecondsLeft = 0;
+	}
+	return 1;
+}
+
 stock ProcessRobStore(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda tidak dapat merampok toko saat pingsan atau terborgol.");
+		return 0;
+	}
+	if (IsPlayerInAnyVehicle(playerid)) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda harus turun dari kendaraan.");
+		return 0;
+	}
 
 	if (gPlayerData[playerid][pFaction] == FACTION_POLICE && gPlayerData[playerid][pDuty]) {
 		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Petugas kepolisian tidak dapat melakukan perampokan!");
@@ -130,14 +152,27 @@ public StoreRobbery_Timer()
 {
 	if (gActiveRobber == INVALID_PLAYER_ID || !IsPlayerConnected(gActiveRobber) || !gPlayerData[gActiveRobber][pLoggedIn]) {
 		KillTimer(gActiveRobTimer);
+		gActiveRobTimer = 0;
 		gActiveRobber = INVALID_PLAYER_ID;
 		gActiveRobStore = -1;
+		return 1;
+	}
+
+	// [SECURITY] Batalkan jika pelaku pingsan atau terborgol saat menodong kasir
+	if (gPlayerData[gActiveRobber][pInjured] || gPlayerData[gActiveRobber][pCuffed]) {
+		SendClientMessage(gActiveRobber, COLOR_ERROR, "ERROR: Anda pingsan atau terborgol! Perampokan kasir dibatalkan.");
+		KillTimer(gActiveRobTimer);
+		gActiveRobTimer = 0;
+		gActiveRobber = INVALID_PLAYER_ID;
+		gActiveRobStore = -1;
+		gActiveRobSecondsLeft = 0;
 		return 1;
 	}
 
 	new storeSlot = gActiveRobStore;
 	if (storeSlot < 0 || storeSlot >= MAX_ROBBABLE_STORES) {
 		KillTimer(gActiveRobTimer);
+		gActiveRobTimer = 0;
 		gActiveRobber = INVALID_PLAYER_ID;
 		return 1;
 	}
@@ -146,6 +181,7 @@ public StoreRobbery_Timer()
 	if (!IsPlayerNearPoint(gActiveRobber, gRobStores[storeSlot][robX], gRobStores[storeSlot][robY], gRobStores[storeSlot][robZ], 9.0)) {
 		SendClientMessage(gActiveRobber, COLOR_ERROR, "ERROR: Anda meninggalkan area kasir toko! Perampokan dibatalkan.");
 		KillTimer(gActiveRobTimer);
+		gActiveRobTimer = 0;
 		gActiveRobber = INVALID_PLAYER_ID;
 		gActiveRobStore = -1;
 		return 1;
@@ -156,6 +192,7 @@ public StoreRobbery_Timer()
 	if (gActiveRobSecondsLeft <= 0) {
 		// Perampokan sukses
 		KillTimer(gActiveRobTimer);
+		gActiveRobTimer = 0;
 
 		new lootCash = 1200 + random(1301); // $1,200 - $2,500
 		GivePlayerMoneyEx(gActiveRobber, lootCash, "hasil perampokan minimarket 24/7");

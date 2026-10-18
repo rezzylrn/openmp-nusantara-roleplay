@@ -85,12 +85,27 @@ stock IllegalActivities_Init()
 	return 1;
 }
 
+stock IllegalActivities_ResetPlayer(playerid)
+{
+	if (playerid >= 0 && playerid < MAX_PLAYERS) {
+		gPlayerSmuggleActive[playerid] = false;
+		gPlayerSmuggleDrop[playerid] = -1;
+		gPlayerSmuggleCooldown[playerid] = 0;
+		gPlayerLockpickCooldown[playerid] = 0;
+	}
+	return 1;
+}
+
 // ---------------------------------------------------------------------------
 // 1. Penyelundupan Paket Kontraband Gelap
 // ---------------------------------------------------------------------------
 stock ProcessStartSmuggle(playerid)
 {
 	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda tidak dapat menyelundup saat pingsan atau terborgol.");
+		return 0;
+	}
 
 	if (gPlayerData[playerid][pFaction] == FACTION_POLICE && gPlayerData[playerid][pDuty]) {
 		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Petugas kepolisian yang sedang bertugas dilarang terlibat penyelundupan!");
@@ -155,6 +170,7 @@ stock ProcessStartSmuggle(playerid)
 stock ProcessSmuggleDelivery(playerid)
 {
 	if (!gPlayerSmuggleActive[playerid]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
 
 	new dropIdx = gPlayerSmuggleDrop[playerid];
 	if (dropIdx < 0 || dropIdx >= sizeof(gSmugglerDrops)) return 0;
@@ -167,8 +183,14 @@ stock ProcessSmuggleDelivery(playerid)
 		return 0;
 	}
 
-	// Ambil paket kontraband dari inventaris
-	TakePlayerItem(playerid, ITEM_CONTRABAND, 1);
+	// [FIX] Ambil paket kontraband secara atomic
+	if (!TakePlayerItem(playerid, ITEM_CONTRABAND, 1)) {
+		DisablePlayerCheckpoint(playerid);
+		gPlayerSmuggleActive[playerid] = false;
+		gPlayerSmuggleDrop[playerid] = -1;
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Gagal memotong paket kontraband dari inventaris.");
+		return 0;
+	}
 
 	// Hadiah uang tunai kotor ($800 - $1400)
 	new reward = 800 + random(601);
@@ -199,6 +221,10 @@ stock ProcessSmuggleDelivery(playerid)
 stock ProcessChopVehicle(playerid)
 {
 	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda tidak dapat membongkar mobil saat pingsan atau terborgol.");
+		return 0;
+	}
 
 	if (!IsPlayerInAnyVehicle(playerid) || GetPlayerState(playerid) != PLAYER_STATE_DRIVER) {
 		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda harus mengendarai kendaraan di depan bengkel Chop Shop.");
@@ -281,6 +307,10 @@ stock ProcessChopVehicle(playerid)
 stock ProcessLockpickVehicle(playerid)
 {
 	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda tidak dapat membobol kunci saat pingsan atau terborgol.");
+		return 0;
+	}
 
 	if (IsPlayerInAnyVehicle(playerid)) {
 		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda harus berada di luar kendaraan untuk membobol kunci.");
@@ -319,8 +349,11 @@ stock ProcessLockpickVehicle(playerid)
 		return 0;
 	}
 
-	// Gunakan 1x Lockpick
-	TakePlayerItem(playerid, ITEM_LOCKPICK, 1);
+	// Gunakan 1x Lockpick secara atomic
+	if (!TakePlayerItem(playerid, ITEM_LOCKPICK, 1)) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Gagal menggunakan Obeng Lockpick.");
+		return 0;
+	}
 	gPlayerLockpickCooldown[playerid] = now + 12;
 
 	// Animasi membungkuk utak-atik pintu mobil

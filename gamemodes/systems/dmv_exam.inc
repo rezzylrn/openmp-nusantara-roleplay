@@ -54,6 +54,12 @@ stock ShowDMVExamDialog(playerid)
 stock OnDMVDialogResponse(playerid, listitem)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 1;
+	if (gPlayerData[playerid][pDriveLic]) return 1;
+	if (IsPlayerConnected(playerid) && !IsPlayerNearPoint(playerid, GOV_X, GOV_Y, GOV_Z, 10.0)) {
+		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Anda terlalu jauh dari loket Balai Kota.");
+		return 1;
+	}
 
 	if (listitem == 1) {
 		// Jawaban Benar

@@ -32,6 +32,20 @@ stock Impound_Init()
 	return 1;
 }
 
+stock Impound_ResetPlayer(playerid)
+{
+	if (playerid >= 0 && playerid < MAX_PLAYERS) {
+		if (gPlayerTowedVeh[playerid] != INVALID_VEHICLE_ID) {
+			if (IsPlayerConnected(playerid)) {
+				new myVeh = GetPlayerVehicleID(playerid);
+				if (myVeh > 0 && IsValidVehicle(myVeh)) DetachTrailerFromVehicle(myVeh);
+			}
+			gPlayerTowedVeh[playerid] = INVALID_VEHICLE_ID;
+		}
+	}
+	return 1;
+}
+
 stock ProcessTowVehicle(playerid)
 {
 	if (!IsPlayerConnected(playerid) || !gPlayerData[playerid][pLoggedIn]) return 0;

@@ -32,6 +32,14 @@ CMD:bobolatm(playerid, params[])
 stock ProcessDrillATM(playerid)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Anda belum login.");
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) {
+		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Anda tidak dapat membobol ATM saat pingsan atau terborgol.");
+		return 1;
+	}
+	if (IsPlayerInAnyVehicle(playerid)) {
+		SendClientMessage(playerid, COLOR_ERROR, "[ERROR] Anda harus turun dari kendaraan untuk membobol ATM.");
+		return 1;
+	}
 
 	new nearATM = -1;
 	for (new i = 0; i < MAX_DYNAMIC_ATMS; i++) {

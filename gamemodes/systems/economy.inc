@@ -417,6 +417,7 @@ stock ProcessPaycheck(playerid)
 	SendRP(playerid, COLOR_PAYDAY, "[PAYDAY] Gaji $%d masuk ke rekening bank Anda (Potongan pajak %d%%: $%d).", net, gCurrentTax, tax);
 	GivePlayerExp(playerid, EXP_PAYDAY, "payday");
 
+	gPlayerData[playerid][pPlayHours] += 1;
 	gPlayerData[playerid][pPaycheckTimer] = PAYCHECK_INTERVAL;
 	gPlayerData[playerid][pPaycheckAmount] = 0;
 	return 1;
