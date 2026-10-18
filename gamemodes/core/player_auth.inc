@@ -30,8 +30,8 @@ public OnPlayerPasswordHashed(playerid, session)
 	return 1;
 }
 
-forward OnPlayerPasswordVerified(playerid, session, bool:success);
-public OnPlayerPasswordVerified(playerid, session, bool:success)
+forward OnPlayerPasswordVerified(playerid, bool:success, session);
+public OnPlayerPasswordVerified(playerid, bool:success, session)
 {
 	if (!IsPlayerConnected(playerid)) return 0;
 	if (session != gPlayerSession[playerid]) return 0; // slot sudah dipakai pemain lain
@@ -164,7 +164,7 @@ stock ProcessUCPLogin(playerid, const password[])
 		ShowUCPLoginDialog(playerid);
 		return 0;
 	}
-	bcrypt_verify(playerid, "OnPlayerPasswordVerified", password, gPlayerData[playerid][pPassword], gPlayerSession[playerid]);
+	bcrypt_verify(playerid, "OnPlayerPasswordVerified", password, gPlayerData[playerid][pPassword], "d", gPlayerSession[playerid]);
 	return 1;
 }
 
@@ -210,7 +210,7 @@ stock ProcessUCPRegisterPass(playerid, const password[])
 		return 0;
 	}
 
-	bcrypt_hash(playerid, "OnPlayerPasswordHashed", password, BCRYPT_COST, gPlayerSession[playerid]);
+	bcrypt_hash(playerid, "OnPlayerPasswordHashed", password, BCRYPT_COST, "d", gPlayerSession[playerid]);
 	return 1;
 }
 

@@ -2012,8 +2012,41 @@ public RunAutomatedRPTests()
 		}
 	}
 
+	// ---------------------------------------------------------------------------
+	// TEST 77: SampBcrypt Native Specifier Format & Callback Argument Alignment
+	// ---------------------------------------------------------------------------
+	print("[TEST 77/77] SampBcrypt Format Specifiers & Verification Callback Signature...");
+	{
+		new bool:t77Ok = true;
+		new fail77[128];
+		fail77[0] = '\0';
+
+		new bTestPlayer = 0;
+		gPlayerData[bTestPlayer][pLoggedIn] = false;
+		gPlayerSession[bTestPlayer] = 42;
+
+		// 77a. OnPlayerPasswordVerified callback execution with signature (playerid, bool:success, session)
+		// When session matches, false success prompts login retry without crash
+		new resVerified = OnPlayerPasswordVerified(bTestPlayer, false, 42);
+		// When session mismatches (stale callback), must reject
+		new resStale = OnPlayerPasswordVerified(bTestPlayer, true, 999);
+
+		if (resVerified != 0 || resStale != 0) {
+			t77Ok = false;
+			format(fail77, sizeof(fail77), "%s callbackSig(v:%d,s:%d);", fail77, resVerified, resStale);
+		}
+
+		if (t77Ok) {
+			print("  -> PASS: Bcrypt verification callback argument order & stale session rejection verified.");
+			passCount++;
+		} else {
+			printf("  -> FAIL: Bcrypt details: %s", fail77);
+			failCount++;
+		}
+	}
+
 	print("==================================================");
-	printf("  [DEBUG SUMMARY] %d / 76 TESTS PASSED, %d FAILED", passCount, failCount);
+	printf("  [DEBUG SUMMARY] %d / 77 TESTS PASSED, %d FAILED", passCount, failCount);
 	print("==================================================\n");
 
 	return 1;

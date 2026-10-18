@@ -19,10 +19,15 @@ mkdir -p "$RUN_DIR/scriptfiles"
 # Ensure database service is running and user exists
 sudo systemctl start mariadb || true
 sudo mysql -e "CREATE DATABASE IF NOT EXISTS roleplay;
-CREATE USER IF NOT EXISTS 'samp'@'localhost' IDENTIFIED VIA mysql_native_password USING PASSWORD('samp123');
-CREATE USER IF NOT EXISTS 'samp'@'127.0.0.1' IDENTIFIED VIA mysql_native_password USING PASSWORD('samp123');
+CREATE USER IF NOT EXISTS 'samp'@'localhost' IDENTIFIED BY 'samp123';
+ALTER USER 'samp'@'localhost' IDENTIFIED BY 'samp123';
+CREATE USER IF NOT EXISTS 'samp'@'127.0.0.1' IDENTIFIED BY 'samp123';
+ALTER USER 'samp'@'127.0.0.1' IDENTIFIED BY 'samp123';
+CREATE USER IF NOT EXISTS 'samp'@'%' IDENTIFIED BY 'samp123';
+ALTER USER 'samp'@'%' IDENTIFIED BY 'samp123';
 GRANT ALL PRIVILEGES ON roleplay.* TO 'samp'@'localhost';
 GRANT ALL PRIVILEGES ON roleplay.* TO 'samp'@'127.0.0.1';
+GRANT ALL PRIVILEGES ON roleplay.* TO 'samp'@'%';
 FLUSH PRIVILEGES;" 2>/dev/null || true
 
 # Extract base open.mp server if not already present
