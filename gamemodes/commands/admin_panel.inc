@@ -294,7 +294,7 @@ Dialog:DialogAdminKickReason(playerid, response, listitem, inputtext[])
 		gPlayerData[targetid][pName], gPlayerData[playerid][pName], reason);
 	SendClientMessageToAll(COLOR_RED, broadcast);
 
-	SetTimerEx("RP_DelayedKick", 350, false, "i", targetid);
+	SetTimerEx("RP_DelayedKick", 350, false, "ii", targetid, gPlayerSession[targetid]);
 	return 1;
 }
 
@@ -334,6 +334,6 @@ Dialog:DialogAdminBanReason(playerid, response, listitem, inputtext[])
 		DB_AddBan(gPlayerData[targetid][pName], tip, reason, gPlayerData[playerid][pName]);
 	}
 
-	SetTimerEx("RP_DelayedKick", 350, false, "i", targetid);
+	SetTimerEx("RP_DelayedKick", 350, false, "ii", targetid, gPlayerSession[targetid]);
 	return 1;
 }

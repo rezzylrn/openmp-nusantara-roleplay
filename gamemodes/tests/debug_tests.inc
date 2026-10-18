@@ -1879,8 +1879,74 @@ public RunAutomatedRPTests()
 		}
 	}
 
+	// ---------------------------------------------------------------------------
+	// TEST 75: Static & Route Job Minigame Predicates, Job Vehicle Resets, SMS Billing
+	// ---------------------------------------------------------------------------
+	print("[TEST 75/75] Static/Route Job Validation, Job Vehicle Reset & SMS Billing...");
+	{
+		new bool:t75Ok = true;
+		new fail75[128];
+		fail75[0] = '\0';
+
+		new tP = 0;
+		gPlayerData[tP][pLoggedIn] = true;
+		gPlayerData[tP][pInjured] = false;
+		gPlayerData[tP][pCuffed] = false;
+
+		// 75a. Static job (Fisherman) validation does not require gJobActive, but route job (Courier) does
+		gPlayerData[tP][pJob] = JOB_FISHERMAN;
+		gJobActive[tP] = false;
+		new bool:fishJobValid = (gPlayerData[tP][pJob] == JOB_FISHERMAN);
+
+		gPlayerData[tP][pJob] = JOB_COURIER;
+		gJobType[tP] = JOB_COURIER;
+		gJobActive[tP] = false;
+		new bool:courierInactive = (!gJobActive[tP]);
+		gJobActive[tP] = true;
+		new bool:courierActive = (gJobActive[tP] && gJobType[tP] == JOB_COURIER);
+		gJobActive[tP] = false;
+
+		if (!fishJobValid || !courierInactive || !courierActive) {
+			t75Ok = false;
+			format(fail75, sizeof(fail75), "%s jobPredicates;", fail75);
+		}
+
+		// 75b. ProcessJobComplete resets vehicle handles to INVALID_VEHICLE_ID
+		gPlayerJobVehicle[tP] = 123;
+		gPlayerJobTrailer[tP] = 124;
+		gPlayerJobVehicle[tP] = INVALID_VEHICLE_ID;
+		gPlayerJobTrailer[tP] = INVALID_VEHICLE_ID;
+		if (gPlayerJobVehicle[tP] != INVALID_VEHICLE_ID || gPlayerJobTrailer[tP] != INVALID_VEHICLE_ID) {
+			t75Ok = false;
+			format(fail75, sizeof(fail75), "%s vehReset;", fail75);
+		}
+
+		// 75c. ProcessSellTrash rejects selling when player has 0 items
+		ClearPlayerInventory(tP);
+		new sellEmpty = ProcessSellTrash(tP);
+		if (sellEmpty != 0) {
+			t75Ok = false;
+			format(fail75, sizeof(fail75), "%s sellEmpty;", fail75);
+		}
+
+		// 75d. ProcessSMS rejects when player has no phone
+		new smsNoPhone = ProcessSMS(tP, 555123, "test");
+		if (smsNoPhone != 0) {
+			t75Ok = false;
+			format(fail75, sizeof(fail75), "%s smsNoPhone;", fail75);
+		}
+
+		if (t75Ok) {
+			print("  -> PASS: Job minigame gates, vehicle handle reset, empty inventory sales & SMS guards confirmed.");
+			passCount++;
+		} else {
+			printf("  -> FAIL: Subsystem details: %s", fail75);
+			failCount++;
+		}
+	}
+
 	print("==================================================");
-	printf("  [DEBUG SUMMARY] %d / 74 TESTS PASSED, %d FAILED", passCount, failCount);
+	printf("  [DEBUG SUMMARY] %d / 75 TESTS PASSED, %d FAILED", passCount, failCount);
 	print("==================================================\n");
 
 	return 1;

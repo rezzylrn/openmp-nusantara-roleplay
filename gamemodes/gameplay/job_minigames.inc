@@ -22,20 +22,28 @@ new gLumberTargetCut[MAX_PLAYERS];
 // [SECURITY] Validasi job aktif sebelum QTE membayar. Dialog QTE dijawab lewat
 // easyDialog (id tetap 32700) sehingga tidak bisa di-spoof, TAPI handler lama
 // membayar hadiah tanpa memeriksa apakah job masih berjalan / pemain masih di
-// lokasi. Pemain bisa buka QTE lalu /quitjob (atau berjalan pergi) dan tetap
-// dibayar. Helper ini dipanggil di awal setiap handler reward.
+// lokasi. Helper ini memvalidasi pemain aktif, login, tidak pingsan/borgol,
+// serta memiliki profesi pekerjaan yang sesuai.
 stock JobQTE_IsActive(playerid)
 {
 	if (!IsPlayerConnected(playerid)) return 0;
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
 	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
-	if (!gJobActive[playerid]) return 0;
+	if (gPlayerData[playerid][pJob] == JOB_NONE) return 0;
 	return 1;
 }
 
 stock JobQTE_IsType(playerid, jobtype)
 {
-	return (JobQTE_IsActive(playerid) && gJobType[playerid] == jobtype) ? 1 : 0;
+	if (!JobQTE_IsActive(playerid)) return 0;
+	if (gPlayerData[playerid][pJob] != jobtype) return 0;
+
+	// Untuk pekerjaan dengan misi kendaraan (kurir, sweeper, trucker, bus),
+	// pastikan juga status rute tugasnya sedang aktif.
+	if (jobtype == JOB_COURIER || jobtype == JOB_SWEEPER || jobtype == JOB_TRUCKER || jobtype == JOB_BUSDRIVER) {
+		if (!gJobActive[playerid] || gJobType[playerid] != jobtype) return 0;
+	}
+	return 1;
 }
 new gCourierCode[MAX_PLAYERS][8];
 new gMechanicTargetPart[MAX_PLAYERS];
@@ -75,6 +83,10 @@ stock StartFishingMinigameProcess(playerid)
 public RP_OnFinishCastRod(playerid, extra)
 {
 	#pragma unused extra
+	// [FIX] Validasi ulang: pemain harus masih nelayan & berada di dermaga
+	if (!JobQTE_IsType(playerid, JOB_FISHERMAN)) return 0;
+	if (IsPlayerConnected(playerid) && !IsPlayerNearPoint(playerid, FISH_PIER_X, FISH_PIER_Y, FISH_PIER_Z, 30.0)) return 0;
+
 	// Ikan menyambar umpan! Tentukan gerakan acak ikan
 	new fishMove = random(3);
 	gFishingTargetAction[playerid] = fishMove;
@@ -113,7 +125,7 @@ Pilih tindakan yang tepat untuk menyeimbangkan tarikan:\n\
 
 Dialog:DialogFishingQTE(playerid, response, listitem, inputtext[])
 {
-	if (!JobQTE_IsActive(playerid)) return 1;
+	if (!JobQTE_IsType(playerid, JOB_FISHERMAN)) return 1;
 
 	if (!response) {
 		SendClientMessage(playerid, COLOR_INFO, "[INFO] Anda melepas tarikan. Ikan berhasil kabur ke laut lepas.");
@@ -165,8 +177,8 @@ public RP_OnFinishChainsaw(playerid, extra)
 {
 	#pragma unused extra
 	// [FIX] Validasi ulang: pemain harus masih bekerja & di dekat area tebang.
-	if (!JobQTE_IsActive(playerid)) return 0;
-	if (!IsPlayerNearPoint(playerid, LUMBER_X, LUMBER_Y, LUMBER_Z, 30.0)) return 0;
+	if (!JobQTE_IsType(playerid, JOB_LUMBERJACK)) return 0;
+	if (IsPlayerConnected(playerid) && !IsPlayerNearPoint(playerid, LUMBER_X, LUMBER_Y, LUMBER_Z, 30.0)) return 0;
 
 	new treeLean = random(3);
 	gLumberTargetCut[playerid] = treeLean;
@@ -178,31 +190,31 @@ public RP_OnFinishChainsaw(playerid, extra)
 Tentukan potongan undercut gergaji agar kayu tidak retak:\n\n\
 1. [ Tebasan Bawah Sudut 45 Derajat ] (Presisi Seimbang)\n\
 2. [ Tebasan Datar Sudut 90 Derajat ]\n\
-3. [ Tebasan Silang Dua Sisi ]");
+3. [ Tebasan Atas Miring ]");
 	} else if (treeLean == 1) {
 		format(prompt, sizeof(prompt),
-			"{FFFFFF}Batang pohon pinus berdiri {FFFF00}TEGAK LURUS SEMPURNA{FFFFFF}.\n\
-Tentukan potongan takik gergaji agar pohon rebah ke jalan:\n\n\
-1. [ Tebasan Potong Atas Datar ]\n\
-2. [ Potongan Takik Felling Cut 90 Derajat ] (Presisi Seimbang)\n\
-3. [ Tebasan Serong Sembarang ]");
+			"{FFFFFF}Batang pohon jati condong ke {FFFF00}ARAH TIMUR{FFFFFF}.\n\
+Tentukan potongan undercut gergaji agar kayu tidak retak:\n\n\
+1. [ Tebasan Datar Sudut 90 Derajat ]\n\
+2. [ Tebasan Bawah Sudut 45 Derajat ] (Presisi Seimbang)\n\
+3. [ Potong Cabang Terlebih Dahulu ]");
 	} else {
 		format(prompt, sizeof(prompt),
-			"{FFFFFF}Batang pohon tua berurat tebal dan condong ke {FFFF00}ARAH TIMUR{FFFFFF}.\n\
-Tentukan teknik tebangan agar pohon tumbang sempurna:\n\n\
-1. [ Potongan Tarik Belakang ]\n\
-2. [ Tebasan Rata Bawah ]\n\
-3. [ Teknik Tebasan Silang Ganda ] (Presisi Seimbang)");
+			"{FFFFFF}Batang pohon jati berdiri {FFFF00}TEGAK LURUS SEMPURNA{FFFFFF}.\n\
+Tentukan potongan undercut gergaji agar kayu tidak retak:\n\n\
+1. [ Tebasan Sudut Miring Tajam ]\n\
+2. [ Tebasan Potong Atas Langsung ]\n\
+3. [ Tebasan Bawah Sudut 45 Derajat ] (Presisi Seimbang)");
 	}
 
 	Dialog_Show(playerid, DialogLumberQTE, DIALOG_STYLE_LIST,
-		"{2ECC71}TEKNIK TEBASAN POHON HUTAN", prompt, "Tebas", "Batal");
+		"{2ECC71}PENEBANG POHON - PRESISI TEBASAN GERGAJI", prompt, "Tebas!", "Batal");
 	return 1;
 }
 
 Dialog:DialogLumberQTE(playerid, response, listitem, inputtext[])
 {
-	if (!JobQTE_IsActive(playerid)) return 1;
+	if (!JobQTE_IsType(playerid, JOB_LUMBERJACK)) return 1;
 
 	if (!response) {
 		SendClientMessage(playerid, COLOR_INFO, "[INFO] Anda membatalkan tebangan pohon.");
@@ -319,7 +331,7 @@ public RP_OnFinishMechanicInspection(playerid, vehid)
 {
 	#pragma unused vehid
 	// [FIX] Validasi ulang: pemain harus masih mekanik & dekat kendaraan target.
-	if (!JobQTE_IsActive(playerid)) return 0;
+	if (!JobQTE_IsType(playerid, JOB_MECHANIC)) return 0;
 
 	new bug = gMechanicTargetPart[playerid];
 	new prompt[300];
@@ -354,7 +366,7 @@ Tentukan penanganan servis mekanik yang paling tepat:\n\n\
 
 Dialog:DialogMechanicDiagnostic(playerid, response, listitem, inputtext[])
 {
-	if (!JobQTE_IsActive(playerid)) return 1;
+	if (!JobQTE_IsType(playerid, JOB_MECHANIC)) return 1;
 	if (!response) {
 		SendClientMessage(playerid, COLOR_INFO, "[INFO] Perbaikan dibatalkan.");
 		return 1;

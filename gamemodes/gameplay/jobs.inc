@@ -333,7 +333,10 @@ stock ProcessSellTrash(playerid)
 	}
 
 	new totalPay = count * 35;
-	TakePlayerItem(playerid, ITEM_RECYCLED, count);
+	if (!TakePlayerItem(playerid, ITEM_RECYCLED, count)) {
+		SendErr(playerid, "Gagal menjual rongsokan: jumlah barang di inventaris tidak mencukupi.");
+		return 0;
+	}
 	GivePlayerMoneyEx(playerid, totalPay, "jual rongsokan");
 	GivePlayerExp(playerid, 15, "jual barang rongsokan");
 
@@ -374,7 +377,10 @@ stock ProcessSellWood(playerid)
 	}
 
 	new totalPay = count * 180;
-	TakePlayerItem(playerid, ITEM_WOOD, count);
+	if (!TakePlayerItem(playerid, ITEM_WOOD, count)) {
+		SendErr(playerid, "Gagal menjual kayu: jumlah barang di inventaris tidak mencukupi.");
+		return 0;
+	}
 	GivePlayerMoneyEx(playerid, totalPay, "jual kayu");
 	GivePlayerExp(playerid, 20, "jual kayu sawmill");
 
@@ -502,6 +508,8 @@ stock ProcessJobComplete(playerid)
 
 	Vehicle_SafeDestroy(gPlayerJobVehicle[playerid]);
 	Vehicle_SafeDestroy(gPlayerJobTrailer[playerid]);
+	gPlayerJobVehicle[playerid] = INVALID_VEHICLE_ID;
+	gPlayerJobTrailer[playerid] = INVALID_VEHICLE_ID;
 
 	GivePlayerMoneyEx(playerid, totalEarned, "gaji rute kerja");
 	GivePlayerExp(playerid, EXP_JOB_DONE, "selesai rute pekerjaan");
@@ -537,10 +545,13 @@ stock ProcessJobQuit(playerid)
 
 	Vehicle_SafeDestroy(gPlayerJobVehicle[playerid]);
 	Vehicle_SafeDestroy(gPlayerJobTrailer[playerid]);
+	gPlayerJobVehicle[playerid] = INVALID_VEHICLE_ID;
+	gPlayerJobTrailer[playerid] = INVALID_VEHICLE_ID;
 
 	if (gTrashDuty[playerid] && gTrashVeh[playerid] > 0 && IsValidVehicle(gTrashVeh[playerid])) {
 		Vehicle_SafeDestroy(gTrashVeh[playerid]);
 		gTrashDuty[playerid] = false;
+		gTrashVeh[playerid] = 0;
 	}
 
 	gJobActive[playerid] = false;

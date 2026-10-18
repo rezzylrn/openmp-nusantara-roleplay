@@ -151,6 +151,28 @@ stock OnFactionArmoryResponse(playerid, listitem)
 {
 	if (!gPlayerData[playerid][pLoggedIn]) return 0;
 	if (gPlayerData[playerid][pFaction] == FACTION_NONE || !gPlayerData[playerid][pDuty]) return 0;
+	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 0;
+
+	if (IsPlayerConnected(playerid)) {
+		new slot = -1;
+		new pVW = GetPlayerVirtualWorld(playerid);
+		new pInt = GetPlayerInterior(playerid);
+
+		for (new i = 0; i < 4; i++) {
+			if (gArmories[i][armFaction] == gPlayerData[playerid][pFaction] &&
+				gArmories[i][armVW] == pVW && gArmories[i][armInterior] == pInt) {
+				if (IsPlayerNearPoint(playerid, gArmories[i][armX], gArmories[i][armY], gArmories[i][armZ], RANGE_ARMORY_INTERACTION)) {
+					slot = i;
+					break;
+				}
+			}
+		}
+
+		if (slot == -1) {
+			SendErr(playerid, "Anda harus berada di dekat loker dinas faksi Anda.");
+			return 0;
+		}
+	}
 
 	if (gPlayerData[playerid][pFaction] == FACTION_POLICE) {
 		switch (listitem) {

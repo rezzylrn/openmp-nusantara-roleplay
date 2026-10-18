@@ -162,11 +162,12 @@ public OnPlayerKeyStateChange(playerid, KEY:newkeys, KEY:oldkeys)
 	// Jika karakter pingsan atau terborgol, nonaktifkan seluruh interaksi tombol
 	if (gPlayerData[playerid][pInjured] || gPlayerData[playerid][pCuffed]) return 1;
 
-	// Key F / ENTER (KEY_SECONDARY_ATTACK) untuk masuk / keluar pintu dinamis (Indoor/Outdoor)
+	// Key F / ENTER (KEY_SECONDARY_ATTACK) untuk masuk / keluar pintu dinamis & rumah (Indoor/Outdoor)
 	if ((newkeys & KEY_SECONDARY_ATTACK) && !(oldkeys & KEY_SECONDARY_ATTACK)) {
 		if (GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) {
 			if (ProcessDoorEnter(playerid)) return 1;
 			if (ProcessDoorExit(playerid)) return 1;
+			if (ProcessHouseInteraction(playerid)) return 1;
 		}
 	}
 

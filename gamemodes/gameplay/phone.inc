@@ -11,7 +11,7 @@
 */
 
 // Forward declarations
-forward CallTimeout(playerid, targetid);
+forward CallTimeout(playerid, targetid, sessionCaller, sessionTarget);
 
 stock ShowPhoneMenu(playerid)
 {
@@ -116,18 +116,19 @@ stock ProcessCall(playerid, const numberStr[])
 		SendInfo(targetid, "[MODE HENING] Panggilan masuk tak bersuara dari nomor %d.", gPlayerData[playerid][pPhone]);
 	}
 
-	SetTimerEx("CallTimeout", 25000, false, "ii", playerid, targetid);
+	SetTimerEx("CallTimeout", 25000, false, "iiii", playerid, targetid, gPlayerSession[playerid], gPlayerSession[targetid]);
 	return 1;
 }
 
-public CallTimeout(playerid, targetid)
+public CallTimeout(playerid, targetid, sessionCaller, sessionTarget)
 {
-	if (IsPlayerConnected(playerid) && gPlayerData[playerid][pCallState] == 1 && gPlayerData[playerid][pCallTarget] == targetid) {
+	if (!IsPlayerConnected(playerid) || gPlayerSession[playerid] != sessionCaller) return 1;
+	if (gPlayerData[playerid][pCallState] == 1 && gPlayerData[playerid][pCallTarget] == targetid) {
 		SendErr(playerid, "Tidak ada jawaban dari penerima.");
 		gPlayerData[playerid][pCallState] = 0;
 		gPlayerData[playerid][pCallTarget] = -1;
 
-		if (IsPlayerConnected(targetid) && gPlayerData[targetid][pCallTarget] == playerid) {
+		if (IsPlayerConnected(targetid) && gPlayerSession[targetid] == sessionTarget && gPlayerData[targetid][pCallTarget] == playerid) {
 			gPlayerData[targetid][pCallState] = 0;
 			gPlayerData[targetid][pCallTarget] = -1;
 			SendInfo(targetid, "Panggilan tak terjawab.");
@@ -224,7 +225,14 @@ stock ProcessSMS(playerid, targetNumber, const message[])
 	}
 
 	// Biaya SMS $1
-	TakePlayerMoneyEx(playerid, 1);
+	if (gPlayerData[playerid][pMoney] < 1) {
+		SendErr(playerid, "Uang tunai Anda tidak mencukupi untuk pulsa SMS ($1).");
+		return 0;
+	}
+	if (!TakePlayerMoneyEx(playerid, 1, "biaya kirim sms")) {
+		SendErr(playerid, "Gagal membayar pulsa SMS ($1).");
+		return 0;
+	}
 
 	SendRP(playerid, COLOR_YELLOW, "[SMS TERKIRIM] Ke: %d | Pesan: %s", targetNumber, message);
 	SendRP(targetid, COLOR_YELLOW, "[SMS MASUK] Dari: %d (%s) | Pesan: %s",
